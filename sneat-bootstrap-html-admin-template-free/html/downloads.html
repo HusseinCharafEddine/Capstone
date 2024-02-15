@@ -472,30 +472,12 @@
                 
               
                 <div class="card mb-4">
-                  <div class="card-header d-flex flex-wrap justify-content-between gap-3">
-                    <div class="card-title mb-0 me-1">
-                      <h5 class="mb-1">My Downloads</h5>
-                      <p class="text-muted mb-0">Total 6 course you have purchased</p>
-                    </div>
-                    <div class="d-flex justify-content-md-end align-items-center gap-3 flex-wrap">
-                      <div class="position-relative"><select id="select2_course_select" class="select2 form-select select2-hidden-accessible" data-placeholder="All Courses" data-select2-id="select2_course_select" tabindex="-1" aria-hidden="true">
-                        <option value="" data-select2-id="2">All Downloads</option>
-                        <option value="all courses">All Courses</option>
-                        <option value="ui/ux">UI/UX</option>
-                        <option value="seo">SEO</option>
-                        <option value="web">Web</option>
-                        <option value="music">Music</option>
-                        <option value="painting">Painting</option>
-                      </select><span class="select2 select2-container select2-container--default" dir="ltr" data-select2-id="1" style="width: 127px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-disabled="false" aria-labelledby="select2-select2_course_select-container"><span class="select2-selection__rendered w-px-150" id="select2-select2_course_select-container" role="textbox" aria-readonly="true"><span class="select2-selection__placeholder"></span></span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span></div>
-              
-                      <label class="switch">
-                        <input type="checkbox" class="switch-input">
-                        <span class="switch-toggle-slider">
-                          <span class="switch-on"></span>
-                          <span class="switch-off"></span>
-                        </span>
-                        <span class="switch-label text-nowrap mb-0">Hide completed</span>
-                      </label>
+                  <div class="card-header">
+                    <h5 class="card-title">Filter</h5>
+                    <div class="d-flex justify-content-between align-items-center row py-3 gap-3 gap-md-0">
+                      <div class="col-md-4 product_status"><select id="ProductStatus" class="form-select text-capitalize"><option value="">University</option><option value="Scheduled">Scheduled</option><option value="Publish">Publish</option><option value="Inactive">Inactive</option></select></div>
+                      <div class="col-md-4 product_category"><select id="ProductCategory" class="form-select text-capitalize"><option value="">Course</option><option value="Household">Household</option><option value="Office">Office</option><option value="Electronics">Electronics</option><option value="Shoes">Shoes</option><option value="Accessories">Accessories</option><option value="Game">Game</option></select></div>
+                      <div class="col-md-4 product_stock"><select id="ProductStock" class="form-select text-capitalize"><option value="">Rating</option><option value="Out_of_Stock">Out of Stock</option><option value="In_Stock">In Stock</option></select></div>
                     </div>
                   </div>
                   <div class="card-body">
