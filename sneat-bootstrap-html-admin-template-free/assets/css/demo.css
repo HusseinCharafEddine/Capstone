@@ -121,3 +121,43 @@
   text-align: center;
   margin-top: 1rem;
 }
+
+.customer-experience-rating {
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.customer-experience-rating__title {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.customer-experience-rating__rating {
+  font-size: 36px;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+
+.customer-experience-rating__stars {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+}
+
+.customer-experience-rating__star {
+  width: 20px;
+  height: 20px;
+  background-color: #ddd;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.customer-experience-rating__star--filled {
+  background-color: gold;
+}
+
+.customer-experience-rating__count {
+  font-size: 16px;
+  margin-top: 10px;
+}
