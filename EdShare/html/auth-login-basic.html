@@ -46,6 +46,7 @@
     <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="../assets/js/config.js"></script>
+ 
   </head>
 
   <body>
@@ -71,14 +72,14 @@
               <h4 class="mb-2">Welcome to EdShare! 👋</h4>
               <p class="mb-4">Please sign-in to your account and start the adventure</p>
 
-              <form id="formAuthentication" class="mb-3" action="index.html">
+              <form id="loginForm" method = "POST" class="mb-3" action="../BE/login.php">
                 <div class="mb-3">
-                  <label for="email" class="form-label">Email or Username</label>
+                  <label for="username" class="form-label">Email or Username</label>
                   <input
                     type="text"
                     class="form-control"
-                    id="email"
-                    name="email-username"
+                    id="username"
+                    name="username"
                     placeholder="Enter your email or username"
                     autofocus />
                 </div>
@@ -109,6 +110,7 @@
                 <div class="mb-3">
                   <button class="btn btn-primary d-grid w-100" type="submit">Sign in</button>
                 </div>
+                <span id = "inv-email">Invalid Username and Password</span>
               </form>
 
               <p class="text-center">
@@ -126,14 +128,7 @@
 
     <!-- / Content -->
 
-    <div class="buy-now">
-      <a
-        href="https://themeselection.com/item/sneat-bootstrap-html-admin-template/"
-        target="_blank"
-        class="btn btn-danger btn-buy-now"
-        >Upgrade to Pro</a
-      >
-    </div>
+   
 
     <!-- Core JS -->
     <!-- build:js assets/vendor/js/core.js -->
@@ -155,5 +150,13 @@
 
     <!-- Place this tag in your head or just before your close body tag. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <script>
+      // Check if the URL contains the alert parameter
+      const urlParams = new URLSearchParams(window.location.search);
+      const alertMessage = urlParams.get('alert');
+      if (alertMessage === 'invalidLogIn') {
+        document.getElementById('inv-email').style.display = 'block';
+      }    
+      </script>
   </body>
 </html>

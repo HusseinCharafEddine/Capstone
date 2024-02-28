@@ -1,4 +1,9 @@
 @charset "UTF-8";
+#inv-username, #inv-firstname, #inv-email, #inv-lastname, #inv-university, #inv-universityAcronym1, #inv-universityAcronym2, #inv-password {
+  color: red;
+  display:none;
+}
+
 .authentication-wrapper {
   display: flex;
   flex-basis: 100%;

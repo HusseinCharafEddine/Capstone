@@ -1,3 +1,9 @@
+<?php
+    session_start();
+    if (!isset($_SESSION["username"])){
+        header("location:../index.php");
+    }
+?>
 <!DOCTYPE html>
 
 <html
@@ -13,7 +19,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-    <title>Dashboard - Analytics | Sneat - Bootstrap 5 HTML Admin Template - Pro</title>
+    <title>Dashboard EdShare</title>
 
     <meta name="description" content="" />
 
@@ -65,6 +71,11 @@
             <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
               <i class="bx bx-chevron-left bx-sm align-middle"></i>
             </a>
+          </div>
+          <div class="app-brand demo"> 
+            <?php
+            echo "Hello "  . $_SESSION['username'];
+            ?>
           </div>
 
           <div class="menu-inner-shadow"></div>

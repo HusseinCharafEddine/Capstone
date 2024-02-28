@@ -46,6 +46,9 @@
     <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/auth.js"></script>
+
+   
   </head>
 
   <body>
@@ -69,7 +72,7 @@
               <!-- /Logo -->
               <h4 class="mb-2">Adventure starts here 🚀</h4>
 
-              <form id="formAuthentication" class="mb-3" action="index.html">
+              <form id="signUpForm" method = "POST" class="mb-3" action="../BE/signup.php">
                 <div class="mb-3">
                   <label for="username" class="form-label">Username</label>
                   <input
@@ -80,30 +83,35 @@
                     placeholder="Enter your username"
                     autofocus />
                 </div>
+                <span id = "inv-username">Username must be 8 characters long</span>
                 <div class="mb-3">
                   <label for="email" class="form-label">Email</label>
                   <input type="text" class="form-control" id="email" name="email" placeholder="Enter your email" />
                 </div>
+                <span id = "inv-email">Invalid Email</span>
+
                 <div class="mb-3">
-                  <label for="first-name" class="form-label">First Name</label>
+                  <label for="firstName" class="form-label">First Name</label>
                   <input
                     type="text"
                     class="form-control"
-                    id="first-name"
-                    name="first-name"
+                    id="firstName"
+                    name="firstName"
                     placeholder="Enter your first name"
                     autofocus />
                 </div>
+                <span id = "inv-firstname">First Name can not be empty</span>
                 <div class="mb-3">
-                  <label for="last-name" class="form-label">Last Name</label>
+                  <label for="lastName" class="form-label">Last Name</label>
                   <input
                     type="text"
                     class="form-control"
-                    id="last-name"
-                    name="last-name"
+                    id="lastName"
+                    name="lastName"
                     placeholder="Enter your last name"
                     autofocus />
                 </div>
+                <span id = "inv-lastname">Last Name can not be empty</span>
                 <div class="mb-3">
                   <label for="university" class="form-label">University</label>
                   <input
@@ -114,6 +122,19 @@
                     placeholder="Enter your university"
                     autofocus />
                 </div>
+                <span id = "inv-university">University can not be empty</span>
+                <div class="mb-3">
+                  <label for="universityAcronym" class="form-label">University Acronym</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="universityAcronym"
+                    name="universityAcronym"
+                    placeholder="Enter your university acronym"
+                    autofocus />
+                </div>
+                <span id = "inv-universityAcronym1">University Acronym can not be empty</span>
+                <span id = "inv-universityAcronym2">University Acronym must be at least 3 characters long</span>
                 <div class="mb-3 form-password-toggle">
                   <label class="form-label" for="password">Password</label>
                   <div class="input-group input-group-merge">
@@ -127,7 +148,7 @@
                     <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
                   </div>
                 </div>
-
+                <span id = "inv-password">Password must be at least 8 characters long</span>
                 <div class="mb-3">
                   <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="terms-conditions" name="terms" />
