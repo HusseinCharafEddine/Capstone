@@ -34,6 +34,7 @@ if ($id){
     session_start();
     $_SESSION["id"]=$id;
     $_SESSION["username"]=$un;
+    $_SESSION["university"] = $user->University;
     header("location:../landing.php");
 }else{
     header("location:../index.html");
@@ -65,6 +66,7 @@ function InsertUserToDBfromObject($user){
         session_start();
         $_SESSION["id"] = $db->lastInsertId();
         $_SESSION["username"] = $user->Username;
+        $_SESSION["university"]=$user->University;
         return $db->lastInsertId();
     } else {
         return 0;

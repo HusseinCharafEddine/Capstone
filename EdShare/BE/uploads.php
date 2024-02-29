@@ -2,9 +2,18 @@
     session_start();
     if (!isset($_SESSION["username"])){
         header("location:../index.php");
+
     }
 
+require_once("common/commonFunctions.php");
+$db = DBConnect();
 $username = $_SESSION['username'];
+
+$RetreiveUniversityId= "SELECT UniversityId FROM User WHERE Username=?";
+$stmt = $db->prepare($RetreiveUniversityId);
+$stmt->execute([$username]);
+$universityId= $stmt->fetchColumn();
+
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     exit('POST request method required');
@@ -71,7 +80,7 @@ $destination = $userUploadDirectory . $fileName;
 $i = 1;
 while (file_exists($destination)) {
     $fileName = $baseName . "($i)." . $fileExtension;
-    $destination = $uploadDirectory . $fileName;
+    $destination = $userUploadDirectory . $fileName;
     $i++;
 }
 
@@ -80,5 +89,50 @@ if (!move_uploaded_file($_FILES["file"]["tmp_name"], $destination)) {
     exit("Can't move uploaded file");
 }
 
+$document= new stdClass();
+
+$CourseName=VarExist($_POST["course-name"]);
+
+$RetreiveUserId= "SELECT UserId FROM User WHERE Username=?";
+$stmt = $db->prepare($RetreiveUserId);
+$stmt->execute([$username]);
+$userId = $stmt->fetchColumn();
+
+
+$RetreiveCourseId= "SELECT CourseId FROM Course WHERE CourseName=?";
+$stmt = $db->prepare($RetreiveCourseId);
+$stmt->execute([$CourseName]);
+$CourseId =$stmt->fetchColumn();
+
+
+if (!$CourseId) {
+    // Insert the new course into the course table
+    $insertCourseQuery = "INSERT INTO Course (CourseName, UniversityId) VALUES (?,?) ";
+    $stmt = $db->prepare($insertCourseQuery);
+    $stmt->execute([$CourseName,$universityId]);
+    $CourseId = $db->lastInsertId();
+}
+
+$document->UserId= $userId;
+$document->CourseId= $CourseId;
+
+$DocumentId = InsertDocumentToDBFromObject($document);
+
 echo "File uploaded successfully.";
+
+
+function InsertDocumentToDBFromObject($document){
+    $db= DBConnect();
+
+    $query = "INSERT INTO Document (UserId, CourseId) VALUES (?, ?)";
+    $stmt = $db->prepare($query);
+    $stmt->execute([$document->UserId, $document->CourseId]);
+    if ($stmt->rowCount() > 0){
+        return $db->lastInsertId();
+    } else {
+        return 0;
+    }
+}
+
+
 ?>
