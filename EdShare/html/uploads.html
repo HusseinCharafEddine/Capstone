@@ -475,23 +475,23 @@
                       <div class="card mb-4">
                         <h5 class="card-header">Upload a File</h5>
                         <div class="card-body demo-vertical-spacing demo-only-element">
-                          <form action="uploads.php" method="post" enctype="multipart/form-data">  
-                           <div class="input-group">
-                                <input type="text" class="form-control" aria-label="University Name">
+                          <form action="../BE/uploads.php" method="post" enctype="multipart/form-data">  
+                            <div class="input-group">
+                                <input type="text" class="form-control" aria-label="University Name" name="university-name">
                                 <label class="input-group-text" for="inputGroupFile02">University Name</label>
                             </div>
                             <div class="input-group">
-                                <input type="text" class="form-control" aria-label="Text input with dropdown button">
+                                <input type="text" class="form-control" aria-label="Text input with dropdown button" name="course-name">
                                 <label class="input-group-text" for="inputGroupFile02">Course Name</label>
                             </div>
                             <div class="input-group">
-                                <input type="file" class="form-control" id="inputGroupFile02">
+                                <input type="file" class="form-control" id="inputGroupFile02" name="file">
                                 <label class="input-group-text" for="inputGroupFile02">Upload</label>
-                              </div>
-                              <div class="container d-flex justify-content-center">
+                            </div>
+                            <div class="container d-flex justify-content-center">
                                 <input type="submit" class="btn btn-outline-primary" value="Upload" name="submit">
                             </div>
-                          </form>
+                        </form>                          
                         </div>
                       </div>
                     </div>
