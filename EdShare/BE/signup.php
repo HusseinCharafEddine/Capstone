@@ -3,6 +3,7 @@ require_once("common/commonFunctions.php");
 
 
 $user=new stdClass();
+$un=$_POST["username"];      
 
 $user->FirstName=VarExist($_POST["firstName"]);
 $user->LastName=VarExist($_POST["lastName"]);
@@ -27,15 +28,15 @@ if ($existingUsername > 0){
     header("location:../html/auth-register-basic.html?alert=usernameExists");
     exit();
 }
-if (InsertUserToDBfromObject($user)){
+$id = InsertUserToDBfromObject($user);
+print "This is a test message\n" . $id;
+if ($id){
     session_start();
-    $row = $stmt->fetch();
-    $id=$row["ID"];
     $_SESSION["id"]=$id;
     $_SESSION["username"]=$un;
     header("location:../landing.php");
 }else{
-    header("location:../index.php");
+    header("location:../index.html");
 }
 
 
@@ -60,14 +61,13 @@ function InsertUserToDBfromObject($user){
     $query = "INSERT INTO User (Username, Password, Email, FirstName, LastName, UniversityId) VALUES (?, MD5(?), ?, ?, ?, ?)";
     $stmt = $db->prepare($query);
     $stmt->execute([$user->Username, $user->Password, $user->Email, $user->FirstName, $user->LastName, $universityId]);
-
     if ($stmt->rowCount() > 0){
         session_start();
         $_SESSION["id"] = $db->lastInsertId();
         $_SESSION["username"] = $user->Username;
-        return true;
+        return $db->lastInsertId();
     } else {
-        return false;
+        return 0;
     }
 }
 
