@@ -53,8 +53,8 @@ $fileName = $baseName . "." . $fileExtension;
 
 // Check if file already exists, append number if necessary
 
-$uploadDirectory = "C:/wamp64/www/Capstone/EdShare/uploads/";
-// $uploadDirectory = __DIR__ . "/uploads/";
+//$uploadDirectory = "C:/wamp64/www/Capstone/EdShare/uploads/";
+$uploadDirectory = __DIR__ . "/../" . "/uploads/";
 $destination = $uploadDirectory . $fileName;
 
 $i = 1;
