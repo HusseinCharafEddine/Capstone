@@ -1,5 +1,10 @@
 <!DOCTYPE html>
-
+<?php
+    session_start();
+    if (!isset($_SESSION["username"])){
+        header("location:../index.php");
+    }
+?> 
 <html
   lang="en"
   class="light-style layout-menu-fixed layout-compact"
