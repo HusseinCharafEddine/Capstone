@@ -3,7 +3,7 @@
     if (!isset($_SESSION["username"])){
         header("location:../index.html");
     }
-?>
+?> 
 <!DOCTYPE html>
 
 <html
