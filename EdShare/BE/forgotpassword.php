@@ -25,7 +25,7 @@ if ($stmt->rowCount() > 0) {
     $mail->addAddress($email);
     $mail->Subject = "Password Reset";
     $mail->Body = <<<END
-    Click <a href="http://example.com/reset-password.php?token=$token">here</a> 
+    Click <a href="http://capstone/EdShare/html/auth-password-reset-page.php?token=$token">here</a> 
     to reset your password.
     END;
 
@@ -36,10 +36,11 @@ if ($stmt->rowCount() > 0) {
     } catch (Exception $e) {
 
         echo "Message could not be sent. Mailer error: {$mail->ErrorInfo}";
-
+        return;
     }
 
 }
 
 echo "Message sent, please check your inbox.";
+header("location:../html/auth-email-sent.html");
 ?>

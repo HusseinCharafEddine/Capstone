@@ -20,9 +20,10 @@ $mail->isSMTP();
 $mail->SMTPAuth = true;
 
 $mail->Host = "smtp.gmail.com";
+$mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
 $mail->Port = 587;
 $mail->Username = "hu.sharafeddine@gmail.com";
-$mail->Password = "souna=2004";
+$mail->Password = "mexu qvxn gyfy fdvi";
 
 $mail->isHtml(true);
 
