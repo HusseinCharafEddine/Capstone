@@ -1,4 +1,10 @@
 <?php
+if (!isset($_SESSION["username"])){
+    header("location:../index.php");
+}
+
+$username = $_SESSION['username'];
+
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     exit('POST request method required');
 }
@@ -51,11 +57,15 @@ if (!in_array($fileExtension, $allowedExtensions)) {
 $baseName = preg_replace("/[^\w-]/", "_", $pathinfo["filename"]);
 $fileName = $baseName . "." . $fileExtension;
 
-// Check if file already exists, append number if necessary
+$userUploadDirectory = __DIR__ . "/../uploads/" . $username . "/";
 
-//$uploadDirectory = "C:/wamp64/www/Capstone/EdShare/uploads/";
-$uploadDirectory = __DIR__ . "/../" . "/uploads/";
-$destination = $uploadDirectory . $fileName;
+// Create user-specific directory if it doesn't exist
+if (!file_exists($userUploadDirectory)) {
+    mkdir($userUploadDirectory, 0777, true); // Create directory recursively with full permissions
+}
+
+// Set the destination path inside user-specific directory
+$destination = $userUploadDirectory . $fileName;
 
 $i = 1;
 while (file_exists($destination)) {
