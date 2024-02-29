@@ -43,7 +43,7 @@ if ($_FILES["file"]["size"] > $maxFileSize) {
 }
 
 // Allowed file types
-$allowedExtensions = ["pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "py", "c", "zip"];
+$allowedExtensions = ["pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "py", "c", "zip", "java"];
 
 $pathinfo = pathinfo($_FILES["file"]["name"]);
 $fileExtension = strtolower($pathinfo["extension"]);
