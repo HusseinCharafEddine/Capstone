@@ -15,6 +15,7 @@ if (strlen($_POST["username"]) < 8 || strlen($_POST["password"]) < 8) {
     header("location:../html/auth-register-basic.html?alert=InvalidUsernameAndPassword");
     exit();
 }
+
 $db = DBConnect();
 
 $checkUserExists = "SELECT Username FROM User WHERE Username = ?";
