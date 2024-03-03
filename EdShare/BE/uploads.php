@@ -92,6 +92,7 @@ if (!move_uploaded_file($_FILES["file"]["tmp_name"], $destination)) {
 $document= new stdClass();
 
 $CourseName=VarExist($_POST["course-name"]);
+$CourseCode=VarExist($_POST["course-code"]);
 
 $RetreiveUserId= "SELECT UserId FROM User WHERE Username=?";
 $stmt = $db->prepare($RetreiveUserId);
@@ -107,14 +108,18 @@ $CourseId =$stmt->fetchColumn();
 
 if (!$CourseId) {
     // Insert the new course into the course table
-    $insertCourseQuery = "INSERT INTO Course (CourseName, UniversityId) VALUES (?,?) ";
+    $insertCourseQuery = "INSERT INTO Course (CourseName, UniversityId, CourseCode) VALUES (?,?,?) ";
     $stmt = $db->prepare($insertCourseQuery);
-    $stmt->execute([$CourseName,$universityId]);
+    $stmt->execute([$CourseName,$universityId, $CourseCode]);
     $CourseId = $db->lastInsertId();
 }
+$Category=VarExist($_POST["category"]);
+$Title=VarExist($_POST["title"]);
 
 $document->UserId= $userId;
 $document->CourseId= $CourseId;
+$document->Category = $Category;
+$document->Title = $Title;
 
 $DocumentId = InsertDocumentToDBFromObject($document);
 
@@ -124,9 +129,9 @@ echo "File uploaded successfully.";
 function InsertDocumentToDBFromObject($document){
     $db= DBConnect();
 
-    $query = "INSERT INTO Document (UserId, CourseId) VALUES (?, ?)";
+    $query = "INSERT INTO Document (UserId, CourseId, Category, Title) VALUES (?, ?, ?, ?)";
     $stmt = $db->prepare($query);
-    $stmt->execute([$document->UserId, $document->CourseId]);
+    $stmt->execute([$document->UserId, $document->CourseId, $document -> Category, $document -> Title]);
     if ($stmt->rowCount() > 0){
         return $db->lastInsertId();
     } else {

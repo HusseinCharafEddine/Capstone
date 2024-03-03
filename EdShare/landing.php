@@ -3,7 +3,7 @@
     if (!isset($_SESSION["username"])){
         header("location:../index.html");
     }
-?> 
+?>
 <!DOCTYPE html>
 
 <html
@@ -108,7 +108,7 @@
                 </li>
                 <li class="menu-item ">
                   <a
-                    href="html/uploads.php"
+                    href="html/uploads.html"
                     class="menu-link">
                     <i class="menu-icon tf-icons bx bx-upload"></i>
                     <div data-i18n="Uploads">Uploads</div>

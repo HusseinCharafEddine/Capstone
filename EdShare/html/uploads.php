@@ -46,10 +46,15 @@
     <!-- Page CSS -->
 
     <!-- Helpers -->
+    
     <script src="../assets/vendor/js/helpers.js"></script>
     <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="../assets/js/config.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>        
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css" /> 
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>‌​
+   
   </head>
 
   <body>
@@ -481,14 +486,30 @@
                         <h5 class="card-header">Upload a File</h5>
                         <div class="card-body demo-vertical-spacing demo-only-element">
                           <form action="../BE/uploads.php" method="post" enctype="multipart/form-data">
+                          <div class="input-group">
+                          <input type="text" class="form-control" aria-label="University Name" id="course-name-input" name="course-name" placeholder="Enter Course Name">
+                          <label class="input-group-text" for="inputGroupFile02">Course Name</label>
+                        </div>
                             <div class="input-group">
-                                <input type="text" class="form-control" aria-label="University Name" name="university-name">
-                                <label class="input-group-text" for="inputGroupFile02">University Name</label>
+                                <input type="text" class="form-control" aria-label="Text input with dropdown button" id="course-code-input" name="course-code"placeholder="Enter Course Code">
+                                <label class="input-group-text" for="inputGroupFile02">Course Code</label>
                             </div>
                             <div class="input-group">
-                                <input type="text" class="form-control" aria-label="Text input with dropdown button" name="course-name">
-                                <label class="input-group-text" for="inputGroupFile02">Course Name</label>
+                                <input type="text" class="form-control" aria-label="Text input with dropdown button" name="title"placeholder="Enter Document Title">
+                                <label class="input-group-text" for="inputGroupFile02">Document Title</label>
                             </div>
+                            <div class="input-group">
+                                <input type="text" class="form-control" aria-label="Text input with dropdown button" id="category-input"  name="category"placeholder="Enter Document Category">
+                                <label class="input-group-text" for="inputGroupFile02">Category</label>
+                            </div>
+                            <div class="input-group">
+                            <select id="largeSelect" class="form-select form-select-md" placeholder= "Document Type">
+                              <option value="" disabled selected>Select Document Type</option>
+                              <option value="1">Summary</option>
+                              <option value="2">Notes</option>
+                              <option value="3">Exercises</option>
+                            </select>
+                          </div>
                             <div class="input-group">
                                 <input type="file" class="form-control" id="inputGroupFile02" name="file">
                                 <label class="input-group-text" for="inputGroupFile02">Upload</label>
@@ -763,7 +784,7 @@
     <!-- Core JS -->
     <!-- build:js assets/vendor/js/core.js -->
 
-    <script src="../assets/vendor/libs/jquery/jquery.js"></script>
+    <!-- <script src="../assets/vendor/libs/jquery/jquery.js"></script> -->
     <script src="../assets/vendor/libs/popper/popper.js"></script>
     <script src="../assets/vendor/js/bootstrap.js"></script>
     <script src="../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
@@ -782,5 +803,35 @@
 
     <!-- Place this tag in your head or just before your close body tag. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <script>
+    // JavaScript code for autocomplete
+      $(document).ready(function() {
+    $('#course-code-input').autocomplete({
+        source: '../BE/autoCompleteCourseCode.php',
+        minLength: 2
+    });
+});
+
+    </script><script>
+    // JavaScript code for autocomplete
+      $(document).ready(function() {
+    $('#course-name-input').autocomplete({
+        source: '../BE/autoCompleteCourseName.php',
+        minLength: 2
+    });
+});
+
+    </script>
+   
+     <script>
+    // JavaScript code for autocomplete
+      $(document).ready(function() {
+    $('#category-input').autocomplete({
+        source: '../BE/autoCompleteCategory.php',
+        minLength: 2
+    });
+});
+
+    </script>
   </body>
 </html>
