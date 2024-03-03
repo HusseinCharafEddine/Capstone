@@ -108,7 +108,7 @@
                 </li>
                 <li class="menu-item ">
                   <a
-                    href="html/uploads.html"
+                    href="html/uploads.php"
                     class="menu-link">
                     <i class="menu-icon tf-icons bx bx-upload"></i>
                     <div data-i18n="Uploads">Uploads</div>
