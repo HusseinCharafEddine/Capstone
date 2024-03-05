@@ -1,19 +1,17 @@
 <?php
-    session_start();
-    if (!isset($_SESSION["username"])){
-        header("location:../index.php");
-
-    }
+session_start();
+if (!isset($_SESSION["username"])) {
+    header("location:../index.php");
+}
 
 require_once("common/commonFunctions.php");
 $db = DBConnect();
 $username = $_SESSION['username'];
 
-$RetreiveUniversityId= "SELECT UniversityId FROM User WHERE Username=?";
+$RetreiveUniversityId = "SELECT UniversityId FROM User WHERE Username=?";
 $stmt = $db->prepare($RetreiveUniversityId);
 $stmt->execute([$username]);
-$universityId= $stmt->fetchColumn();
-
+$universityId = $stmt->fetchColumn();
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     exit('POST request method required');
@@ -68,76 +66,85 @@ $baseName = preg_replace("/[^\w-]/", "_", $pathinfo["filename"]);
 $fileName = $baseName . "." . $fileExtension;
 
 $userUploadDirectory = __DIR__ . "/../uploads/" . $username . "/";
+$thumbnailDirectory = __DIR__ . "/../thumbnails/" . $username . "/";
 
 // Create user-specific directory if it doesn't exist
 if (!file_exists($userUploadDirectory)) {
     mkdir($userUploadDirectory, 0777, true); // Create directory recursively with full permissions
 }
 
-// Set the destination path inside user-specific directory
-$destination = $userUploadDirectory . $fileName;
-
-$i = 1;
-while (file_exists($destination)) {
-    $fileName = $baseName . "($i)." . $fileExtension;
-    $destination = $userUploadDirectory . $fileName;
-    $i++;
-}
-
 // Move the uploaded file to the destination
+$destination = $userUploadDirectory . $fileName;
 if (!move_uploaded_file($_FILES["file"]["tmp_name"], $destination)) {
     exit("Can't move uploaded file");
 }
 
-$document= new stdClass();
+// Generate a thumbnail for the uploaded file
+$thumbnailPath = generateThumbnail($destination, $thumbnailDirectory);
 
-$CourseName=VarExist($_POST["course-name"]);
-$CourseCode=VarExist($_POST["course-code"]);
+// Save the thumbnail path and original file path to the database
+$document = new stdClass();
+$document->UserId = getUserId($db, $username);
+$document->CourseId = getCourseId($db, $_POST["course-name"], $universityId, $_POST["course-code"]);
+$document->Category = VarExist($_POST["category"]);
+$document->Title = VarExist($_POST["title"]);
+$document->FilePath = $destination;
+$document->ThumbnailPath = $thumbnailPath;
 
-$RetreiveUserId= "SELECT UserId FROM User WHERE Username=?";
-$stmt = $db->prepare($RetreiveUserId);
-$stmt->execute([$username]);
-$userId = $stmt->fetchColumn();
-
-
-$RetreiveCourseId= "SELECT CourseId FROM Course WHERE CourseName=?";
-$stmt = $db->prepare($RetreiveCourseId);
-$stmt->execute([$CourseName]);
-$CourseId =$stmt->fetchColumn();
-
-
-if (!$CourseId) {
-    // Insert the new course into the course table
-    $insertCourseQuery = "INSERT INTO Course (CourseName, UniversityId, CourseCode) VALUES (?,?,?) ";
-    $stmt = $db->prepare($insertCourseQuery);
-    $stmt->execute([$CourseName,$universityId, $CourseCode]);
-    $CourseId = $db->lastInsertId();
-}
-$Category=VarExist($_POST["category"]);
-$Title=VarExist($_POST["title"]);
-
-$document->UserId= $userId;
-$document->CourseId= $CourseId;
-$document->Category = $Category;
-$document->Title = $Title;
-
-$DocumentId = InsertDocumentToDBFromObject($document);
+$DocumentId = InsertDocumentToDBFromObject($db, $document);
 
 echo "File uploaded successfully.";
 
+function generateThumbnail($filePath, $thumbnailDirectory)
+{
+    // Create thumbnail directory if it doesn't exist
+    if (!file_exists($thumbnailDirectory)) {
+        mkdir($thumbnailDirectory, 0777, true);
+    }
 
-function InsertDocumentToDBFromObject($document){
-    $db= DBConnect();
+    $pathinfo = pathinfo($filePath);
+    $thumbnailPath = $thumbnailDirectory . $pathinfo['filename'] . "_thumb.jpg"; 
 
-    $query = "INSERT INTO Document (UserId, CourseId, Category, Title) VALUES (?, ?, ?, ?)";
+    // actually generateeee hallllll thingyyyyyyyyyyyyyyyyyyyyyyyyyy
+
+    return $thumbnailPath;
+}
+
+function getUserId($db, $username)
+{
+    $RetreiveUserId = "SELECT UserId FROM User WHERE Username=?";
+    $stmt = $db->prepare($RetreiveUserId);
+    $stmt->execute([$username]);
+    return $stmt->fetchColumn();
+}
+
+function getCourseId($db, $courseName, $universityId, $courseCode)
+{
+    $RetreiveCourseId = "SELECT CourseId FROM Course WHERE CourseName=?";
+    $stmt = $db->prepare($RetreiveCourseId);
+    $stmt->execute([$courseName]);
+    $CourseId = $stmt->fetchColumn();
+
+    if (!$CourseId) {
+        // Insert the new course into the course table
+        $insertCourseQuery = "INSERT INTO Course (CourseName, UniversityId, CourseCode) VALUES (?,?,?) ";
+        $stmt = $db->prepare($insertCourseQuery);
+        $stmt->execute([$courseName, $universityId, $courseCode]);
+        $CourseId = $db->lastInsertId();
+    }
+
+    return $CourseId;
+}
+
+function InsertDocumentToDBFromObject($db, $document)
+{
+    $query = "INSERT INTO Document (UserId, CourseId, Category, Title, FilePath, ThumbnailPath) VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = $db->prepare($query);
-    $stmt->execute([$document->UserId, $document->CourseId, $document -> Category, $document -> Title]);
-    if ($stmt->rowCount() > 0){
+    $stmt->execute([$document->UserId, $document->CourseId, $document->Category, $document->Title, $document->FilePath, $document->ThumbnailPath]);
+    if ($stmt->rowCount() > 0) {
         return $db->lastInsertId();
     } else {
         return 0;
     }
 }
-
-
 ?>
