@@ -4,7 +4,17 @@
     if (!isset($_SESSION["username"])){
         header("location:../index.php");
     }
-?> 
+
+
+  require_once("../BE/common/commonFunctions.php");
+  $db = DBConnect();
+  $username = $_SESSION['username'];
+
+  $getUploadedDocumentsQuery = "SELECT * FROM Document WHERE UserId = (SELECT UserId FROM User WHERE Username = ?)";
+  $stmt = $db->prepare($getUploadedDocumentsQuery);
+  $stmt->execute([$username]);
+  $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
 <html
   lang="en"
   class="light-style layout-menu-fixed layout-compact"
@@ -536,7 +546,22 @@
                   </div>
                </div>
                 <h6 class="mb-0 mt-5 " >My Uploads</h6>
-                <div class="row row-cols-1 row-cols-md-5 g-3 mb-5">
+                <div>
+                   <?php if (empty($uploadedDocuments)) : ?>
+                      <p>No documents uploaded yet.</p>
+                    <?php else : ?>
+                      <ul>
+                    <?php foreach ($uploadedDocuments as $document) : ?>
+                          <li>
+                          <a href="../uploads/<?php echo $username ?>/<?php echo $document['Title']; ?>" target="_blank"> <!-- make downloadable-->
+                            <?php echo $document['Title']; ?>
+                          </a>
+                          </li>
+                    <?php endforeach; ?>
+                    </ul>
+                  <?php endif; ?>
+                </div>
+            <div class="row row-cols-1 row-cols-md-5 g-3 mb-5">
                       <div class="col ">
                       <div class="card h-100">
                         <img class="card-img-top" src="../assets/img/elements/2.jpg" alt="Card image cap">
