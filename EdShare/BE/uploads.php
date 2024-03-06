@@ -105,10 +105,44 @@ function generateThumbnail($filePath, $thumbnailDirectory)
     $pathinfo = pathinfo($filePath);
     $thumbnailPath = $thumbnailDirectory . $pathinfo['filename'] . "_thumb.jpg"; 
 
-    // actually generateeee hallllll thingyyyyyyyyyyyyyyyyyyyyyyyyyy
+    try {
+        // Create Imagick object for the PDF
+        $im = new Imagick();
+        
+        // Read the first page of the PDF and convert it to an image
+        $im->setResolution(600, 600); // Set resolution to 600 dpi for higher quality
+        $im->readImage($filePath . '[0]'); // [0] represents the first page
+        $im->setImageFormat('jpg'); // Set the image format to JPG
+        
+        // Adjust compression and quality settings for better image quality
+        $im->setImageCompression(Imagick::COMPRESSION_JPEG);
+        $im->setImageCompressionQuality(100); // Set JPEG compression quality (0-100) - increased to 95
+        $im->setAntiAlias(true); // Enable anti-aliasing
+        
+        // Resize the image to create a thumbnail (e.g., 300x300 pixels)
+        $im->thumbnailImage(300, 300, true); // Adjust dimensions as needed
+        
+        // Enhance image sharpness
+        $im->sharpenImage(1, 0.8); // Adjust sharpening parameters
 
-    return $thumbnailPath;
+        // Optimize color space for better color representation
+        $im->setImageColorspace(Imagick::COLORSPACE_SRGB);
+        
+        // Write the thumbnail image to the destination
+        $im->writeImage($thumbnailPath);
+        
+        // Destroy the Imagick object to free up memory
+        $im->destroy();
+
+        return $thumbnailPath;
+    } catch (Exception $e) {
+        // Handle any exceptions
+        echo 'Error generating thumbnail: ', $e->getMessage();
+        return null; // Return null to indicate failure
+    }
 }
+
+
 
 function getUserId($db, $username)
 {
