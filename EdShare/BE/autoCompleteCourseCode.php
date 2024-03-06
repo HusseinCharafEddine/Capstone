@@ -8,7 +8,7 @@ if (isset($_GET['term'])) {
     $courseCode = $_GET['term'];
 
     // SQL query to retrieve matching course names
-    $sql = "SELECT CourseCode FROM Course WHERE CourseCode LIKE :courseCode";
+    $sql = "SELECT DISTINCT CourseCode FROM Course WHERE CourseCode LIKE :courseCode";
 
     // Prepare the SQL statement
     $stmt = $db->prepare($sql);
