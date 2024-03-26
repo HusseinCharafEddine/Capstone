@@ -546,199 +546,21 @@
                   </div>
                </div>
                 <h6 class="mb-0 mt-5 " >My Uploads</h6>
-                <div>
-                   <?php if (empty($uploadedDocuments)) : ?>
-                      <p>No documents uploaded yet.</p>
-                    <?php else : ?>
-                      <ul>
-                    <?php foreach ($uploadedDocuments as $document) : ?>
-                          <li>
-                          <a href="../uploads/<?php echo $username ?>/<?php echo $document['Title']; ?>" target="_blank"> <!-- make downloadable-->
-                            <?php echo $document['Title']; ?>
-                          </a>
-                          </li>
-                    <?php endforeach; ?>
-                    </ul>
-                  <?php endif; ?>
-                </div>
             <div class="row row-cols-1 row-cols-md-5 g-3 mb-5">
+            <?php foreach ($uploadedDocuments as $document) : ?>
                       <div class="col ">
                       <div class="card h-100">
-                        <img class="card-img-top" src="../assets/img/elements/2.jpg" alt="Card image cap">
+                        <img class="card-img-top" src="../thumbnails/<?php echo $username?>/<?php echo $document['ThumbnailPath'];?>">
                         <div class="card-body">
-                          <h5 class="card-title">Card title</h5>
+                          <h5 class="card-title"><?php echo $document['Title']; ?></h5>
                           <p class="card-text">
                             This is a longer card with supporting 
                           </p>
                         </div>
                       </div>
                     </div>
-                    <div class="col">
-                      <div class="card h-100">
-                        <img class="card-img-top" src="../assets/img/elements/2.jpg" alt="Card image cap">
-                        <div class="card-body">
-                          <h5 class="card-title">Card title</h5>
-                          <p class="card-text">
-                            This is a longer card with supporting 
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col">
-                      <div class="card h-100">
-                        <img class="card-img-top" src="../assets/img/elements/2.jpg" alt="Card image cap">
-                        <div class="card-body">
-                          <h5 class="card-title">Card title</h5>
-                          <p class="card-text">
-                            This is a longer card with supporting text 
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col">
-                        <div class="card h-100">
-                          <img class="card-img-top" src="../assets/img/elements/2.jpg" alt="Card image cap">
-                          <div class="card-body">
-                            <h5 class="card-title">Card title</h5>
-                            <p class="card-text">
-                              This is a longer card with supporting text 
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    <div class="col">
-                      <div class="card h-100">
-                        <img class="card-img-top" src="../assets/img/elements/2.jpg" alt="Card image cap">
-                        <div class="card-body">
-                          <h5 class="card-title">Card title</h5>
-                          <p class="card-text">
-                            This is a longer card with supporting text safhasjfhsjhfasjfha sodfhasohfd asohfiasjd fhoasdhfasjofhaosjfh
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="col">
-                      <div class="card h-100">
-                        <img class="card-img-top" src="../assets/img/elements/13.jpg" alt="Card image cap">
-                        <div class="card-body">
-                          <h5 class="card-title">Card title</h5>
-                          <p class="card-text">
-                            This is a longer card with supporting text below as a natural lead-in to additional content.
-                            This content is a little bit longer.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col">
-                      <div class="card h-100">
-                        <img class="card-img-top" src="../assets/img/elements/4.jpg" alt="Card image cap">
-                        <div class="card-body">
-                          <h5 class="card-title">Card title</h5>
-                          <p class="card-text">
-                            This is a longer card with supporting text below as a natural lead-in to additional content.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col">
-                      <div class="card h-100">
-                        <img class="card-img-top" src="../assets/img/elements/18.jpg" alt="Card image cap">
-                        <div class="card-body">
-                          <h5 class="card-title">Card title</h5>
-                          <p class="card-text">
-                            This is a longer card with supporting text below as a natural lead-in to additional content.
-                            This content is a little bit longer.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col">
-                      <div class="card h-100">
-                        <img class="card-img-top" src="../assets/img/elements/19.jpg" alt="Card image cap">
-                        <div class="card-body">
-                          <h5 class="card-title">Card title</h5>
-                          <p class="card-text">
-                            This is a longer card with supporting text below as a natural lead-in to additional content.
-                            This content is a little bit longer.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col">
-                      <div class="card h-100">
-                        <img class="card-img-top" src="../assets/img/elements/20.jpg" alt="Card image cap">
-                        <div class="card-body">
-                          <h5 class="card-title">Card title</h5>
-                          <p class="card-text">
-                            This is a longer card with supporting text below as a natural lead-in to additional content.
-                            This content is a little bit longer.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                    <div class="col">
-                      <div class="card h-100">
-                        <img class="card-img-top" src="../assets/img/elements/2.jpg" alt="Card image cap">
-                         <div class="card-body">
-                              <h5 class="card-title">Card title</h5>
-                              <p class="card-text">
-                                This is a longer card with supporting text below as a natural lead-in to additional content.
-                                This content is a little bit longer.
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col">
-                          <div class="card h-100">
-                            <img class="card-img-top" src="../assets/img/elements/2.jpg" alt="Card image cap">
-                            <div class="card-body">
-                              <h5 class="card-title">Card title</h5>
-                              <p class="card-text">
-                                This is a longer card with supporting text below as a natural lead-in to additional content.
-                                This content is a little bit longer.
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col">
-                          <div class="card h-100">
-                            <img class="card-img-top" src="../assets/img/elements/2.jpg" alt="Card image cap">
-                            <div class="card-body">
-                              <h5 class="card-title">Card title</h5>
-                              <p class="card-text">
-                                This is a longer card with supporting text below as a natural lead-in to additional content.
-                                This content is a little bit longer.
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col">
-                            <div class="card h-100">
-                              <img class="card-img-top" src="../assets/img/elements/2.jpg" alt="Card image cap">
-                              <div class="card-body">
-                                <h5 class="card-title">Card title</h5>
-                                <p class="card-text">
-                                  This is a longer card with supporting text below as a natural lead-in to additional content.
-                                  This content is a little bit longer.
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        <div class="col">
-                          <div class="card h-100">
-                            <img class="card-img-top" src="../assets/img/elements/2.jpg" alt="Card image cap">
-                            <div class="card-body">
-                              <h5 class="card-title">Card title</h5>
-                              <p class="card-text">
-                                This is a longer card with supporting text below as a natural lead-in to additional content.
-                                This content is a little bit longer.
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                    </div>
+            <?php endforeach; ?>
+              </div>
                     <ul class="pagination justify-content-center mt-5">
                         <li class="page-item prev">
                           <a class="page-link" href="javascript:void(0);"><i class="tf-icon bx bx-chevrons-left"></i></a>
