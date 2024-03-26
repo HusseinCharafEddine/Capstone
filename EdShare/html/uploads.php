@@ -491,7 +491,7 @@
               <div class="row">
                 <h6 class="mb-5" >Upload a File</h6>
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                       <div class="card mb-4">
                         <h5 class="card-header">Upload a File</h5>
                         <div class="card-body demo-vertical-spacing demo-only-element">
@@ -531,30 +531,19 @@
                         </div>
                       </div>
                     </div>
-    
-                    <div class="col-md-6">
-                      <!-- Segmented buttons -->
-                      <div class="row">
-                        <div class="col-12">
-                          <div class="card mb-4">
-                            <h5 class="card-header">Segmented buttons</h5>
-                            <div class="card-body demo-vertical-spacing demo-only-element">
-                                
-                            </div>
-                      </div>
-                    </div>
                   </div>
                </div>
-                <h6 class="mb-0 mt-5 " >My Uploads</h6>
-            <div class="row row-cols-1 row-cols-md-5 g-3 mb-5">
+                <h6 class="mb-5 mt-5 " >My Uploads</h6>
+            <div class="row row-cols-1 row-cols-md-4 g-4 mb-3">
             <?php foreach ($uploadedDocuments as $document) : ?>
                       <div class="col ">
                       <div class="card h-100">
                         <img class="card-img-top" src="../thumbnails/<?php echo $username?>/<?php echo $document['ThumbnailPath'];?>">
                         <div class="card-body">
+                          <hr>
                           <h5 class="card-title"><?php echo $document['Title']; ?></h5>
                           <p class="card-text">
-                            This is a longer card with supporting 
+                          This is a longer card with supporting 
                           </p>
                         </div>
                       </div>
