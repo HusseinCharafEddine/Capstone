@@ -103,7 +103,7 @@ function generateThumbnail($filePath, $thumbnailDirectory)
     }
 
     $pathinfo = pathinfo($filePath);
-    $thumbnailPath = $pathinfo['filename'] . "_thumb.jpg"; 
+    $thumbnailPath =$pathinfo['filename'] . "_thumb.png"; 
 
     try {
         $im = new Imagick();
@@ -113,21 +113,22 @@ function generateThumbnail($filePath, $thumbnailDirectory)
         $im->readImage($filePath . '[0]'); // [0] represents the first page
         // Enhance image sharpness
         $im->sharpenImage(1, 0.5); // Adjust sharpening parameters
-        $im->setImageFormat('jpg'); // Set the image format to JPG
+        $im->setImageFormat('png'); // Set the image format to JPG
+        
+        // Set background color to white
+        $im->setImageBackgroundColor('white');
+        $im->setImageAlphaChannel(Imagick::ALPHACHANNEL_REMOVE);
+        
+        // Optimize color space for better color representation
+        $im->transformImageColorspace(Imagick::COLORSPACE_SRGB);
 
-         // Optimize color space for better color representation
-        $im->setImageColorspace(Imagick::COLORSPACE_RGB);
-
-        // Adjust compression and quality settings for better image quality
-        $im->setImageCompression(Imagick::COMPRESSION_JPEG);
-        $im->setImageCompressionQuality(100); // Set JPEG compression quality (0-100) - increased to 95
         $im->setAntiAlias(true); // Enable anti-aliasing
         
         // Resize the image to create a thumbnail (e.g., 300x300 pixels)
         $im->thumbnailImage(300, 300, true); // Adjust dimensions as needed
        
         // Write the thumbnail image to the destination
-        $im->writeImage($thumbnailDirectory . $pathinfo['filename'] . "_thumb.jpg");
+        $im->writeImage($thumbnailDirectory . $pathinfo['filename'] . "_thumb.png");
         
         // Destroy the Imagick object to free up memory
         $im->destroy();
@@ -139,6 +140,7 @@ function generateThumbnail($filePath, $thumbnailDirectory)
         return null; // Return null to indicate failure
     }
 }
+
 
 
 
