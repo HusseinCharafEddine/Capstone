@@ -172,13 +172,16 @@ function getCourseId($db, $courseName, $universityId, $courseCode)
 
 function InsertDocumentToDBFromObject($db, $document)
 {
+    $fileName = basename($document->FilePath);
+
     $query = "INSERT INTO Document (UserId, CourseId, Category, Title, FilePath, ThumbnailPath) VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = $db->prepare($query);
-    $stmt->execute([$document->UserId, $document->CourseId, $document->Category, $document->Title, $document->FilePath, $document->ThumbnailPath]);
+    $stmt->execute([$document->UserId, $document->CourseId, $document->Category, $document->Title, $fileName, $document->ThumbnailPath]);
     if ($stmt->rowCount() > 0) {
         return $db->lastInsertId();
     } else {
         return 0;
     }
 }
+
 ?>

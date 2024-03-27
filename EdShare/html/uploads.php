@@ -536,19 +536,19 @@
                 <h6 class="mb-5 mt-5 " >My Uploads</h6>
             <div class="row row-cols-1 row-cols-md-4 g-4 mb-3">
             <?php foreach ($uploadedDocuments as $document) : ?>
-                      <div class="col ">
-                      <div class="card h-100">
-                        <img class="card-img-top" src="../thumbnails/<?php echo $username?>/<?php echo $document['ThumbnailPath'];?>">
-                        <div class="card-body">
-                          <hr>
-                          <h5 class="card-title"><?php echo $document['Title']; ?></h5>
-                          <p class="card-text">
-                          This is a longer card with supporting 
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-            <?php endforeach; ?>
+               <div class="col">
+                <div class="card h-100">
+                <a href="../uploads/<?php echo $username ?>/<?php echo $document['FilePath']; ?>" download>
+                <img class="card-img-top" src="../thumbnails/<?php echo $username ?>/<?php echo $document['ThumbnailPath']; ?>">
+                </a>
+              <div class="card-body">
+                <hr>
+                <h5 class="card-title"><?php echo $document['Title']; ?></h5>
+            </div>
+        </div>
+    </div>
+          <?php endforeach; ?>
+
               </div>
                     <ul class="pagination justify-content-center mt-5">
                         <li class="page-item prev">
