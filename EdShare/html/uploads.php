@@ -11,10 +11,13 @@ require ("../BE/common/commonFunctions.php");
 require ("../BE/coursesController.php");
 require ("../BE/userController.php");
 require ("../BE/documentController.php");
+require ("../BE/universityController.php");
 
 $userController = new UserController();
 $courseController = new CoursesController();
 $documentController = new DocumentController();
+$universityController = new UniversityController();
+
 $db = DBConnect();
 $username = $_SESSION['username'];
 
@@ -602,10 +605,24 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                           <?php echo $document['Title']; ?>
                         </a>
                         <br>
-                        <span class="badge bg-label-primary">LAU</span>
                         <span class="badge bg-label-primary">
                           <?php
                           $course = $courseController->getCourse($document['CourseId']);
+                          if ($course) {
+                            $university = $universityController->getUniversityById($course['UniversityId']);
+                            if ($university) {
+                              echo $university['UniversityAcronym']; // Assuming 'CourseName' is a field in your courses table
+                            } else {
+                              echo "University Not Found";
+                            }
+                          } else {
+                            echo "Course Not Found";
+                          }
+
+                          ?>
+                        </span>
+                        <span class="badge bg-label-primary">
+                          <?php
                           if ($course) {
                             echo $course['CourseCode']; // Assuming 'CourseName' is a field in your courses table
                           } else {
