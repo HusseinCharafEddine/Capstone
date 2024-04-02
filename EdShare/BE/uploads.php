@@ -4,7 +4,7 @@ if (!isset($_SESSION["username"])) {
     header("location:../index.php");
 }
 
-require_once("common/commonFunctions.php");
+require_once ("common/commonFunctions.php");
 $db = DBConnect();
 $username = $_SESSION['username'];
 
@@ -79,6 +79,7 @@ if (!move_uploaded_file($_FILES["file"]["tmp_name"], $destination)) {
     exit("Can't move uploaded file");
 }
 
+
 // Generate a thumbnail for the uploaded file
 $thumbnailPath = generateThumbnail($destination, $thumbnailDirectory);
 
@@ -103,33 +104,33 @@ function generateThumbnail($filePath, $thumbnailDirectory)
     }
 
     $pathinfo = pathinfo($filePath);
-    $thumbnailPath =$pathinfo['filename'] . "_thumb.png"; 
+    $thumbnailPath = $pathinfo['filename'] . "_thumb.png";
 
     try {
         $im = new Imagick();
-        
+
         // Read the first page of the PDF and convert it to an image
         $im->setResolution(600, 600); // Set resolution to 600 dpi for higher quality
         $im->readImage($filePath . '[0]'); // [0] represents the first page
         // Enhance image sharpness
         $im->sharpenImage(1, 0.5); // Adjust sharpening parameters
         $im->setImageFormat('png'); // Set the image format to JPG
-        
+
         // Set background color to white
         $im->setImageBackgroundColor('white');
         $im->setImageAlphaChannel(Imagick::ALPHACHANNEL_REMOVE);
-        
+
         // Optimize color space for better color representation
         $im->transformImageColorspace(Imagick::COLORSPACE_SRGB);
 
         $im->setAntiAlias(true); // Enable anti-aliasing
-        
+
         // Resize the image to create a thumbnail (e.g., 300x300 pixels)
         $im->thumbnailImage(300, 300, true); // Adjust dimensions as needed
-       
+
         // Write the thumbnail image to the destination
         $im->writeImage($thumbnailDirectory . $pathinfo['filename'] . "_thumb.png");
-        
+
         // Destroy the Imagick object to free up memory
         $im->destroy();
 
