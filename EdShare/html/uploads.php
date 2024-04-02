@@ -10,9 +10,11 @@ if (!isset($_SESSION["username"])) {
 require ("../BE/common/commonFunctions.php");
 require ("../BE/coursesController.php");
 require ("../BE/userController.php");
+require ("../BE/documentController.php");
+
 $userController = new UserController();
 $courseController = new CoursesController();
-
+$documentController = new DocumentController();
 $db = DBConnect();
 $username = $_SESSION['username'];
 
@@ -563,9 +565,27 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
               </div>
             </div>
-            <h6 class="mb-5 mt-5 ">My Uploads</h6>
+            <?php
+            // Assuming $uploadedDocuments contains all your uploads
+            $uploadsPerPage = 20;
+            $user = $userController->getUserByUsername($username);
+            $totalUploads = $user['UploadCount'];
+            $totalPages = ceil($totalUploads / $uploadsPerPage);
+
+            // Get the current page number
+            $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
+
+            // Calculate the offset
+            $offset = ($page - 1) * $uploadsPerPage;
+
+            // Fetch uploads for the current page from your data source
+            $uploadsForPage = $documentController->fetchDocumentsForPage($user['UserId'], $offset, $uploadsPerPage);
+            ?>
+
+            <h6 class="mb-5 mt-5">My Uploads</h6>
+
             <div class="row row-cols-1 row-cols-md-4 g-4 mb-3">
-              <?php foreach ($uploadedDocuments as $document): ?>
+              <?php foreach ($uploadsForPage as $document): ?>
                 <div class="col">
                   <div class="card h-100">
                     <a href="../uploads/<?php echo $username ?>/<?php echo $document['FilePath']; ?>" download>
@@ -599,49 +619,50 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </span>
                         <br>
                         <span class="text">Author:
-                          <?php $course = $userController->getUser($document['UserId']);
-                          if ($course) {
-                            echo $course['Username']; // Assuming 'CourseName' is a field in your courses table
-                          } else {
-                            echo "User not found"; // Or handle the case where the course is not found
-                          }
+                          <?php
+                          echo $username; // Assuming 'Username' is a field in your users table
+                        
                           ?>
                         </span>
                       </div>
-
-
                     </div>
                   </div>
                 </div>
               <?php endforeach; ?>
-
             </div>
-            <ul class="pagination justify-content-center mt-5">
-              <li class="page-item prev">
-                <a class="page-link" href="javascript:void(0);"><i class="tf-icon bx bx-chevrons-left"></i></a>
-              </li>
-              <li class="page-item active">
-                <a class="page-link" href="javascript:void(0);">1</a>
-              </li>
-              <li class="page-item">
-                <a class="page-link" href="javascript:void(0);">2</a>
-              </li>
-              <li class="page-item">
-                <a class="page-link" href="javascript:void(0);">3</a>
-              </li>
-              <li class="page-item">
-                <a class="page-link" href="javascript:void(0);">4</a>
-              </li>
-              <li class="page-item">
-                <a class="page-link" href="javascript:void(0);">5</a>
-              </li>
-              <li class="page-item next">
-                <a class="page-link" href="javascript:void(0);"><i class="tf-icon bx bx-chevrons-right"></i></a>
-              </li>
-            </ul>
-            <!-- / Content -->
 
-            <!-- Footer -->
+            <!-- Pagination -->
+            <!-- Pagination -->
+            <ul class="pagination justify-content-center mt-5">
+              <?php if ($page > 1): ?>
+                <li class="page-item prev">
+                  <a class="page-link" href="?page=<?php echo $page - 1; ?>"><i
+                      class="tf-icon bx bx-chevrons-left"></i></a>
+                </li>
+              <?php endif; ?>
+
+              <?php
+              // Calculate the starting page number for display
+              $startPage = max(1, $page - 2);
+              // Calculate the ending page number for display
+              $endPage = min($totalPages, $startPage + 4);
+
+              for ($i = $startPage; $i <= $endPage; $i++): ?>
+                <li class="page-item <?php echo ($i == $page) ? 'active' : ''; ?>">
+                  <a class="page-link" href="?page=<?php echo $i; ?>">
+                    <?php echo $i; ?>
+                  </a>
+                </li>
+              <?php endfor; ?>
+
+              <?php if ($page < $totalPages): ?>
+                <li class="page-item next">
+                  <a class="page-link" href="?page=<?php echo $page + 1; ?>"><i
+                      class="tf-icon bx bx-chevrons-right"></i></a>
+                </li>
+              <?php endif; ?>
+            </ul>
+
             <footer class="content-footer footer bg-footer-theme">
               <div class="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
                 <div class="mb-2 mb-md-0">
