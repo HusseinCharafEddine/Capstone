@@ -12,16 +12,21 @@ require ("../BE/coursesController.php");
 require ("../BE/userController.php");
 require ("../BE/documentController.php");
 require ("../BE/universityController.php");
+require ("../BE/downloadController.php");
 
 $userController = new UserController();
 $courseController = new CoursesController();
 $documentController = new DocumentController();
 $universityController = new UniversityController();
+$downloadController = new DownloadController();
 
 $db = DBConnect();
 $username = $_SESSION['username'];
 
-
+$getUploadedDocumentsQuery = "SELECT * FROM Document WHERE UserId = (SELECT UserId FROM User WHERE Username = ?)";
+$stmt = $db->prepare($getUploadedDocumentsQuery);
+$stmt->execute([$username]);
+$uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <html lang="en" class="light-style layout-menu-fixed layout-compact" dir="ltr" data-theme="theme-default"
   data-assets-path="../assets/" data-template="vertical-menu-template-free">
@@ -59,14 +64,10 @@ $username = $_SESSION['username'];
   <!-- Page CSS -->
 
   <!-- Helpers -->
-
   <script src="../assets/vendor/js/helpers.js"></script>
   <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
   <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
   <script src="../assets/js/config.js"></script>
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-  <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css" />
-  <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>‌​
 
 </head>
 
@@ -106,13 +107,13 @@ $username = $_SESSION['username'];
               <div data-i18n="History">History</div>
             </a>
           </li>
-          <li class="menu-item  ">
-            <a href="downloads.php" class="menu-link">
+          <li class="menu-item active ">
+            <a href="downloads.html" class="menu-link">
               <i class="menu-icon tf-icons bx bx-download"></i>
               <div data-i18n="Downloads">Downloads</div>
             </a>
           </li>
-          <li class="menu-item active">
+          <li class="menu-item ">
             <a href="uploads.php" class="menu-link">
               <i class="menu-icon tf-icons bx bx-upload"></i>
               <div data-i18n="Uploads">Uploads</div>
@@ -154,18 +155,12 @@ $username = $_SESSION['username'];
         <nav
           class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
           id="layout-navbar">
-
           <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0   d-xl-none ">
             <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
               <i class="bx bx-menu bx-sm"></i>
             </a>
           </div>
-
-
           <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
-
-
-
 
             <!-- Search -->
             <div class="navbar-nav align-items-center">
@@ -516,256 +511,220 @@ $username = $_SESSION['username'];
           <!-- Content -->
 
           <div class="container-xxl flex-grow-1 container-p-y">
-            <div class="row">
-              <h6 class="mb-5">Upload a File</h6>
-              <div class="row">
-                <div class="col-md-12">
-                  <div class="card mb-4">
-                    <h5 class="card-header">Upload a File</h5>
-                    <div class="card-body demo-vertical-spacing demo-only-element">
-                      <form action="../BE/uploads.php" method="post" enctype="multipart/form-data">
-                        <div class="input-group">
-                          <input type="text" class="form-control" aria-label="University Name" id="course-name-input"
-                            name="course-name" placeholder="Enter Course Name">
-                          <label class="input-group-text" for="inputGroupFile02">Course Name</label>
-                        </div>
-                        <div class="input-group">
-                          <input type="text" class="form-control" aria-label="Text input with dropdown button"
-                            id="course-code-input" name="course-code" placeholder="Enter Course Code">
-                          <label class="input-group-text" for="inputGroupFile02">Course Code</label>
-                        </div>
-                        <div class="input-group">
-                          <input type="text" class="form-control" aria-label="Text input with dropdown button"
-                            name="title" placeholder="Enter Document Title">
-                          <label class="input-group-text" for="inputGroupFile02">Document Title</label>
-                        </div>
-                        <div class="input-group">
-                          <input type="text" class="form-control" aria-label="Text input with dropdown button"
-                            id="category-input" name="category" placeholder="Enter Document Category">
-                          <label class="input-group-text" for="inputGroupFile02">Category</label>
-                        </div>
-                        <div class="input-group">
-                          <select id="largeSelect" class="form-select form-select-md" placeholder="Document Type">
-                            <option value="" disabled selected>Select Document Type</option>
-                            <option value="1">Summary</option>
-                            <option value="2">Notes</option>
-                            <option value="3">Exercises</option>
-                          </select>
-                        </div>
-                        <div class="input-group">
-                          <input type="file" class="form-control" id="inputGroupFile02" name="file">
-                          <label class="input-group-text" for="inputGroupFile02">Upload</label>
-                        </div>
-                        <div class="container d-flex justify-content-center">
-                          <input type="submit" class="btn btn-outline-primary" value="Upload" name="submit">
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <?php
-            // Assuming $uploadedDocuments contains all your uploads
-            $uploadsPerPage = 20;
-            $user = $userController->getUserByUsername($username);
-            $totalUploads = $user['UploadCount'];
-            $totalPages = ceil($totalUploads / $uploadsPerPage);
-
-            // Get the current page number
-            $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
-
-            // Calculate the offset
-            $offset = ($page - 1) * $uploadsPerPage;
-
-            // Fetch uploads for the current page from your data source
-            $uploadsForPage = $documentController->fetchDocumentsForPage($user['UserId'], $offset, $uploadsPerPage);
-            ?>
-
-            <h6 class="mb-5 mt-5">My Uploads</h6>
-
-            <div class="row row-cols-1 row-cols-md-5 g-3 mb-3">
-              <?php foreach ($uploadsForPage as $document): ?>
-                <div class="col">
-                  <div class="card h-100">
-                    <img class="card-img-top"
-                      src="../thumbnails/<?php echo $username ?>/<?php echo $document['ThumbnailPath']; ?>">
-                    <div class="card-body">
-                      <hr>
-                      <h5 class="card-title">
-
-                      </h5>
-                      <a href="app-academy-course-details.html" class="h5">
-                        <?php echo $document['Title']; ?>
-                      </a>
-                      <br>
-                      <div class="d-flex justify-content-between align-items-center mb-3">
-
-                        <span class="badge bg-label-primary">
-                          <?php
-                          $course = $courseController->getCourse($document['CourseId']);
-                          if ($course) {
-                            $university = $universityController->getUniversityById($course['UniversityId']);
-                            if ($university) {
-                              echo $university['UniversityAcronym']; // Assuming 'CourseName' is a field in your courses table
-                            } else {
-                              echo "University Not Found";
-                            }
-                          } else {
-                            echo "Course Not Found";
-                          }
-
-                          ?>
-                        </span>
-                        <span class="badge bg-label-primary">
-                          <?php
-                          if ($course) {
-                            echo $course['CourseCode']; // Assuming 'CourseName' is a field in your courses table
-                          } else {
-                            echo "Course not found"; // Or handle the case where the course is not found
-                          }
-                          ?>
-                        </span>
-                        <h6 class="d-flex align-items-center justify-content-center gap-1 mb-0">
-                        </h6>
-                        <?php echo $document['Rating']; ?> <span class="text-warning"><i
-                            class="bx bxs-star me-1"></i></span><span class="text-muted">(1.23k)</span>
-                        </span>
-                        </h6>
-
-                        <br>
-
-                      </div>
-                      <span class="text">Author:
+            <div class="app-academy">
+              <div class="card mb-4">
+                <div class="card-header">
+                  <h5 class="card-title">Filter</h5>
+                  <div class="d-flex justify-content-between align-items-center row py-3 gap-3 gap-md-0">
+                    <div class="col-md-4 ">
+                      <label for="defaultFormControlInput" class="form-label">University</label>
+                      <select id="University" class="form-select text-capitalize">
+                        <option value="0" diasbled></option>
                         <?php
-                        echo $username; // Assuming 'Username' is a field in your users table
-                      
+                        $universities = $universityController->getAllUniversities();
+                        foreach ($universities as $university) {
+                          echo "<option value='" . $university['UniversityId'] . "'>" . $university['UniversityName'] . "</option>";
+                        }
                         ?>
-                      </span>
+                      </select>
+                    </div>
+                    <div class="col-md-4 ">
+                      <label for="defaultFormControlInput" class="form-label">Course</label>
+                      <select id="Category" class="form-select text-capitalize">
+                        <option value="0" diasbled></option>
+                        <?php
+                        $courses = $courseController->getAllCourses();
+                        foreach ($courses as $course) {
+                          echo "<option value='" . $course['CourseId'] . "'>" . strtoupper($course['CourseCode']) . "</option>";
+                        }
+                        ?>
+                      </select>
+                    </div>
+                    <div class="col-md-4">
+                      <label for="defaultFormControlInput" class="form-label">Rating</label>
+                      <input id="Rating" class="form-control" aria-describedby="defaultFormControlHelp">
+
+                    </div>
+                    <div class="col-md-4 mt-3">
+                      <button id="applyFilterBtn" class="btn btn-primary me-2">Apply Filter</button>
                     </div>
                   </div>
                 </div>
-              <?php endforeach; ?>
+                <div class="card-body">
+                  <?php
+                  $downloadsPerPage = 20;
+                  $user = $userController->getUserByUsername($username);
+                  $totalDownloads = $user['DownloadCount'];
+                  $totalPages = ceil($totalDownloads / $downloadsPerPage);
+
+                  $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
+
+                  $offset = ($page - 1) * $downloadsPerPage;
+
+                  // Get filter values from the AJAX request
+                  $universityId = isset($_GET['universityId']) ? intval($_GET['universityId']) : 0;
+                  $courseId = isset($_GET['courseId']) ? intval($_GET['courseId']) : 0;
+                  $rating = isset($_GET['rating']) ? intval($_GET['rating']) : 0;
+
+                  // Build the filter string based on the selected filter values
+                  $filter = array();
+                  if ($universityId != 0) {
+                    $filter['universityId'] = $universityId;
+                  }
+                  if ($courseId != 0) {
+                    $filter['courseId'] = $courseId;
+                  }
+                  if (!empty($rating)) {
+                    $filter['rating'] = $rating;
+                  }
+
+                  $downloadsForPage = $downloadController->fetchDownloadsForPage($user['UserId'], $offset, $downloadsPerPage, $filter);
+                  ?>
+
+                  <h6 class="mb-5 mt-5">My Downloads</h6>
+
+                  <div class="row row-cols-1 row-cols-md-5 g-3 mb-3">
+                    <?php foreach ($downloadsForPage as $download): ?>
+                      <?php
+                      $document = $documentController->getDocumentById($download['DocumentId']);
+                      ?>
+                      <div class="col">
+                        <div class="card h-100">
+                          <img class="card-img-top"
+                            src="../thumbnails/<?php echo $username ?>/<?php echo $document['ThumbnailPath']; ?>">
+                          <div class="card-body">
+                            <hr>
+                            <h5 class="card-title">
+                              <a href="app-academy-course-details.html" class="h5">
+                                <?php echo $document['Title']; ?>
+                              </a>
+                            </h5>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                              <span class="badge bg-label-primary">
+                                <?php
+                                $course = $courseController->getCourse($document['CourseId']);
+                                if ($course) {
+                                  $university = $universityController->getUniversityById($course['UniversityId']);
+                                  if ($university) {
+                                    echo $university['UniversityAcronym'];
+                                  } else {
+                                    echo "University Not Found";
+                                  }
+                                } else {
+                                  echo "Course Not Found";
+                                }
+                                ?>
+                              </span>
+                              <span class="badge bg-label-primary">
+                                <?php
+                                if ($course) {
+                                  echo $course['CourseCode'];
+                                } else {
+                                  echo "Course not found";
+                                }
+                                ?>
+                              </span>
+                              <?php echo $document['Rating']; ?> <span class="text-warning"><i
+                                  class="bx bxs-star me-1"></i></span><span class="text-muted">(1.23k)</span>
+                            </div>
+                            <div class="d-flex align-items-center mb-3">
+                              <span class="text mb-3">Author:
+                                <?php
+                                echo $username;
+                                ?>
+                              </span>
+                            </div>
+                            <a href="../uploads/<?php echo $username ?>/<?php echo $document['FilePath']; ?>" download>
+                              <div
+                                class="d-flex justify-content-center text-center flex-column flex-md-row gap-2 text-nowrap pe-xl-3 pe-xxl-0 bg-primary text-white rounded">
+                                <span class="me-2 ml-3">Download</span><i class="bx bx-download lh-1 scaleX-n1-rtl"></i>
+                              </div>
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    <?php endforeach; ?>
+                  </div>
+
+                  <ul class="pagination justify-content-center mt-5">
+                    <?php if ($page > 1): ?>
+                      <li class="page-item prev">
+                        <a class="page-link" href="?page=<?php echo $page - 1; ?>"><i
+                            class="tf-icon bx bx-chevrons-left"></i></a>
+                      </li>
+                    <?php endif; ?>
+
+                    <?php
+                    $startPage = max(1, $page - 2);
+                    $endPage = min($totalPages, $startPage + 4);
+
+                    for ($i = $startPage; $i <= $endPage; $i++): ?>
+                      <li class="page-item <?php echo ($i == $page) ? 'active' : ''; ?>">
+                        <a class="page-link" href="?page=<?php echo $i; ?>">
+                          <?php echo $i; ?>
+                        </a>
+                      </li>
+                    <?php endfor; ?>
+
+                    <?php if ($page < $totalPages): ?>
+                      <li class="page-item next">
+                        <a class="page-link" href="?page=<?php echo $page + 1; ?>"><i
+                            class="tf-icon bx bx-chevrons-right"></i></a>
+                      </li>
+                    <?php endif; ?>
+                  </ul>
+
+
+                  <!-- / Footer -->
+
+                  <div class="content-backdrop fade"></div>
+
+                </div>
+                <!-- Content wrapper -->
+              </div>
+              <!-- / Layout page -->
             </div>
 
-            <!-- Pagination -->
-            <!-- Pagination -->
-            <ul class="pagination justify-content-center mt-5">
-              <?php if ($page > 1): ?>
-                <li class="page-item prev">
-                  <a class="page-link" href="?page=<?php echo $page - 1; ?>"><i
-                      class="tf-icon bx bx-chevrons-left"></i></a>
-                </li>
-              <?php endif; ?>
-
-              <?php
-              // Calculate the starting page number for display
-              $startPage = max(1, $page - 2);
-              // Calculate the ending page number for display
-              $endPage = min($totalPages, $startPage + 4);
-
-              for ($i = $startPage; $i <= $endPage; $i++): ?>
-                <li class="page-item <?php echo ($i == $page) ? 'active' : ''; ?>">
-                  <a class="page-link" href="?page=<?php echo $i; ?>">
-                    <?php echo $i; ?>
-                  </a>
-                </li>
-              <?php endfor; ?>
-
-              <?php if ($page < $totalPages): ?>
-                <li class="page-item next">
-                  <a class="page-link" href="?page=<?php echo $page + 1; ?>"><i
-                      class="tf-icon bx bx-chevrons-right"></i></a>
-                </li>
-              <?php endif; ?>
-            </ul>
-
-            <footer class="content-footer footer bg-footer-theme">
-              <div class="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
-                <div class="mb-2 mb-md-0">
-
-                </div>
-                <div class="d-none d-lg-inline-block">
-
-
-                  <a href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/documentation/"
-                    target="_blank" class="footer-link me-4">Documentation</a>
-
-                  <a href="https://github.com/themeselection/sneat-html-admin-template-free/issues" target="_blank"
-                    class="footer-link">Support</a>
-                </div>
-              </div>
-            </footer>
-            <!-- / Footer -->
-
-            <div class="content-backdrop fade"></div>
-
+            <!-- Overlay -->
+            <div class="layout-overlay layout-menu-toggle"></div>
           </div>
-          <!-- Content wrapper -->
-        </div>
-        <!-- / Layout page -->
-      </div>
-
-      <!-- Overlay -->
-      <div class="layout-overlay layout-menu-toggle"></div>
-    </div>
-    <!-- / Layout wrapper -->
+          <!-- / Layout wrapper -->
 
 
 
-    <!-- Core JS -->
-    <!-- build:js assets/vendor/js/core.js -->
+          <!-- Core JS -->
+          <!-- build:js assets/vendor/js/core.js -->
 
-    <!-- <script src="../assets/vendor/libs/jquery/jquery.js"></script> -->
-    <script src="../assets/vendor/libs/popper/popper.js"></script>
-    <script src="../assets/vendor/js/bootstrap.js"></script>
-    <script src="../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
-    <script src="../assets/vendor/js/menu.js"></script>
+          <script src="../assets/vendor/libs/jquery/jquery.js"></script>
+          <script src="../assets/vendor/libs/popper/popper.js"></script>
+          <script src="../assets/vendor/js/bootstrap.js"></script>
+          <script src="../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+          <script src="../assets/vendor/js/menu.js"></script>
 
-    <!-- endbuild -->
+          <!-- endbuild -->
 
-    <!-- Vendors JS -->
-    <script src="../assets/vendor/libs/apex-charts/apexcharts.js"></script>
+          <!-- Vendors JS -->
+          <script src="../assets/vendor/libs/apex-charts/apexcharts.js"></script>
 
-    <!-- Main JS -->
-    <script src="../assets/js/main.js"></script>
+          <!-- Main JS -->
+          <script src="../assets/js/main.js"></script>
 
-    <!-- Page JS -->
-    <script src="../assets/js/dashboards-analytics.js"></script>
+          <!-- Page JS -->
+          <script src="../assets/js/dashboards-analytics.js"></script>
 
-    <!-- Place this tag in your head or just before your close body tag. -->
-    <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <script>
-      // JavaScript code for autocomplete
-      $(document).ready(function () {
-        $('#course-code-input').autocomplete({
-          source: '../BE/autoCompleteCourseCode.php',
-          minLength: 2
-        });
-      });
+          <!-- Place this tag in your head or just before your close body tag. -->
 
-    </script>
-    <script>
-      // JavaScript code for autocomplete
-      $(document).ready(function () {
-        $('#course-name-input').autocomplete({
-          source: '../BE/autoCompleteCourseName.php',
-          minLength: 2
-        });
-      });
 
-    </script>
+          <script>
+            document.getElementById("applyFilterBtn").addEventListener("click", function () {
+              var universityId = document.getElementById("University").value;
+              var courseId = document.getElementById("Category").value;
+              var rating = document.getElementById("Rating").value;
 
-    <script>
-      // JavaScript code for autocomplete
-      $(document).ready(function () {
-        $('#category-input').autocomplete({
-          source: '../BE/autoCompleteCategory.php',
-          minLength: 2
-        });
-      });
-
-    </script>
+              // Redirect to the same page with filter parameters
+              window.location.href = window.location.pathname + "?universityId=" + universityId + "&courseId=" + courseId + "&rating=" + rating;
+            });
+          </script>
 </body>
 
 </html>

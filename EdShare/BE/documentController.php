@@ -23,6 +23,13 @@ class DocumentController
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
+    public function getDocumentById($documentId)
+    {
+        $query = "SELECT * FROM document WHERE DocumentId = :documentId";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':documentId', $documentId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }
 ?>

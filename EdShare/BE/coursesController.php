@@ -35,6 +35,12 @@ class CoursesController
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function getAllCourses()
+    {
+        $query = "SELECT * FROM course";
+        $stmt = $this->db->query($query);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
     // Update course details
     public function updateCourse($CourseId, $CourseName, $CourseCode, $UniversityId)
     {
