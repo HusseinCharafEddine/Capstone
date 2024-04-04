@@ -1,10 +1,25 @@
+<!DOCTYPE html>
 <?php
 session_start();
 if (!isset($_SESSION["username"])) {
   header("location:../index.html");
 }
+
+
+require ("BE/common/commonFunctions.php");
+require ("BE/coursesController.php");
+require ("BE/userController.php");
+require ("BE/documentController.php");
+require ("BE/universityController.php");
+
+$userController = new UserController();
+$courseController = new CoursesController();
+$documentController = new DocumentController();
+$universityController = new UniversityController();
+
+$db = DBConnect();
+$username = $_SESSION['username'];
 ?>
-<!DOCTYPE html>
 
 <html lang="en" class="light-style layout-menu-fixed layout-compact" dir="ltr" data-theme="theme-default"
   data-assets-path="../assets/" data-template="vertical-menu-template-free">
@@ -77,6 +92,29 @@ if (!isset($_SESSION["username"])) {
 
         <ul class="menu-inner py-1">
           <!-- Dashboards -->
+          <li>
+            <div id="token-container" style="display: flex; margin: 18px; margin-top:0px">
+              <div id="uploads-token" style="margin-right: auto;"> 
+                <span>
+                <img src="assets/img/icons/tokens/uploadstoken.png">
+                  <?php
+                    $uploadcount = $userController->getUploadCount($_SESSION['username']);
+                    echo $uploadcount['UploadCount'];
+                  ?>
+                </span>
+              </div>
+              <div class="vertical-divider" style="width: 20px;"></div>
+              <div id="downloads-token" style="margin-left: auto;">
+                <span>
+                <img src="assets/img/icons/tokens/downloadstoken.png">
+                  <?php
+                    $downloadcount = $userController->getDownloadCount($_SESSION['username']);
+                    echo $downloadcount['DownloadCount'];
+                  ?>
+                </span>
+              </div>
+            </div>
+          </li>
           <li class="menu-item active">
             <a href="landing.html" class="menu-link">
               <i class="menu-icon tf-icons bx bx-home-circle"></i>

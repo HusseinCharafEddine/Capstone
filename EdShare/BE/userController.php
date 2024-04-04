@@ -58,6 +58,22 @@ class UserController
         $stmt->execute();
         return $stmt->rowCount();
     }
+
+    public function getDownloadCount($Username){
+        $query="SELECT DownloadCount FROM user WHERE Username= :Username";
+        $stmt= $this->db->prepare($query);
+        $stmt->bindParam(':Username', $Username);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function getUploadCount($Username){
+        $query="SELECT UploadCount FROM user WHERE Username= :Username";
+        $stmt= $this->db->prepare($query);
+        $stmt->bindParam(':Username', $Username);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }
 
 ?>
