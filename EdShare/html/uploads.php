@@ -95,13 +95,13 @@ $username = $_SESSION['username'];
         <ul class="menu-inner py-1">
           <!-- Dashboards -->
           <li class="menu-item">
-            <a href="../landing.html" class="menu-link">
+            <a href="../landing.php" class="menu-link">
               <i class="menu-icon tf-icons bx bx-home-circle"></i>
               <div data-i18n="Home">Home</div>
             </a>
           </li>
           <li class="menu-item ">
-            <a href="history.html" class="menu-link">
+            <a href="history.php" class="menu-link">
               <i class="menu-icon tf-icons bx bx-history"></i>
               <div data-i18n="History">History</div>
             </a>
@@ -119,19 +119,19 @@ $username = $_SESSION['username'];
             </a>
           </li>
           <li class="menu-item ">
-            <a href="analytics.html" class="menu-link">
+            <a href="analytics.php" class="menu-link">
               <i class="menu-icon tf-icons bx bx-chart"></i>
               <div data-i18n="Analytics">Analytics</div>
             </a>
           </li>
           <li class="menu-item ">
-            <a href="league-standings.html" class="menu-link">
+            <a href="league-standings.php" class="menu-link">
               <i class="menu-icon tf-icons bx bx-crown"></i>
               <div data-i18n="LeagueStandings">League Standings</div>
             </a>
           </li>
           <li class="menu-item ">
-            <a href="studybuddy.html" class="menu-link">
+            <a href="studybuddy.php" class="menu-link">
               <i class="menu-icon tf-icons bx bx-brain"></i>
               <div data-i18n="StudyBuddy">StudyBuddy AI</div>
             </a>
@@ -411,7 +411,7 @@ $username = $_SESSION['username'];
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
                   <li>
-                    <a class="dropdown-item" href="pages-account-settings-account.html">
+                    <a class="dropdown-item" href="pages-account-settings-account.pgp">
                       <div class="d-flex">
                         <div class="flex-shrink-0 me-3">
                           <div class="avatar avatar-online">
@@ -429,13 +429,13 @@ $username = $_SESSION['username'];
                     <div class="dropdown-divider"></div>
                   </li>
                   <li>
-                    <a class="dropdown-item" href="pages-profile-user.html">
+                    <a class="dropdown-item" href="pages-profile-user.php">
                       <i class="bx bx-user me-2"></i>
                       <span class="align-middle">My Profile</span>
                     </a>
                   </li>
                   <li>
-                    <a class="dropdown-item" href="pages-account-settings-account.html">
+                    <a class="dropdown-item" href="pages-account-settings-account.php">
                       <i class="bx bx-cog me-2"></i>
                       <span class="align-middle">Settings</span>
                     </a>
