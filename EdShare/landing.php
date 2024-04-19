@@ -50,7 +50,7 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
     href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
     rel="stylesheet" />
 
-  <link rel="stylesheet" href="ssets/vendor/fonts/boxicons.css" />
+  <link rel="stylesheet" href="assets/vendor/fonts/boxicons.css" />
 
   <!-- Core CSS -->
   <link rel="stylesheet" href="assets/vendor/css/core.css" class="template-customizer-core-css" />
@@ -552,15 +552,17 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
                 <div class="card-body">
                   <?php
-                  $downloadsPerPage = 20;
-                  $user = $userController->getUserByUsername($username);
-                  $totalDownloads = $user['DownloadCount'];
-                  $totalPages = ceil($totalDownloads / $downloadsPerPage);
+                  $uploadsPerPage = 20;
+                  $totalUploads = $documentController->getCountOfDocuments();
+                  $totalPages = ceil($totalUploads / $uploadsPerPage);
 
+                  // Get the current page number
                   $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 
-                  $offset = ($page - 1) * $downloadsPerPage;
+                  // Calculate the offset
+                  $offset = ($page - 1) * $uploadsPerPage;
 
+                  // Fetch uploads for the current page from your data source
                   // Get filter values from the AJAX request
                   $universityId = isset($_GET['universityId']) ? intval($_GET['universityId']) : 0;
                   $courseId = isset($_GET['courseId']) ? intval($_GET['courseId']) : 0;
@@ -577,23 +579,24 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                   if (!empty($rating)) {
                     $filter['rating'] = $rating;
                   }
+                  $downloadsForPage = $documentController->fetchAllDocumentsForPage($offset, $uploadsPerPage, $filter);
 
-                  $downloadsForPage = $downloadController->fetchDownloadsForPage($user['UserId'], $offset, $downloadsPerPage, $filter);
                   ?>
 
                   <h6 class="mb-5 mt-5">Documents</h6>
 
                   <div class="row row-cols-1 row-cols-md-5 g-3 mb-3">
-                    <?php 
-                        $users = $userController->getAllUsers();
-                        foreach ($downloadsForPage as $download): ?>
+                    <?php
+                    $users = $userController->getAllUsers();
+                    foreach ($downloadsForPage as $download): ?>
                       <?php
                       $document = $documentController->getDocumentById($download['DocumentId']);
-                      ?>
+                      $author = $userController->getUser((int) $document['UserId'])['Username']
+                        ?>
                       <div class="col">
                         <div class="card h-100">
-                          <img class="card-img-top"
-                            src="thumbnails/<?php echo $username ?>/<?php echo $document['ThumbnailPath']; ?>">
+                          <img class="card-img-top" src="thumbnails/<?php
+                          echo $author ?>/<?php echo $document['ThumbnailPath']; ?>">
                           <div class="card-body">
                             <hr>
                             <h5 class="card-title">
@@ -632,7 +635,7 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <div class="d-flex align-items-center mb-3">
                               <span class="text mb-3">Author:
                                 <?php
-                                echo $username;
+                                echo $author;
                                 ?>
                               </span>
                             </div>
