@@ -125,43 +125,43 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </a>
           </li>
           <li class="menu-item ">
-            <a href="history.html" class="menu-link">
+            <a href="html/history.html" class="menu-link">
               <i class="menu-icon tf-icons bx bx-history"></i>
               <div data-i18n="History">History</div>
             </a>
           </li>
           <li class="menu-item ">
-            <a href="downloads.html" class="menu-link">
+            <a href="html/downloads.php" class="menu-link">
               <i class="menu-icon tf-icons bx bx-download"></i>
               <div data-i18n="Downloads">Downloads</div>
             </a>
           </li>
           <li class="menu-item ">
-            <a href="uploads.php" class="menu-link">
+            <a href="html/uploads.php" class="menu-link">
               <i class="menu-icon tf-icons bx bx-upload"></i>
               <div data-i18n="Uploads">Uploads</div>
             </a>
           </li>
           <li class="menu-item ">
-            <a href="analytics.html" class="menu-link">
+            <a href="html/analytics.html" class="menu-link">
               <i class="menu-icon tf-icons bx bx-chart"></i>
               <div data-i18n="Analytics">Analytics</div>
             </a>
           </li>
           <li class="menu-item ">
-            <a href="league-standings.html" class="menu-link">
+            <a href="html/league-standings.html" class="menu-link">
               <i class="menu-icon tf-icons bx bx-crown"></i>
               <div data-i18n="LeagueStandings">League Standings</div>
             </a>
           </li>
           <li class="menu-item ">
-            <a href="studybuddy.html" class="menu-link">
+            <a href="html/studybuddy.html" class="menu-link">
               <i class="menu-icon tf-icons bx bx-brain"></i>
               <div data-i18n="StudyBuddy">StudyBuddy AI</div>
             </a>
           </li>
           <li class="menu-item ">
-            <a href="contact-us.html" class="menu-link">
+            <a href="html/contact-us.html" class="menu-link">
               <i class="menu-icon tf-icons bx bx-phone"></i>
               <div data-i18n="ContactUs">Contact Us</div>
             </a>

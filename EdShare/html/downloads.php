@@ -108,7 +108,7 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </a>
           </li>
           <li class="menu-item active ">
-            <a href="downloads.html" class="menu-link">
+            <a href="downloads.php" class="menu-link">
               <i class="menu-icon tf-icons bx bx-download"></i>
               <div data-i18n="Downloads">Downloads</div>
             </a>
