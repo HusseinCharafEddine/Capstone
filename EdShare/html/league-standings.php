@@ -37,6 +37,7 @@
     <!-- Vendors CSS -->
     <link rel="stylesheet" href="../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
     <link rel="stylesheet" href="../assets/vendor/libs/apex-charts/apex-charts.css" />
+    <link rel="stylesheet" href="../assets/css/badgeslider.css"/>
 
     <!-- Page CSS -->
 
@@ -443,6 +444,29 @@
             <div class="container-xxl flex-grow-1 container-p-y">
               <div class="row">
                 <h6 class="mb-5" >League Standings</h6>
+      <div class="badge-container">
+      <div class="slider-wrapper">
+        <button id="prev-slide" class="slide-button material-symbols-rounded">
+          
+        </button>
+        <ul class="image-list">
+          <img class="image-item" src="../assets/badges/Iron_1_Rank.png">
+          <img class="image-item" src="../assets/badges/Bronze_2_Rank.png">
+          <img class="image-item" src="../assets/badges/Silver_3_Rank.png">
+          <img class="image-item" src="../assets/badges/Gold_4_Rank.png">
+          <img class="image-item" src="../assets/badges/Platinum_5_Rank.png">
+          <img class="image-item" src="../assets/badges/Diamond_6_Rank.png">
+          <img class="image-item" src="../assets/badges/Immortal_3_Rank.png">
+        <button id="next-slide" class="slide-button material-symbols-rounded">
+        
+        </button>
+      </div>
+      <div class="slider-scrollbar">
+        <div class="scrollbar-track">
+          <div class="scrollbar-thumb"></div>
+        </div>
+      </div>
+    </div>
                 <div class="card">
                     <div class="card-datatable table-responsive">
                       <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer">
@@ -599,5 +623,6 @@
 
     <!-- Place this tag in your head or just before your close body tag. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <script src="../assets/js/badgeslider.js" defer></script>
   </body>
 </html>
