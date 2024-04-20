@@ -8,6 +8,15 @@ if (!isset($_SESSION["username"])) {
 
 
 require ("../BE/common/commonFunctions.php");
+require ("../BE/userController.php");
+require ("../BE/universityController.php");
+
+$userController = new UserController();
+$universityController = new UniversityController();
+$db = DBConnect();
+$username = $_SESSION['username'];
+$user = $userController->getUserByUsername($username);
+$university = $universityController->getUniversityById($user['UniversityId']);
 ?>
 <html lang="en" class="light-style layout-menu-fixed layout-compact" dir="ltr" data-theme="theme-default"
   data-assets-path="../assets/" data-template="vertical-menu-template-free">
@@ -58,52 +67,11 @@ require ("../BE/common/commonFunctions.php");
 
       <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
         <div class="app-brand demo">
-          <a href="index.html" class="app-brand-link">
+          <a href="../index.html" class="app-brand-link">
             <span class="app-brand-logo demo">
-              <svg width="25" viewBox="0 0 25 42" version="1.1" xmlns="http://www.w3.org/2000/svg"
-                xmlns:xlink="http://www.w3.org/1999/xlink">
-                <defs>
-                  <path
-                    d="M13.7918663,0.358365126 L3.39788168,7.44174259 C0.566865006,9.69408886 -0.379795268,12.4788597 0.557900856,15.7960551 C0.68998853,16.2305145 1.09562888,17.7872135 3.12357076,19.2293357 C3.8146334,19.7207684 5.32369333,20.3834223 7.65075054,21.2172976 L7.59773219,21.2525164 L2.63468769,24.5493413 C0.445452254,26.3002124 0.0884951797,28.5083815 1.56381646,31.1738486 C2.83770406,32.8170431 5.20850219,33.2640127 7.09180128,32.5391577 C8.347334,32.0559211 11.4559176,30.0011079 16.4175519,26.3747182 C18.0338572,24.4997857 18.6973423,22.4544883 18.4080071,20.2388261 C17.963753,17.5346866 16.1776345,15.5799961 13.0496516,14.3747546 L10.9194936,13.4715819 L18.6192054,7.984237 L13.7918663,0.358365126 Z"
-                    id="path-1"></path>
-                  <path
-                    d="M5.47320593,6.00457225 C4.05321814,8.216144 4.36334763,10.0722806 6.40359441,11.5729822 C8.61520715,12.571656 10.0999176,13.2171421 10.8577257,13.5094407 L15.5088241,14.433041 L18.6192054,7.984237 C15.5364148,3.11535317 13.9273018,0.573395879 13.7918663,0.358365126 C13.5790555,0.511491653 10.8061687,2.3935607 5.47320593,6.00457225 Z"
-                    id="path-3"></path>
-                  <path
-                    d="M7.50063644,21.2294429 L12.3234468,23.3159332 C14.1688022,24.7579751 14.397098,26.4880487 13.008334,28.506154 C11.6195701,30.5242593 10.3099883,31.790241 9.07958868,32.3040991 C5.78142938,33.4346997 4.13234973,34 4.13234973,34 C4.13234973,34 2.75489982,33.0538207 2.37032616e-14,31.1614621 C-0.55822714,27.8186216 -0.55822714,26.0572515 -4.05231404e-15,25.8773518 C0.83734071,25.6075023 2.77988457,22.8248993 3.3049379,22.52991 C3.65497346,22.3332504 5.05353963,21.8997614 7.50063644,21.2294429 Z"
-                    id="path-4"></path>
-                  <path
-                    d="M20.6,7.13333333 L25.6,13.8 C26.2627417,14.6836556 26.0836556,15.9372583 25.2,16.6 C24.8538077,16.8596443 24.4327404,17 24,17 L14,17 C12.8954305,17 12,16.1045695 12,15 C12,14.5672596 12.1403557,14.1461923 12.4,13.8 L17.4,7.13333333 C18.0627417,6.24967773 19.3163444,6.07059163 20.2,6.73333333 C20.3516113,6.84704183 20.4862915,6.981722 20.6,7.13333333 Z"
-                    id="path-5"></path>
-                </defs>
-                <g id="g-app-brand" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                  <g id="Brand-Logo" transform="translate(-27.000000, -15.000000)">
-                    <g id="Icon" transform="translate(27.000000, 15.000000)">
-                      <g id="Mask" transform="translate(0.000000, 8.000000)">
-                        <mask id="mask-2" fill="white">
-                          <use xlink:href="#path-1"></use>
-                        </mask>
-                        <use fill="#696cff" xlink:href="#path-1"></use>
-                        <g id="Path-3" mask="url(#mask-2)">
-                          <use fill="#696cff" xlink:href="#path-3"></use>
-                          <use fill-opacity="0.2" fill="#FFFFFF" xlink:href="#path-3"></use>
-                        </g>
-                        <g id="Path-4" mask="url(#mask-2)">
-                          <use fill="#696cff" xlink:href="#path-4"></use>
-                          <use fill-opacity="0.2" fill="#FFFFFF" xlink:href="#path-4"></use>
-                        </g>
-                      </g>
-                      <g id="Triangle"
-                        transform="translate(19.000000, 11.000000) rotate(-300.000000) translate(-19.000000, -11.000000) ">
-                        <use fill="#696cff" xlink:href="#path-5"></use>
-                        <use fill-opacity="0.2" fill="#FFFFFF" xlink:href="#path-5"></use>
-                      </g>
-                    </g>
-                  </g>
-                </g>
-              </svg>
+              <img src="../icon.svg">
             </span>
-            <span class="app-brand-text demo menu-text fw-bold ms-2">Sneat</span>
+            <span class="app-brand-text demo menu-text fw-bold ms-2">EdShare</span>
           </a>
 
           <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
@@ -116,447 +84,54 @@ require ("../BE/common/commonFunctions.php");
         <ul class="menu-inner py-1">
           <!-- Dashboards -->
           <li class="menu-item">
-            <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <a href="../landing.php" class="menu-link">
               <i class="menu-icon tf-icons bx bx-home-circle"></i>
-              <div data-i18n="Dashboards">Dashboards</div>
-              <div class="badge bg-danger rounded-pill ms-auto">5</div>
-            </a>
-            <ul class="menu-sub">
-              <li class="menu-item">
-                <a href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/html/vertical-menu-template/dashboards-crm.html"
-                  target="_blank" class="menu-link">
-                  <div data-i18n="CRM">CRM</div>
-                  <div class="badge bg-label-primary fs-tiny rounded-pill ms-auto">Pro</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="index.html" class="menu-link">
-                  <div data-i18n="Analytics">Analytics</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/html/vertical-menu-template/app-ecommerce-dashboard.html"
-                  target="_blank" class="menu-link">
-                  <div data-i18n="eCommerce">eCommerce</div>
-                  <div class="badge bg-label-primary fs-tiny rounded-pill ms-auto">Pro</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/html/vertical-menu-template/app-logistics-dashboard.html"
-                  target="_blank" class="menu-link">
-                  <div data-i18n="Logistics">Logistics</div>
-                  <div class="badge bg-label-primary fs-tiny rounded-pill ms-auto">Pro</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/html/vertical-menu-template/app-academy-dashboard.html"
-                  target="_blank" class="menu-link">
-                  <div data-i18n="Academy">Academy</div>
-                  <div class="badge bg-label-primary fs-tiny rounded-pill ms-auto">Pro</div>
-                </a>
-              </li>
-            </ul>
-          </li>
-
-          <!-- Layouts -->
-          <li class="menu-item">
-            <a href="javascript:void(0);" class="menu-link menu-toggle">
-              <i class="menu-icon tf-icons bx bx-layout"></i>
-              <div data-i18n="Layouts">Layouts</div>
-            </a>
-
-            <ul class="menu-sub">
-              <li class="menu-item">
-                <a href="layouts-without-menu.html" class="menu-link">
-                  <div data-i18n="Without menu">Without menu</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="layouts-without-navbar.html" class="menu-link">
-                  <div data-i18n="Without navbar">Without navbar</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="layouts-container.html" class="menu-link">
-                  <div data-i18n="Container">Container</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="layouts-fluid.html" class="menu-link">
-                  <div data-i18n="Fluid">Fluid</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="layouts-blank.html" class="menu-link">
-                  <div data-i18n="Blank">Blank</div>
-                </a>
-              </li>
-            </ul>
-          </li>
-
-          <!-- Front Pages -->
-          <li class="menu-item">
-            <a href="javascript:void(0);" class="menu-link menu-toggle">
-              <i class="menu-icon tf-icons bx bx-store"></i>
-              <div data-i18n="Front Pages">Front Pages</div>
-              <div class="badge bg-label-primary fs-tiny rounded-pill ms-auto">Pro</div>
-            </a>
-            <ul class="menu-sub">
-              <li class="menu-item">
-                <a href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/html/front-pages/landing-page.html"
-                  class="menu-link" target="_blank">
-                  <div data-i18n="Landing">Landing</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/html/front-pages/pricing-page.html"
-                  class="menu-link" target="_blank">
-                  <div data-i18n="Pricing">Pricing</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/html/front-pages/payment-page.html"
-                  class="menu-link" target="_blank">
-                  <div data-i18n="Payment">Payment</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/html/front-pages/checkout-page.html"
-                  class="menu-link" target="_blank">
-                  <div data-i18n="Checkout">Checkout</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/html/front-pages/help-center-landing.html"
-                  class="menu-link" target="_blank">
-                  <div data-i18n="Help Center">Help Center</div>
-                </a>
-              </li>
-            </ul>
-          </li>
-
-          <li class="menu-header small text-uppercase">
-            <span class="menu-header-text">Apps &amp; Pages</span>
-          </li>
-          <!-- Apps -->
-          <li class="menu-item">
-            <a href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/html/vertical-menu-template/app-email.html"
-              target="_blank" class="menu-link">
-              <i class="menu-icon tf-icons bx bx-envelope"></i>
-              <div data-i18n="Email">Email</div>
-              <div class="badge bg-label-primary fs-tiny rounded-pill ms-auto">Pro</div>
+              <div data-i18n="Home">Home</div>
             </a>
           </li>
-          <li class="menu-item">
-            <a href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/html/vertical-menu-template/app-chat.html"
-              target="_blank" class="menu-link">
-              <i class="menu-icon tf-icons bx bx-chat"></i>
-              <div data-i18n="Chat">Chat</div>
-              <div class="badge bg-label-primary fs-tiny rounded-pill ms-auto">Pro</div>
+          <li class="menu-item ">
+            <a href="history.php" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-history"></i>
+              <div data-i18n="History">History</div>
             </a>
           </li>
-          <li class="menu-item">
-            <a href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/html/vertical-menu-template/app-calendar.html"
-              target="_blank" class="menu-link">
-              <i class="menu-icon tf-icons bx bx-calendar"></i>
-              <div data-i18n="Calendar">Calendar</div>
-              <div class="badge bg-label-primary fs-tiny rounded-pill ms-auto">Pro</div>
+          <li class="menu-item  ">
+            <a href="downloads.php" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-download"></i>
+              <div data-i18n="Downloads">Downloads</div>
             </a>
           </li>
-          <li class="menu-item">
-            <a href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/html/vertical-menu-template/app-kanban.html"
-              target="_blank" class="menu-link">
-              <i class="menu-icon tf-icons bx bx-grid"></i>
-              <div data-i18n="Kanban">Kanban</div>
-              <div class="badge bg-label-primary fs-tiny rounded-pill ms-auto">Pro</div>
+          <li class="menu-item active">
+            <a href="uploads.php" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-upload"></i>
+              <div data-i18n="Uploads">Uploads</div>
             </a>
           </li>
-          <!-- Pages -->
-          <li class="menu-item active open">
-            <a href="javascript:void(0);" class="menu-link menu-toggle">
-              <i class="menu-icon tf-icons bx bx-dock-top"></i>
-              <div data-i18n="Account Settings">Account Settings</div>
-            </a>
-            <ul class="menu-sub">
-              <li class="menu-item active">
-                <a href="pages-account-settings-account.html" class="menu-link">
-                  <div data-i18n="Account">Account</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="pages-account-settings-notifications.html" class="menu-link">
-                  <div data-i18n="Notifications">Notifications</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="pages-account-settings-connections.html" class="menu-link">
-                  <div data-i18n="Connections">Connections</div>
-                </a>
-              </li>
-            </ul>
-          </li>
-          <li class="menu-item">
-            <a href="javascript:void(0);" class="menu-link menu-toggle">
-              <i class="menu-icon tf-icons bx bx-lock-open-alt"></i>
-              <div data-i18n="Authentications">Authentications</div>
-            </a>
-            <ul class="menu-sub">
-              <li class="menu-item">
-                <a href="auth-login-basic.html" class="menu-link" target="_blank">
-                  <div data-i18n="Basic">Login</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="auth-register-basic.html" class="menu-link" target="_blank">
-                  <div data-i18n="Basic">Register</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="auth-forgot-password-basic.html" class="menu-link" target="_blank">
-                  <div data-i18n="Basic">Forgot Password</div>
-                </a>
-              </li>
-            </ul>
-          </li>
-          <li class="menu-item">
-            <a href="javascript:void(0);" class="menu-link menu-toggle">
-              <i class="menu-icon tf-icons bx bx-cube-alt"></i>
-              <div data-i18n="Misc">Misc</div>
-            </a>
-            <ul class="menu-sub">
-              <li class="menu-item">
-                <a href="pages-misc-error.html" class="menu-link">
-                  <div data-i18n="Error">Error</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="pages-misc-under-maintenance.html" class="menu-link">
-                  <div data-i18n="Under Maintenance">Under Maintenance</div>
-                </a>
-              </li>
-            </ul>
-          </li>
-          <!-- Components -->
-          <li class="menu-header small text-uppercase"><span class="menu-header-text">Components</span></li>
-          <!-- Cards -->
-          <li class="menu-item">
-            <a href="cards-basic.html" class="menu-link">
-              <i class="menu-icon tf-icons bx bx-collection"></i>
-              <div data-i18n="Basic">Cards</div>
+          <li class="menu-item ">
+            <a href="analytics.php" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-chart"></i>
+              <div data-i18n="Analytics">Analytics</div>
             </a>
           </li>
-          <!-- User interface -->
-          <li class="menu-item">
-            <a href="javascript:void(0)" class="menu-link menu-toggle">
-              <i class="menu-icon tf-icons bx bx-box"></i>
-              <div data-i18n="User interface">User interface</div>
-            </a>
-            <ul class="menu-sub">
-              <li class="menu-item">
-                <a href="ui-accordion.html" class="menu-link">
-                  <div data-i18n="Accordion">Accordion</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="ui-alerts.html" class="menu-link">
-                  <div data-i18n="Alerts">Alerts</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="ui-badges.html" class="menu-link">
-                  <div data-i18n="Badges">Badges</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="ui-buttons.html" class="menu-link">
-                  <div data-i18n="Buttons">Buttons</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="ui-carousel.html" class="menu-link">
-                  <div data-i18n="Carousel">Carousel</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="ui-collapse.html" class="menu-link">
-                  <div data-i18n="Collapse">Collapse</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="ui-dropdowns.html" class="menu-link">
-                  <div data-i18n="Dropdowns">Dropdowns</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="ui-footer.html" class="menu-link">
-                  <div data-i18n="Footer">Footer</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="ui-list-groups.html" class="menu-link">
-                  <div data-i18n="List Groups">List groups</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="ui-modals.html" class="menu-link">
-                  <div data-i18n="Modals">Modals</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="ui-navbar.html" class="menu-link">
-                  <div data-i18n="Navbar">Navbar</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="ui-offcanvas.html" class="menu-link">
-                  <div data-i18n="Offcanvas">Offcanvas</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="ui-pagination-breadcrumbs.html" class="menu-link">
-                  <div data-i18n="Pagination &amp; Breadcrumbs">Pagination &amp; Breadcrumbs</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="ui-progress.html" class="menu-link">
-                  <div data-i18n="Progress">Progress</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="ui-spinners.html" class="menu-link">
-                  <div data-i18n="Spinners">Spinners</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="ui-tabs-pills.html" class="menu-link">
-                  <div data-i18n="Tabs &amp; Pills">Tabs &amp; Pills</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="ui-toasts.html" class="menu-link">
-                  <div data-i18n="Toasts">Toasts</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="ui-tooltips-popovers.html" class="menu-link">
-                  <div data-i18n="Tooltips & Popovers">Tooltips &amp; popovers</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="ui-typography.html" class="menu-link">
-                  <div data-i18n="Typography">Typography</div>
-                </a>
-              </li>
-            </ul>
-          </li>
-
-          <!-- Extended components -->
-          <li class="menu-item">
-            <a href="javascript:void(0)" class="menu-link menu-toggle">
-              <i class="menu-icon tf-icons bx bx-copy"></i>
-              <div data-i18n="Extended UI">Extended UI</div>
-            </a>
-            <ul class="menu-sub">
-              <li class="menu-item">
-                <a href="extended-ui-perfect-scrollbar.html" class="menu-link">
-                  <div data-i18n="Perfect Scrollbar">Perfect scrollbar</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="extended-ui-text-divider.html" class="menu-link">
-                  <div data-i18n="Text Divider">Text Divider</div>
-                </a>
-              </li>
-            </ul>
-          </li>
-
-          <li class="menu-item">
-            <a href="icons-boxicons.html" class="menu-link">
+          <li class="menu-item ">
+            <a href="league-standings.php" class="menu-link">
               <i class="menu-icon tf-icons bx bx-crown"></i>
-              <div data-i18n="Boxicons">Boxicons</div>
+              <div data-i18n="LeagueStandings">League Standings</div>
             </a>
           </li>
-
-          <!-- Forms & Tables -->
-          <li class="menu-header small text-uppercase"><span class="menu-header-text">Forms &amp; Tables</span></li>
-          <!-- Forms -->
-          <li class="menu-item">
-            <a href="javascript:void(0);" class="menu-link menu-toggle">
-              <i class="menu-icon tf-icons bx bx-detail"></i>
-              <div data-i18n="Form Elements">Form Elements</div>
-            </a>
-            <ul class="menu-sub">
-              <li class="menu-item">
-                <a href="forms-basic-inputs.html" class="menu-link">
-                  <div data-i18n="Basic Inputs">Basic Inputs</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="forms-input-groups.html" class="menu-link">
-                  <div data-i18n="Input groups">Input groups</div>
-                </a>
-              </li>
-            </ul>
-          </li>
-          <li class="menu-item">
-            <a href="javascript:void(0);" class="menu-link menu-toggle">
-              <i class="menu-icon tf-icons bx bx-detail"></i>
-              <div data-i18n="Form Layouts">Form Layouts</div>
-            </a>
-            <ul class="menu-sub">
-              <li class="menu-item">
-                <a href="form-layouts-vertical.html" class="menu-link">
-                  <div data-i18n="Vertical Form">Vertical Form</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="form-layouts-horizontal.html" class="menu-link">
-                  <div data-i18n="Horizontal Form">Horizontal Form</div>
-                </a>
-              </li>
-            </ul>
-          </li>
-          <!-- Form Validation -->
-          <li class="menu-item">
-            <a href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/html/vertical-menu-template/form-validation.html"
-              target="_blank" class="menu-link">
-              <i class="menu-icon tf-icons bx bx-list-check"></i>
-              <div data-i18n="Form Validation">Form Validation</div>
-              <div class="badge bg-label-primary fs-tiny rounded-pill ms-auto">Pro</div>
+          <li class="menu-item ">
+            <a href="studybuddy.php" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-brain"></i>
+              <div data-i18n="StudyBuddy">StudyBuddy AI</div>
             </a>
           </li>
-          <!-- Tables -->
-          <li class="menu-item">
-            <a href="tables-basic.html" class="menu-link">
-              <i class="menu-icon tf-icons bx bx-table"></i>
-              <div data-i18n="Tables">Tables</div>
+          <li class="menu-item ">
+            <a href="contact-us.html" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-phone"></i>
+              <div data-i18n="ContactUs">Contact Us</div>
             </a>
           </li>
-          <!-- Data Tables -->
-          <li class="menu-item">
-            <a href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/html/vertical-menu-template/tables-datatables-basic.html"
-              target="_blank" class="menu-link">
-              <i class="menu-icon tf-icons bx bx-grid"></i>
-              <div data-i18n="Datatables">Datatables</div>
-              <div class="badge bg-label-primary fs-tiny rounded-pill ms-auto">Pro</div>
-            </a>
-          </li>
-          <!-- Misc -->
-          <li class="menu-header small text-uppercase"><span class="menu-header-text">Misc</span></li>
-          <li class="menu-item">
-            <a href="https://github.com/themeselection/sneat-html-admin-template-free/issues" target="_blank"
-              class="menu-link">
-              <i class="menu-icon tf-icons bx bx-support"></i>
-              <div data-i18n="Support">Support</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/documentation/"
-              target="_blank" class="menu-link">
-              <i class="menu-icon tf-icons bx bx-file"></i>
-              <div data-i18n="Documentation">Documentation</div>
-            </a>
-          </li>
+        </ul>
         </ul>
       </aside>
       <!-- / Menu -->
@@ -587,11 +162,11 @@ require ("../BE/common/commonFunctions.php");
 
             <ul class="navbar-nav flex-row align-items-center ms-auto">
               <!-- Place this tag where you want the button to render. -->
-              <li class="nav-item lh-1 me-3">
+              <!-- <li class="nav-item lh-1 me-3">
                 <a class="github-button" href="https://github.com/themeselection/sneat-html-admin-template-free"
                   data-icon="octicon-star" data-size="large" data-show-count="true"
                   aria-label="Star themeselection/sneat-html-admin-template-free on GitHub">Star</a>
-              </li>
+              </li> -->
 
               <!-- User -->
               <li class="nav-item navbar-dropdown dropdown-user dropdown">
@@ -705,127 +280,56 @@ require ("../BE/common/commonFunctions.php");
                   </div>
                   <hr class="my-0" />
                   <div class="card-body">
-                    <form id="formAccountSettings" method="POST" onsubmit="return false">
+                    <form id="formAccountSettings" method="POST" action="../BE/updateUser.php">
                       <div class="row">
+
+                        <div class="mb-3 col-md-6">
+                          <label for="firstName" class="form-label">Username</label>
+                          <input class="form-control" type="text" id="username" name="username"
+                            value="<?php echo $user['Username']; ?>" autofocus />
+                        </div>
                         <div class="mb-3 col-md-6">
                           <label for="firstName" class="form-label">First Name</label>
-                          <input class="form-control" type="text" id="firstName" name="firstName" value="John"
-                            autofocus />
+                          <input class="form-control" type="text" id="firstName" name="firstName"
+                            value="<?php echo $user['FirstName']; ?>" autofocus />
                         </div>
                         <div class="mb-3 col-md-6">
                           <label for="lastName" class="form-label">Last Name</label>
-                          <input class="form-control" type="text" name="lastName" id="lastName" value="Doe" />
+                          <input class="form-control" type="text" name="lastName" id="lastName"
+                            value="<?php echo ucwords($user['LastName']); ?>" />
                         </div>
                         <div class="mb-3 col-md-6">
                           <label for="email" class="form-label">E-mail</label>
-                          <input class="form-control" type="text" id="email" name="email" value="john.doe@example.com"
-                            placeholder="john.doe@example.com" />
+                          <input class="form-control" type="text" id="email" name="email"
+                            value="<?php echo $user['Email']; ?>" />
                         </div>
                         <div class="mb-3 col-md-6">
-                          <label for="organization" class="form-label">Organization</label>
-                          <input type="text" class="form-control" id="organization" name="organization"
-                            value="ThemeSelection" />
+                          <label for="organization" class="form-label">University</label>
+                          <input type="text" class="form-control" id="universityName" name="universityName"
+                            value="<?php echo ucwords($university['UniversityName']); ?>" />
                         </div>
                         <div class="mb-3 col-md-6">
-                          <label class="form-label" for="phoneNumber">Phone Number</label>
+                          <label for="organization" class="form-label">University Acronym</label>
+                          <input type="text" class="form-control" id="universityAcronym" name="universityAcronym"
+                            value="<?php echo strtoupper($university['UniversityAcronym']); ?>" />
+                        </div>
+                        <div class="mb-3 col-md-6 form-password-toggle">
+                          <div class="d-flex justify-content-between">
+                            <label class="form-label" for="password">Password</label>
+
+                          </div>
                           <div class="input-group input-group-merge">
-                            <span class="input-group-text">US (+1)</span>
-                            <input type="text" id="phoneNumber" name="phoneNumber" class="form-control"
-                              placeholder="202 555 0111" />
+                            <input type="password" id="password" class="form-control" name="password"
+                              placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
+                              aria-describedby="password" />
+                            <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
                           </div>
                         </div>
-                        <div class="mb-3 col-md-6">
-                          <label for="address" class="form-label">Address</label>
-                          <input type="text" class="form-control" id="address" name="address" placeholder="Address" />
+
+                        <div class="mt-2">
+                          <button type="submit" class="btn btn-primary me-2">Save changes</button>
+                          <button type="reset" class="btn btn-outline-secondary">Cancel</button>
                         </div>
-                        <div class="mb-3 col-md-6">
-                          <label for="state" class="form-label">State</label>
-                          <input class="form-control" type="text" id="state" name="state" placeholder="California" />
-                        </div>
-                        <div class="mb-3 col-md-6">
-                          <label for="zipCode" class="form-label">Zip Code</label>
-                          <input type="text" class="form-control" id="zipCode" name="zipCode" placeholder="231465"
-                            maxlength="6" />
-                        </div>
-                        <div class="mb-3 col-md-6">
-                          <label class="form-label" for="country">Country</label>
-                          <select id="country" class="select2 form-select">
-                            <option value="">Select</option>
-                            <option value="Australia">Australia</option>
-                            <option value="Bangladesh">Bangladesh</option>
-                            <option value="Belarus">Belarus</option>
-                            <option value="Brazil">Brazil</option>
-                            <option value="Canada">Canada</option>
-                            <option value="China">China</option>
-                            <option value="France">France</option>
-                            <option value="Germany">Germany</option>
-                            <option value="India">India</option>
-                            <option value="Indonesia">Indonesia</option>
-                            <option value="Israel">Israel</option>
-                            <option value="Italy">Italy</option>
-                            <option value="Japan">Japan</option>
-                            <option value="Korea">Korea, Republic of</option>
-                            <option value="Mexico">Mexico</option>
-                            <option value="Philippines">Philippines</option>
-                            <option value="Russia">Russian Federation</option>
-                            <option value="South Africa">South Africa</option>
-                            <option value="Thailand">Thailand</option>
-                            <option value="Turkey">Turkey</option>
-                            <option value="Ukraine">Ukraine</option>
-                            <option value="United Arab Emirates">United Arab Emirates</option>
-                            <option value="United Kingdom">United Kingdom</option>
-                            <option value="United States">United States</option>
-                          </select>
-                        </div>
-                        <div class="mb-3 col-md-6">
-                          <label for="language" class="form-label">Language</label>
-                          <select id="language" class="select2 form-select">
-                            <option value="">Select Language</option>
-                            <option value="en">English</option>
-                            <option value="fr">French</option>
-                            <option value="de">German</option>
-                            <option value="pt">Portuguese</option>
-                          </select>
-                        </div>
-                        <div class="mb-3 col-md-6">
-                          <label for="timeZones" class="form-label">Timezone</label>
-                          <select id="timeZones" class="select2 form-select">
-                            <option value="">Select Timezone</option>
-                            <option value="-12">(GMT-12:00) International Date Line West</option>
-                            <option value="-11">(GMT-11:00) Midway Island, Samoa</option>
-                            <option value="-10">(GMT-10:00) Hawaii</option>
-                            <option value="-9">(GMT-09:00) Alaska</option>
-                            <option value="-8">(GMT-08:00) Pacific Time (US & Canada)</option>
-                            <option value="-8">(GMT-08:00) Tijuana, Baja California</option>
-                            <option value="-7">(GMT-07:00) Arizona</option>
-                            <option value="-7">(GMT-07:00) Chihuahua, La Paz, Mazatlan</option>
-                            <option value="-7">(GMT-07:00) Mountain Time (US & Canada)</option>
-                            <option value="-6">(GMT-06:00) Central America</option>
-                            <option value="-6">(GMT-06:00) Central Time (US & Canada)</option>
-                            <option value="-6">(GMT-06:00) Guadalajara, Mexico City, Monterrey</option>
-                            <option value="-6">(GMT-06:00) Saskatchewan</option>
-                            <option value="-5">(GMT-05:00) Bogota, Lima, Quito, Rio Branco</option>
-                            <option value="-5">(GMT-05:00) Eastern Time (US & Canada)</option>
-                            <option value="-5">(GMT-05:00) Indiana (East)</option>
-                            <option value="-4">(GMT-04:00) Atlantic Time (Canada)</option>
-                            <option value="-4">(GMT-04:00) Caracas, La Paz</option>
-                          </select>
-                        </div>
-                        <div class="mb-3 col-md-6">
-                          <label for="currency" class="form-label">Currency</label>
-                          <select id="currency" class="select2 form-select">
-                            <option value="">Select Currency</option>
-                            <option value="usd">USD</option>
-                            <option value="euro">Euro</option>
-                            <option value="pound">Pound</option>
-                            <option value="bitcoin">Bitcoin</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="mt-2">
-                        <button type="submit" class="btn btn-primary me-2">Save changes</button>
-                        <button type="reset" class="btn btn-outline-secondary">Cancel</button>
-                      </div>
                     </form>
                   </div>
                   <!-- /Account -->
@@ -892,10 +396,7 @@ require ("../BE/common/commonFunctions.php");
   </div>
   <!-- / Layout wrapper -->
 
-  <div class="buy-now">
-    <a href="https://themeselection.com/item/sneat-bootstrap-html-admin-template/" target="_blank"
-      class="btn btn-danger btn-buy-now">Upgrade to Pro</a>
-  </div>
+
 
   <!-- Core JS -->
   <!-- build:js assets/vendor/js/core.js -->
