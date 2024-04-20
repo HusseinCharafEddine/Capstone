@@ -95,6 +95,29 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         <ul class="menu-inner py-1">
           <!-- Dashboards -->
+          <li>
+            <div id="token-container" style="display: flex; margin: 18px; margin-top:0px">
+              <div id="uploads-token" style="margin-right: auto;"> 
+                <span>
+                <img src="assets/img/icons/tokens/uploadstoken.png">
+                  <?php
+                    $uploadcount = $userController->getUploadCount($_SESSION['username']);
+                    echo $uploadcount['UploadCount'];
+                  ?>
+                </span>
+              </div>
+              <div class="vertical-divider" style="width: 20px;"></div>
+              <div id="downloads-token" style="margin-left: auto;">
+                <span>
+                <img src="assets/img/icons/tokens/downloadstoken.png">
+                  <?php
+                    $downloadcount = $userController->getDownloadCount($_SESSION['username']);
+                    echo $downloadcount['DownloadCount'];
+                  ?>
+                </span>
+              </div>
+            </div>
+          </li>
           <li class="menu-item active">
             <a href="landing.html" class="menu-link">
               <i class="menu-icon tf-icons bx bx-home-circle"></i>
