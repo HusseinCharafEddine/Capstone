@@ -35,9 +35,10 @@ class UserController
         $query = "SELECT * FROM user";
         $stmt = $this->db->prepare($query);
         $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC); // Use fetchAll() to get all rows
     }
-   
+
+
     public function getUserByUsername($Username)
     {
         $query = "SELECT * FROM user WHERE Username = :Username";
@@ -45,6 +46,68 @@ class UserController
         $stmt->bindParam(':Username', $Username);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+
+    public function getCountOfUsersInLeague($userId)
+    {
+        // Retrieve the user's rating to determine the league range
+        $user = $this->getUser($userId);
+        if (!$user) {
+            return 0; // User not found or error handling
+        }
+
+        // Determine league range based on user's rating
+        $tokenScore = $user['TokenScore'];
+        $minRating = 0;
+        $maxRating = PHP_INT_MAX; // Use a large value for the maximum rating
+
+        if ($tokenScore >= 0 && $tokenScore < 200) {
+            $maxRating = 200;
+        } elseif ($tokenScore >= 200 && $tokenScore < 400) {
+            $minRating = 200;
+            $maxRating = 400;
+        } elseif ($tokenScore >= 400 && $tokenScore < 700) {
+            $minRating = 400;
+            $maxRating = 700;
+        } elseif ($tokenScore >= 700 && $tokenScore < 1000) {
+            $minRating = 700;
+            $maxRating = 1000;
+        } elseif ($tokenScore >= 1000 && $tokenScore < 1300) {
+            $minRating = 1000;
+            $maxRating = 1300;
+        } elseif ($tokenScore >= 1300 && $tokenScore < 1700) {
+            $minRating = 1300;
+            $maxRating = 1700;
+        } elseif ($tokenScore >= 1700 && $tokenScore < 2100) {
+            $minRating = 1700;
+            $maxRating = 2100;
+        } elseif ($tokenScore >= 2100) {
+            $minRating = 2101; // Start from 2101 and no upper limit
+        } else {
+            // Unknown league or rating, handle accordingly
+            return 0;
+        }
+
+        // Prepare SQL query to count users within the determined rating range
+        $query = "SELECT COUNT(*) AS userCount FROM user WHERE TokenScore >= :minRating AND TokenScore < :maxRating";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':minRating', $minRating, PDO::PARAM_INT);
+        $stmt->bindParam(':maxRating', $maxRating, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['userCount'];
+    }
+
+
+    public function getCountOfAllUsers()
+    {
+        $query = "SELECT COUNT(*) AS userCount FROM user";
+        $stmt = $this->db->prepare($query);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $result['userCount'];
     }
 
     // Update user details
@@ -122,21 +185,81 @@ class UserController
         return $stmt->rowCount();
     }
 
-    public function getDownloadCount($Username){
-        $query="SELECT DownloadCount FROM user WHERE Username= :Username";
-        $stmt= $this->db->prepare($query);
+    public function getDownloadCount($Username)
+    {
+        $query = "SELECT DownloadCount FROM user WHERE Username= :Username";
+        $stmt = $this->db->prepare($query);
         $stmt->bindParam(':Username', $Username);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function getUploadCount($Username){
-        $query="SELECT UploadCount FROM user WHERE Username= :Username";
-        $stmt= $this->db->prepare($query);
+    public function getUploadCount($Username)
+    {
+        $query = "SELECT UploadCount FROM user WHERE Username= :Username";
+        $stmt = $this->db->prepare($query);
         $stmt->bindParam(':Username', $Username);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+    public function fetchUsersForStandings($standingsType, $userId, $rowsPerPage)
+    {
+        // Initialize the query variable
+        $query = '';
+
+        // Determine the SQL query based on the selected standings type
+        if ($standingsType === 'worldwide') {
+            $query = "SELECT * FROM user ORDER BY TokenScore DESC";
+        } else {
+            // Retrieve the user's rating to determine the league
+            $userTokenScoreQuery = "SELECT TokenScore FROM user WHERE UserId = :userId";
+            $userTokenScoreStmt = $this->db->prepare($userTokenScoreQuery);
+            $userTokenScoreStmt->bindParam(':userId', $userId);
+            $userTokenScoreStmt->execute();
+            $userTokenScore = $userTokenScoreStmt->fetch(PDO::FETCH_ASSOC)['TokenScore'];
+
+            // Determine the league range based on the user's rating
+            $leagueMinRating = 0;
+            $leagueMaxRating = 0;
+
+            if ($userTokenScore >= 0 && $userTokenScore < 200) {
+                $leagueMinRating = 0;
+                $leagueMaxRating = 200;
+            } elseif ($userTokenScore >= 200 && $userTokenScore < 400) {
+                $leagueMinRating = 200;
+                $leagueMaxRating = 400;
+            }
+            // Add more league ranges as needed...
+
+            // Construct the query for league standings
+            $query = "SELECT * FROM user WHERE TokenScore BETWEEN :leagueMinRating AND :leagueMaxRating ORDER BY TokenScore DESC";
+        }
+
+        // Prepare the SQL statement
+        $stmt = $this->db->prepare($query);
+
+        // Bind parameters for league standings query
+        if ($standingsType != 'worldwide') {
+            $stmt->bindParam(':leagueMinRating', $leagueMinRating, PDO::PARAM_INT);
+            $stmt->bindParam(':leagueMaxRating', $leagueMaxRating, PDO::PARAM_INT);
+        }
+
+        // Execute the SQL query
+        // print_r($stmt);
+        $stmt->execute();
+        $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Pagination logic
+        $currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
+        $offset = ($currentPage - 1) * $rowsPerPage;
+        $paginatedUsers = array_slice($users, $offset, $rowsPerPage);
+
+        return $paginatedUsers;
+    }
+
+
+    // Other methods...
+
 }
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Check if it's a delete request
@@ -147,5 +270,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Handle update user logic
         updateUser($_POST['userId'], $_POST['newData']); // Assuming updateUser function exists in your code
     }
+
 }
+
 ?>

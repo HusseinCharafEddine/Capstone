@@ -10,7 +10,27 @@ if (!function_exists('VarExist')) {
         }
     }
 }
+if (!function_exists('buildUrlWithParams')) {
+    function buildUrlWithParams($baseUrl, $params)
+    {
+        $urlParts = parse_url($baseUrl);
 
+        // Get the existing query parameters
+        $query = isset($urlParts['query']) ? $urlParts['query'] : '';
+        parse_str($query, $queryParams);
+
+        // Merge existing parameters with the new parameters
+        $mergedParams = array_merge($queryParams, $params);
+
+        // Build the new query string
+        $newQuery = http_build_query($mergedParams);
+
+        // Reconstruct the URL with updated query string
+        $newUrl = $urlParts['path'] . '?' . $newQuery;
+
+        return $newUrl;
+    }
+}
 if (!function_exists('DbConnect')) {
     function DBConnect()
     {
