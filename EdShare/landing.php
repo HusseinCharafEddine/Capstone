@@ -58,6 +58,7 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <link rel="stylesheet" href="assets/vendor/css/core.css" class="template-customizer-core-css" />
   <link rel="stylesheet" href="assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
   <link rel="stylesheet" href="assets/css/demo.css" />
+  <link rel="stylesheet" href="assets/css/favs.css"/>
 
   <!-- Vendors CSS -->
   <link rel="stylesheet" href="assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
@@ -562,9 +563,15 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                               <img class="card-img-top"
                                 src="thumbnails/<?php echo $author ?>/<?php echo $document['ThumbnailPath']; ?>">
                               <div class="card-body">
-                                <h5 class="card-title">
-                                  <a href="app-academy-course-details.html"
-                                    class="h5"><?php echo $document['Title']; ?></a>
+                              <h5 class="card-title">
+                                  <a href="app-academy-course-details.html" class="h5">
+                                  <?php echo $document['Title']; ?>
+                                  </a>
+                                <span style="float: right;">
+                                  <a href="#" onclick="addToFavorites(<?php echo $document['DocumentId']; ?>)">
+                                  <img id="heart-fav<?php echo $document['DocumentId']; ?>" class="heart-favs" src="assets/img/icons/unicons/heart.png">
+                                  </a>
+                                </span>
                                 </h5>
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                   <span class="badge bg-label-primary">
@@ -651,8 +658,14 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 src="thumbnails/<?php echo $author ?>/<?php echo $document['ThumbnailPath']; ?>">
                               <div class="card-body">
                                 <h5 class="card-title">
-                                  <a href="app-academy-course-details.html"
-                                    class="h5"><?php echo $document['Title']; ?></a>
+                                  <a href="app-academy-course-details.html" class="h5">
+                                  <?php echo $document['Title']; ?>
+                                  </a>
+                                <span style="float: right;">
+                                  <a href="#" onclick="addToFavorites(<?php echo $document['DocumentId']; ?>)">
+                                  <img id="heart-fav<?php echo $document['DocumentId']; ?>" class="heart-favs" src="assets/img/icons/unicons/heart.png">
+                                  </a>
+                                </span>
                                 </h5>
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                   <span class="badge bg-label-primary">
@@ -738,9 +751,15 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                               <img class="card-img-top"
                                 src="thumbnails/<?php echo $author ?>/<?php echo $document['ThumbnailPath']; ?>">
                               <div class="card-body">
-                                <h5 class="card-title">
-                                  <a href="app-academy-course-details.html"
-                                    class="h5"><?php echo $document['Title']; ?></a>
+                              <h5 class="card-title">
+                                  <a href="app-academy-course-details.html" class="h5">
+                                  <?php echo $document['Title']; ?>
+                                  </a>
+                                <span style="float: right;">
+                                  <a href="#" onclick="addToFavorites(<?php echo $document['DocumentId']; ?>)">
+                                  <img id="heart-fav<?php echo $document['DocumentId']; ?>" class="heart-favs" src="assets/img/icons/unicons/heart.png">
+                                  </a>
+                                </span>
                                 </h5>
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                   <span class="badge bg-label-primary">
@@ -881,10 +900,15 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                           <div class="card-body">
                             <hr>
                             <h5 class="card-title">
-                              <a href="app-academy-course-details.html" class="h5">
-                                <?php echo $document['Title']; ?>
-                              </a>
-                            </h5>
+                                  <a href="app-academy-course-details.html" class="h5">
+                                  <?php echo $document['Title']; ?>
+                                  </a>
+                                <span style="float: right;">
+                                  <a href="#" onclick="addToFavorites(<?php echo $document['DocumentId']; ?>)">
+                                  <img id="heart-fav<?php echo $document['DocumentId']; ?>" class="heart-favs" src="assets/img/icons/unicons/heart.png">
+                                  </a>
+                                </span>
+                                </h5>
                             <div class="d-flex justify-content-between align-items-center mb-3">
                               <span class="badge bg-label-primary">
                                 <?php
@@ -1106,7 +1130,7 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             </script> -->
 
-            <script>
+            <!-- <script>
               $(document).ready(function () {
                 $('.toggle-favorite').click(function () {
                   var documentId = $(this).data('document-id');
@@ -1132,7 +1156,39 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                   });
                 });
               });
-            </script>
+            </script> -->
+
+<script>
+    function addToFavorites(documentId) {
+        var heartIcon = document.getElementById('heart-fav' + documentId);
+        var isFavorite = heartIcon.src.includes('heartfilled.png');
+
+        
+        if (isFavorite) {
+            heartIcon.src = 'assets/img/icons/unicons/heart.png';
+        } else {
+            heartIcon.src = 'assets/img/icons/unicons/heartfilled.png';
+        }
+
+      
+        $.ajax({
+            type: 'POST',
+            url: 'BE/toggleFavorite.php',
+            data: {
+                documentId: documentId
+            },
+            success: function (response) {
+                
+                console.log(response);
+            },
+            error: function () {
+                
+            }
+        });
+    }
+</script>
+
+
 
 </body>
 
