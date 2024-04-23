@@ -54,7 +54,7 @@ class DocumentController
             return 0; // Default value if query fails or no documents found
         }
     }
-    public function fetchAllDocumentsForPage($offset, $uploadsForPage, $filter = null)
+    public function fetchAllDocumentsForPage($offset, $uploadsForPage, $filter = null, $searchTerm = null)
     {
         // Start building the query
         $query = "SELECT *
@@ -85,6 +85,16 @@ class DocumentController
             }
         }
 
+        // Add search term condition if provided
+        if ($searchTerm !== null && trim($searchTerm) !== '') {
+            if ($filterApplied) {
+                $query .= " AND"; // Add AND if filters are already applied
+            } else {
+                $query .= " WHERE"; // Start WHERE clause if no filters applied
+            }
+            $query .= " (Title LIKE :searchTerm OR Category LIKE :searchTerm)";
+        }
+
         // Add limit and offset to the query
         $query .= " LIMIT :offset, :uploadsForPage";
 
@@ -108,10 +118,38 @@ class DocumentController
             }
         }
 
+        // Bind search term parameter if provided
+        if ($searchTerm !== null && trim($searchTerm) !== '') {
+            $searchParam = '%' . $searchTerm . '%'; // Wrap the search term with wildcards for partial matching
+            $stmt->bindParam(':searchTerm', $searchParam, PDO::PARAM_STR);
+        }
+
         // Execute the query
         $stmt->execute();
 
         // Return the result
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function searchDocuments($searchTerm)
+    {
+        // Prepare the search query to match document names or categories
+        $query = "SELECT *
+                  FROM document
+                  WHERE Title LIKE :searchTerm
+                     OR Category LIKE :searchTerm";
+
+        // Prepare the query
+        $stmt = $this->db->prepare($query);
+
+        // Bind the search term parameter
+        $searchParam = '%' . $searchTerm . '%'; // Wrap the search term with wildcards for partial matching
+        $stmt->bindParam(':searchTerm', $searchParam, PDO::PARAM_STR);
+
+        // Execute the query
+        $stmt->execute();
+
+        // Return the search results
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 

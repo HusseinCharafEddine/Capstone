@@ -123,6 +123,120 @@ class DownloadController
         // Return the result
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    // Get the most downloaded document today or on the latest date
+    public function getMostDownloadedToday()
+    {
+        $today = date('Y-m-d');
+
+        // Query to get most downloaded document today
+        $queryToday = "SELECT DocumentId, UserId , COUNT(*) AS downloads_count
+                   FROM downloaded
+                   WHERE Date = :today
+                   GROUP BY DocumentId
+                   ORDER BY downloads_count DESC
+                   LIMIT 1";
+
+        // Prepare and execute query for today's downloads
+        $stmt = $this->db->prepare($queryToday);
+        $stmt->bindParam(':today', $today, PDO::PARAM_STR);
+        $stmt->execute();
+        $resultToday = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Check if there are downloads today; otherwise, get most downloaded document of all time
+        if ($resultToday && !empty($resultToday['DocumentId'])) {
+            return $resultToday; // Return most downloaded document of today
+        } else {
+            // Query to get most downloaded document of all time
+            $queryAllTime = "SELECT DocumentId, COUNT(*) AS downloads_count, UserId
+                         FROM downloaded
+                         GROUP BY DocumentId
+                         ORDER BY downloads_count DESC
+                         LIMIT 1";
+
+            // Execute query for all-time downloads
+            $stmtAllTime = $this->db->query($queryAllTime);
+            $resultAllTime = $stmtAllTime->fetch(PDO::FETCH_ASSOC);
+
+            return $resultAllTime; // Return most downloaded document of all time
+        }
+    }
+
+    // Get the most downloaded document yesterday or on the previous date with downloads
+    public function getMostDownloadedYesterday($excludeDocumentIds = [])
+    {
+        $yesterday = date('Y-m-d', strtotime('-1 day'));
+
+        // Build the base query
+        $query = "SELECT DocumentId, COUNT(*) AS downloads_count
+              FROM downloaded
+              WHERE Date = :yesterday ";
+
+        // Check if there are documents to exclude
+        if (!empty($excludeDocumentIds)) {
+            $excludeIdsString = implode(',', $excludeDocumentIds);
+            $query .= "AND DocumentId NOT IN ($excludeIdsString) ";
+        }
+
+        // Complete the query
+        $query .= "GROUP BY DocumentId
+               ORDER BY downloads_count DESC
+               LIMIT 1";
+
+        // Prepare the SQL statement
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':yesterday', $yesterday, PDO::PARAM_STR);
+
+        // Execute the query
+        $stmt->execute();
+
+        // Fetch the result
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // If no result found for yesterday, find the most downloaded document excluding specified IDs
+        if (!$result) {
+            $excludeIdsString = implode(',', $excludeDocumentIds);
+
+            $fallbackQuery = "SELECT DocumentId, COUNT(*) AS downloads_count
+                          FROM downloaded ";
+
+            if (!empty($excludeDocumentIds)) {
+                $fallbackQuery .= "WHERE DocumentId NOT IN ($excludeIdsString) ";
+            }
+
+            $fallbackQuery .= "GROUP BY DocumentId
+                           ORDER BY downloads_count DESC
+                           LIMIT 1";
+
+            $stmt = $this->db->query($fallbackQuery);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+
+        return $result;
+    }
+
+
+    // Get the newest downloaded document
+    public function getNewestDownloadedDocument($excludeDocumentId = null)
+    {
+        $query = "SELECT DocumentId, MAX(Date) AS latest_download_date
+                  FROM downloaded ";
+
+        if ($excludeDocumentId !== null) {
+            $query .= "WHERE DocumentId != :excludeDocumentId ";
+        }
+
+        $query .= "GROUP BY DocumentId
+                   ORDER BY latest_download_date DESC
+                   LIMIT 1";
+
+        $stmt = $this->db->prepare($query);
+        if ($excludeDocumentId !== null) {
+            $stmt->bindParam(':excludeDocumentId', $excludeDocumentId, PDO::PARAM_INT);
+        }
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
 
 
 
