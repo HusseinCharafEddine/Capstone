@@ -114,6 +114,92 @@ class DocumentController
         // Return the result
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    public function getDocumentCountByUserId($userId)
+    {
+        $query = "SELECT COUNT(*) AS documentCount FROM document WHERE UserId = :userId";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
+        // Check if the query executed successfully
+        if ($result !== false && isset($result['documentCount'])) {
+            return $result['documentCount'];
+        } else {
+            return 0; // Default value if query fails or no documents found
+        }
+    }
+
+
+    // Function to get total number of documents by user ID
+    public function getTotalDocumentsByUserId($userId)
+    {
+        $query = "SELECT COUNT(*) AS totalDocuments
+                  FROM document
+                  WHERE UserId = :userId";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return ($result !== false && isset($result['totalDocuments'])) ? $result['totalDocuments'] : 0;
+    }
+
+    // Function to calculate total Documents for the last week by user ID
+    public function getTotalDocumentsThisWeekByUserId($userId)
+    {
+        $thisWeekStartDate = date('Y-m-d', strtotime('this week'));
+
+        $query = "SELECT COUNT(*) AS totalDocumentsThisWeek
+              FROM document
+              WHERE UserId = :userId
+              AND DATE_FORMAT(Date, '%Y-%m-%d') > :startDate ";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+        $stmt->bindParam(':startDate', $thisWeekStartDate, PDO::PARAM_STR);
+
+        $stmt->execute();
+
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return ($result !== false && isset($result['totalDocumentsThisWeek'])) ? $result['totalDocumentsThisWeek'] : 0;
+    }
+
+
+    // Function to calculate total Documents for this week by user ID
+    public function getTotalDocumentsLastWeekByUserId($userId)
+    {
+        $lastWeekStartDate = date('Y-m-d', strtotime('-7 days'));
+        $lastWeekEndDate = date('Y-m-d');
+
+        $query = "SELECT COUNT(*) AS totalDocumentsLastWeek
+                  FROM document d
+                  WHERE d.UserId = :userId
+                  AND DATE_FORMAT(d.Date, '%Y-%m-%d') BETWEEN :startDate AND :endDate";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+        $stmt->bindParam(':startDate', $lastWeekStartDate, PDO::PARAM_STR);
+        $stmt->bindParam(':endDate', $lastWeekEndDate, PDO::PARAM_STR);
+        $stmt->execute();
+
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return ($result !== false && isset($result['totalDocumentsLastWeek'])) ? $result['totalDocumentsLastWeek'] : 0;
+    }
+
+
+    // Function to calculate download growth percentage between last week and this week
+    public function computeDocumentGrowthPercentage($userId)
+    {
+        $DocumentsLastWeek = $this->getTotalDocumentsLastWeekByUserId($userId);
+        $DocumentsThisWeek = $this->getTotalDocumentsThisWeekByUserId($userId);
+        if ($DocumentsLastWeek == 0) {
+            return ($DocumentsThisWeek > 0) ? 100 : 0; // Handle division by zero
+        }
+
+        $growthPercentage = (($DocumentsThisWeek - $DocumentsLastWeek) / $DocumentsLastWeek) * 100;
+        return round($growthPercentage, 2); // Return growth percentage rounded to 2 decimal places
+    }
 }
 ?>

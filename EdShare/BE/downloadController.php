@@ -123,8 +123,79 @@ class DownloadController
         // Return the result
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    public function getTotalDownloadsForUser($userId)
+    {
+        $query = "SELECT COUNT(*) AS totalDownloads 
+                  FROM downloaded d
+                  INNER JOIN document doc ON d.DocumentId = doc.DocumentId
+                  WHERE doc.UserId = :userId";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $result['totalDownloads'];
+    }
+    public function getTotalDownloadsLastWeek($userId)
+    {
+        // Calculate the start and end date for the last week (7 days ago from today)
+        $startDate = date('Y-m-d', strtotime('-7 days'));
+        $endDate = date('Y-m-d');
+
+        // SQL query to count downloads within the last week for user's documents
+        $query = "SELECT COUNT(*) AS totalDownloadsLastWeek
+              FROM downloaded d
+              JOIN document doc ON d.DocumentId = doc.DocumentId
+              WHERE doc.UserId = :userId
+              AND DATE(d.Date) BETWEEN STR_TO_DATE(:startDate, '%Y-%m-%d') AND STR_TO_DATE(:endDate, '%Y-%m-%d')";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+        $stmt->bindParam(':startDate', $startDate, PDO::PARAM_STR);
+        $stmt->bindParam(':endDate', $endDate, PDO::PARAM_STR);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $result['totalDownloadsLastWeek'] ?? 0;
+    }
+
+    public function getTotalDownloadsThisWeek($userId)
+    {
+        // Calculate the start and end date for the current week (starting from Monday of this week)
+        $startDate = date('Y-m-d', strtotime('monday this week'));
+
+        // SQL query to count downloads within the current week for user's documents
+        $query = "SELECT COUNT(*) AS totalDownloadsThisWeek
+              FROM downloaded d
+              JOIN document doc ON d.DocumentId = doc.DocumentId
+              WHERE doc.UserId = :userId
+              AND DATE(d.Date) > STR_TO_DATE(:startDate, '%Y-%m-%d') ";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+        $stmt->bindParam(':startDate', $startDate, PDO::PARAM_STR);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $result['totalDownloadsThisWeek'] ?? 0;
+    }
 
 
+    // Function to compute the percentage growth of downloads between last week and this week
+    public function computeDownloadGrowthPercentage($userId)
+    {
+        $downloadsLastWeek = $this->getTotalDownloadsLastWeek($userId);
+        $downloadsThisWeek = $this->getTotalDownloadsThisWeek($userId);
+
+        if ($downloadsLastWeek > 0) {
+            $growthPercentage = (($downloadsThisWeek - $downloadsLastWeek) / $downloadsLastWeek) * 100;
+        } else {
+            $growthPercentage = 0; // Default if no downloads last week (avoid division by zero)
+        }
+
+        return $growthPercentage;
+    }
 
 }
 
