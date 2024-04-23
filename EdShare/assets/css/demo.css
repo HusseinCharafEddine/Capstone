@@ -161,3 +161,12 @@
   font-size: 16px;
   margin-top: 10px;
 }
+#token-container{
+  display:flex;
+}
+#uploads-token{
+  margin-left:auto;
+}
+#downloads-token{
+  margin-right:auto;
+}
