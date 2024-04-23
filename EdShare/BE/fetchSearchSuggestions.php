@@ -9,8 +9,21 @@ $searchTerm = isset($_GET['searchTerm']) ? $_GET['searchTerm'] : '';
 // Fetch document titles based on the search term (for suggestions)
 $searchSuggestions = $documentController->searchDocuments($searchTerm);
 
-// Output the search suggestions as HTML response
+echo '<style>
+        
+        .search-suggestion {
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width:100%;
+        }
+
+        .search-suggestion:hover {
+            background-color: #f0f0f0;
+        }
+    </style>';
+
 foreach ($searchSuggestions as $document) {
-    echo '<div class="search-suggestion" style ="cursor = pointer;">' . $document['Title'] . '</div>';
+    echo '<div class="search-suggestion">' . $document['Title'] . '</div>';
 }
 ?>

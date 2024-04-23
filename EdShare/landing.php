@@ -157,23 +157,22 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         <nav
           class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
-          id="layout-navbar">
+          id="layout-navbar" >
           <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0   d-xl-none ">
             <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
               <i class="bx bx-menu bx-sm"></i>
             </a>
           </div>
-          <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+          <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse" style="width=100%;">
 
-            <div class="navbar-nav align-items-center">
-              <div class="nav-item d-flex align-items-center position-relative">
+            <div class="navbar-nav align-items-center" style="width=100%;">
+              <div class="nav-item d-flex align-items-center position-relative" style="width=100%;">
                 <i class="bx bx-search fs-4 lh-0"></i>
                 <input id="searchInput" type="text" class="form-control border-0 shadow-none ps-1 ps-sm-2"
                   placeholder="Search..." aria-label="Search..." onkeyup="fetchSearchSuggestions(this.value)">
-                <div id="searchSuggestions" class="search-suggestions" style="position: absolute; top: 100%; left: 0; z-index: 1000; width: 100%; background-color: #fff;
-            border: 1px solid #ccc; border-top: none; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-            max-height: 200px; overflow-y: auto; display: none; ">
-                  <!-- Suggestions will be populated dynamically here -->
+                <div id="searchSuggestions" class="search-suggestions" style="position: absolute; top: 134%; left: 5%;background-color: #fff;
+                width:100%; border-top: none; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+                max-height: 200px; overflow-y: auto; ">
                 </div>
               </div>
             </div>
@@ -563,7 +562,7 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                               <img class="card-img-top"
                                 src="thumbnails/<?php echo $author ?>/<?php echo $document['ThumbnailPath']; ?>">
                               <div class="card-body">
-                              <h5 class="card-title">
+                                <h5 class="card-title">
                                   <a href="app-academy-course-details.html" class="h5">
                                   <?php echo $document['Title']; ?>
                                   </a>
