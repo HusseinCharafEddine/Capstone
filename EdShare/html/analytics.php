@@ -649,52 +649,68 @@ $userId = $user['UserId'];
                 <div class="card">
                   <h5 class="card-header bg-success text-white">Your Top Downloaded Contributions </h5>
                   <div class="table-responsive text-nowrap">
+                    <?php
+                    // Pagination parameters
+                    $documentsPerPage = 10;
+                    $currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
+                    $offset = ($currentPage - 1) * $documentsPerPage;
+
+                    // Fetch documents for the current page
+                    $documents = $documentController->fetchAllDocumentsForUser($userId, $offset, $documentsPerPage);
+                    ?>
                     <table class="table table-striped">
                       <thead>
                         <tr>
                           <th>Document title</th>
                           <th>Category</th>
-                          <th>File type</th>
+                          <th>Rating</th>
                           <th># of downloads</th>
                           <th>Publishing date</th>
                         </tr>
                       </thead>
                       <tbody class="table-border-bottom-0">
-                        <tr>
-                          <td>
-                            <span class="fw-medium">CSC375 chapter 5 summary</span>
-                          </td>
-                          <td>Summary</td>
-                          <td>PDF</td>
-                          <td>
-                            234
-                          </td>
-                          <td><span class="badge bg-label-primary me-1">2022-09-01</span></td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <span class="fw-medium">OS producer consumer code</span>
-                          </td>
-                          <td>class notes</td>
-                          <td>zip file</td>
-                          <td>
-                            198
-                          </td>
-                          <td><span class="badge bg-label-primary me-1">2022-12-29</span></td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <span class="fw-medium">MTH201 ch1 practice</span>
-                          </td>
-                          <td>practice sheet</td>
-                          <td>word</td>
-                          <td>
-                            97
-                          </td>
-                          <td><span class="badge bg-label-primary me-1">2023-11-02</span></td>
-                        </tr>
+                        <?php foreach ($documents as $document): ?>
+                          <tr>
+                            <td>
+                              <span class="fw-medium"><?php echo htmlspecialchars($document['Title']); ?></span>
+                            </td>
+                            <td><?php echo htmlspecialchars($document['Category']); ?></td>
+                            <td>
+                              <?php
+                              $documentId = $document['DocumentId'];
+                              $averageRating = $documentController->getAverageRatingByDocumentId($documentId);
+                              echo number_format($averageRating, 1); // Display average rating rounded to 1 decimal point
+                              ?>
+                            </td>
+                            <td>
+                              <?php
+                              $totalDownloads = $documentController->getTotalDownloadsByDocumentId($documentId);
+                              echo $totalDownloads;
+                              ?>
+                            </td>
+                            <td><span class="badge bg-label-primary me-1">
+                                <?php echo htmlspecialchars(date('Y-m-d', strtotime($document['Date']))); ?>
+                              </span>
+                            </td>
+                          </tr>
+                        <?php endforeach; ?>
                       </tbody>
                     </table>
+
+                    <?php
+                    // Pagination controls
+                    $totalDocuments = $documentController->getDocumentCountByUserId($userId);
+                    $totalPages = ceil($totalDocuments / $documentsPerPage);
+
+                    if ($totalPages > 1) {
+                      echo '<ul class="pagination justify-content-center">';
+                      for ($i = 1; $i <= $totalPages; $i++) {
+                        $isActive = ($i === $currentPage) ? 'active' : '';
+                        echo '<li class="page-item ' . $isActive . '"><a class="page-link" href="?page=' . $i . '">' . $i . '</a></li>';
+                      }
+                      echo '</ul>';
+                    }
+                    ?>
                   </div>
                 </div>
               </div>
@@ -709,7 +725,7 @@ $userId = $user['UserId'];
                     <div class="card-title mb-0">
                       <h5 class="m-0 me-2">Document Statistics</h5>
                     </div>
-                    <div class="dropdown">
+                    <!-- <div class="dropdown">
                       <button class="btn p-0" type="button" id="orederStatistics" data-bs-toggle="dropdown"
                         aria-haspopup="true" aria-expanded="false">
                         <i class="bx bx-dots-vertical-rounded"></i>
@@ -719,12 +735,12 @@ $userId = $user['UserId'];
                         <a class="dropdown-item" href="javascript:void(0);">Refresh</a>
                         <a class="dropdown-item" href="javascript:void(0);">Share</a>
                       </div>
-                    </div>
+                    </div> -->
                   </div>
                   <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                       <div class="d-flex flex-column align-items-center gap-1">
-                        <h2 class="mb-2">234</h2>
+                        <h2 class="mb-2"><?php echo $totalDownloadsForUser ?></h2>
                         <span>Total Downloads</span>
                       </div>
                       <div id="orderStatisticsChart"></div>
@@ -739,7 +755,8 @@ $userId = $user['UserId'];
                             <h6 class="mb-0">Summaries</h6>
                           </div>
                           <div class="user-progress">
-                            <small class="fw-medium">82.5k</small>
+                            <small class="fw-medium"><?php $summaryDownloadCount = $documentController->getTotalDownloadsByUserIdAndType($userId, "Summary");
+                            echo $summaryDownloadCount; ?></small>
                           </div>
                         </div>
                       </li>
@@ -749,10 +766,11 @@ $userId = $user['UserId'];
                         </div>
                         <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                           <div class="me-2">
-                            <h6 class="mb-0">Class notes</h6>
+                            <h6 class="mb-0">Notes</h6>
                           </div>
                           <div class="user-progress">
-                            <small class="fw-medium">23.8k</small>
+                            <small class="fw-medium"><?php $notesDownloadCount = $documentController->getTotalDownloadsByUserIdAndType($userId, "Notes");
+                            echo $notesDownloadCount; ?></small>
                           </div>
                         </div>
                       </li>
@@ -762,10 +780,13 @@ $userId = $user['UserId'];
                         </div>
                         <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                           <div class="me-2">
-                            <h6 class="mb-0">PPT lectures</h6>
+                            <h6 class="mb-0">Exercises</h6>
                           </div>
                           <div class="user-progress">
-                            <small class="fw-medium">849k</small>
+                            <div class="user-progress">
+                              <small class="fw-medium"><?php $exercisesDownloadCount = $documentController->getTotalDownloadsByUserIdAndType($userId, "Exercises");
+                              echo $exercisesDownloadCount; ?></small>
+                            </div>
                           </div>
                         </div>
                       </li>
@@ -778,7 +799,8 @@ $userId = $user['UserId'];
                             <h6 class="mb-0">Practice sheets</h6>
                           </div>
                           <div class="user-progress">
-                            <small class="fw-medium">99</small>
+                            <small class="fw-medium"><?php $practiceSheetsDownloadCount = $documentController->getTotalDownloadsByUserIdAndType($userId, "Practice Sheets");
+                            echo $practiceSheetsDownloadCount; ?></small>
                           </div>
                         </div>
                       </li>
@@ -829,6 +851,96 @@ $userId = $user['UserId'];
 
   <!-- Place this tag in your head or just before your close body tag. -->
   <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <script>
+
+    (function () {
+      let cardColor, headingColor, axisColor, shadeColor, borderColor;
+
+      cardColor = config.colors.cardColor;
+      headingColor = config.colors.headingColor;
+      axisColor = config.colors.axisColor;
+      borderColor = config.colors.borderColor; const chartOrderStatistics = document.querySelector('#orderStatisticsChart'),
+        orderChartConfig = {
+          chart: {
+            height: 165,
+            width: 130,
+            type: 'donut'
+          },
+          labels: ['Summaries', 'Practice Sheets', 'Exercises ', 'Notes'],
+          series: [
+            <?php echo $summaryDownloadCount / $totalDownloadsForUser * 100 . "," ?>
+            <?php echo $practiceSheetsDownloadCount / $totalDownloadsForUser * 100 . "," ?>
+            <?php echo $exercisesDownloadCount / $totalDownloadsForUser * 100 . "," ?>
+            <?php echo $notesDownloadCount / $totalDownloadsForUser * 100 . "," ?>
+          ], colors: [config.colors.primary, config.colors.secondary, config.colors.info, config.colors.success],
+          stroke: {
+            width: 5,
+            colors: [cardColor]
+          },
+          dataLabels: {
+            enabled: false,
+            formatter: function (val, opt) {
+              return parseInt(val) + '%';
+            }
+          },
+          legend: {
+            show: false
+          },
+          grid: {
+            padding: {
+              top: 0,
+              bottom: 0,
+              right: 15
+            }
+          },
+          states: {
+            hover: {
+              filter: { type: 'none' }
+            },
+            active: {
+              filter: { type: 'none' }
+            }
+          },
+          plotOptions: {
+            pie: {
+              donut: {
+                size: '75%',
+                labels: {
+                  show: true,
+                  value: {
+                    fontSize: '1.5rem',
+                    fontFamily: 'Public Sans',
+                    color: headingColor,
+                    offsetY: -15,
+                    formatter: function (val) {
+                      return parseInt(val) + '%';
+                    }
+                  },
+                  name: {
+                    offsetY: 20,
+                    fontFamily: 'Public Sans'
+                  },
+                  total: {
+                    show: true,
+                    fontSize: '0.8125rem',
+                    color: axisColor,
+                    label: 'Weekly',
+                    formatter: function (w) {
+                      return '38%';
+                    }
+                  }
+                }
+              }
+            }
+          }
+        };
+      if (typeof chartOrderStatistics !== undefined && chartOrderStatistics !== null) {
+        const statisticsChart = new ApexCharts(chartOrderStatistics, orderChartConfig);
+        statisticsChart.render();
+      }
+    })();
+
+  </script>
 </body>
 
 </html>
