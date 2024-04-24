@@ -168,19 +168,19 @@ class DownloadController
 
         // Build the base query
         $query = "SELECT DocumentId, COUNT(*) AS downloads_count
-              FROM downloaded
-              WHERE Date = :yesterday ";
+                  FROM downloaded
+                  WHERE Date >= :yesterday AND Date < DATE_ADD(:yesterday, INTERVAL 1 DAY)";
 
         // Check if there are documents to exclude
-        if (!empty($excludeDocumentIds)) {
+        if (!empty($excludeDocumentIds) && count($excludeDocumentIds) > 1) {
             $excludeIdsString = implode(',', $excludeDocumentIds);
-            $query .= "AND DocumentId NOT IN ($excludeIdsString) ";
+            $query .= " AND DocumentId NOT IN ($excludeIdsString)";
         }
 
         // Complete the query
-        $query .= "GROUP BY DocumentId
-               ORDER BY downloads_count DESC
-               LIMIT 1";
+        $query .= " GROUP BY DocumentId
+                    ORDER BY downloads_count DESC
+                    LIMIT 1";
 
         // Prepare the SQL statement
         $stmt = $this->db->prepare($query);
@@ -192,27 +192,48 @@ class DownloadController
         // Fetch the result
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // If no result found for yesterday, find the most downloaded document excluding specified IDs
-        if (!$result) {
-            $excludeIdsString = implode(',', $excludeDocumentIds);
-
+        // If no result found for yesterday and exclusions are present, try without exclusions
+        if (!$result && !empty($excludeDocumentIds) && count($excludeDocumentIds) > 1) {
             $fallbackQuery = "SELECT DocumentId, COUNT(*) AS downloads_count
-                          FROM downloaded ";
+                              FROM downloaded
+                              WHERE Date >= :yesterday AND Date < DATE_ADD(:yesterday, INTERVAL 1 DAY)
+                              GROUP BY DocumentId
+                              ORDER BY downloads_count DESC
+                              LIMIT 1";
 
-            if (!empty($excludeDocumentIds)) {
-                $fallbackQuery .= "WHERE DocumentId NOT IN ($excludeIdsString) ";
-            }
+            // Prepare and execute the fallback query without exclusions
+            $fallbackStmt = $this->db->prepare($fallbackQuery);
+            $fallbackStmt->bindParam(':yesterday', $yesterday, PDO::PARAM_STR);
+            $fallbackStmt->execute();
 
-            $fallbackQuery .= "GROUP BY DocumentId
-                           ORDER BY downloads_count DESC
-                           LIMIT 1";
-
-            $stmt = $this->db->query($fallbackQuery);
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            // Fetch the fallback result
+            $result = $fallbackStmt->fetch(PDO::FETCH_ASSOC);
         }
+
+        // If still no result found, try to get the most downloaded document without exclusions
+        if (!$result) {
+            $fallbackQuery = "SELECT DocumentId, COUNT(*) AS downloads_count
+                              FROM downloaded
+                              WHERE Date >= :yesterday AND Date < DATE_ADD(:yesterday, INTERVAL 1 DAY)
+                              GROUP BY DocumentId
+                              ORDER BY downloads_count DESC
+                              LIMIT 1";
+
+            // Prepare and execute the fallback query without any exclusions
+            $fallbackStmt = $this->db->prepare($fallbackQuery);
+            $fallbackStmt->bindParam(':yesterday', $yesterday, PDO::PARAM_STR);
+            $fallbackStmt->execute();
+
+            // Fetch the fallback result
+            $result = $fallbackStmt->fetch(PDO::FETCH_ASSOC);
+        }
+
+        // Debugging: Output the executed query for troubleshooting
 
         return $result;
     }
+
+
 
 
     // Get the newest downloaded document
