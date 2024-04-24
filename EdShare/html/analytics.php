@@ -564,12 +564,15 @@ $userId = $user['UserId'];
                           <div class="row row--30">
                             <div class="col-lg-4">
                               <div class="rating-box">
-                                <div class="rating-number">5.0</div>
+                                <div class="rating-number">
+                                  <?php echo $downloadController->getAverageRatingByUserId($userId) ?>
+                                </div>
                                 <div class="rating"> <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star"
                                     aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i> <i
                                     class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star"
                                     aria-hidden="true"></i> </div>
-                                <span>(25 Review)</span>
+                                <span>(<?php echo $ratingTotalCount = $downloadController->getTotalNonNullRatingsByUserId($userId) ?>
+                                  Review)</span>
                               </div>
                             </div>
                             <div class="col-lg-8">
@@ -577,42 +580,56 @@ $userId = $user['UserId'];
                                 <div class="single-progress-bar">
                                   <div class="rating-text"> 5 <i class="fa fa-star" aria-hidden="true"></i> </div>
                                   <div class="progress">
-                                    <div class="progress-bar" role="progressbar" style="width: 100%" aria-valuenow="100"
-                                      aria-valuemin="0" aria-valuemax="100"></div>
+                                    <div class="progress-bar" role="progressbar" style="width: <?php $rating5 = $downloadController->getCountOfRatingsEqualTo($userId, 5);
+                                    echo $rating5 / $ratingTotalCount * 100; ?>%" aria-valuenow="100" aria-valuemin="0"
+                                      aria-valuemax="100"></div>
                                   </div>
-                                  <span class="rating-value">23</span>
+                                  <span class="rating-value">
+                                    <?php echo $rating5; ?></span>
                                 </div>
                                 <div class="single-progress-bar">
                                   <div class="rating-text"> 4 <i class="fa fa-star" aria-hidden="true"></i> </div>
                                   <div class="progress">
-                                    <div class="progress-bar" role="progressbar" style="width: 80%" aria-valuenow="0"
-                                      aria-valuemin="0" aria-valuemax="100"></div>
+                                    <div class="progress-bar" role="progressbar" style="width: <?php $rating4 = $downloadController->getCountOfRatingsEqualTo($userId, 4);
+                                    echo $rating4 / $ratingTotalCount * 100; ?>%" aria-valuenow="100" aria-valuemin="0"
+                                      aria-valuemax="100"></div>
                                   </div>
-                                  <span class="rating-value">3</span>
+                                  <span class="rating-value">
+                                    <?php echo $rating4; ?></span>
+                                  </span>
                                 </div>
                                 <div class="single-progress-bar">
                                   <div class="rating-text"> 3 <i class="fa fa-star" aria-hidden="true"></i> </div>
                                   <div class="progress">
-                                    <div class="progress-bar" role="progressbar" style="width: 60%" aria-valuenow="0"
-                                      aria-valuemin="0" aria-valuemax="100"></div>
+                                    <div class="progress-bar" role="progressbar" style="width: <?php $rating3 = $downloadController->getCountOfRatingsEqualTo($userId, 3);
+                                    echo $rating3 / $ratingTotalCount * 100; ?>%" aria-valuenow="100" aria-valuemin="0"
+                                      aria-valuemax="100"></div>
                                   </div>
-                                  <span class="rating-value">2</span>
+                                  <span class="rating-value">
+                                    <?php echo $rating3; ?></span>
+                                  </span>
                                 </div>
                                 <div class="single-progress-bar">
                                   <div class="rating-text"> 2 <i class="fa fa-star" aria-hidden="true"></i> </div>
                                   <div class="progress">
-                                    <div class="progress-bar" role="progressbar" style="width: 40%" aria-valuenow="0"
-                                      aria-valuemin="0" aria-valuemax="100"></div>
+                                    <div class="progress-bar" role="progressbar" style="width: <?php $rating2 = $downloadController->getCountOfRatingsEqualTo($userId, 2);
+                                    echo $rating2 / $ratingTotalCount * 100; ?>%" aria-valuenow="100" aria-valuemin="0"
+                                      aria-valuemax="100"></div>
                                   </div>
-                                  <span class="rating-value">3</span>
+                                  <span class="rating-value">
+                                    <?php echo $rating2; ?></span>
+                                  </span>
                                 </div>
                                 <div class="single-progress-bar">
                                   <div class="rating-text"> 1 <i class="fa fa-star" aria-hidden="true"></i> </div>
                                   <div class="progress">
-                                    <div class="progress-bar" role="progressbar" style="width: 20%" aria-valuenow="0"
-                                      aria-valuemin="80" aria-valuemax="100"></div>
+                                    <div class="progress-bar" role="progressbar" style="width: <?php $rating1 = $downloadController->getCountOfRatingsEqualTo($userId, 1);
+                                    echo $rating1 / $ratingTotalCount * 100; ?>%" aria-valuenow="100" aria-valuemin="0"
+                                      aria-valuemax="100"></div>
                                   </div>
-                                  <span class="rating-value">2</span>
+                                  <span class="rating-value">
+                                    <?php echo $rating1; ?></span>
+                                  </span>
                                 </div>
                               </div>
                             </div>

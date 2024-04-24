@@ -170,9 +170,8 @@ class DocumentController
     // Function to calculate total Documents for this week by user ID
     public function getTotalDocumentsLastWeekByUserId($userId)
     {
-        $lastWeekStartDate = date('Y-m-d', strtotime('-7 days'));
-        $lastWeekEndDate = date('Y-m-d');
-
+        $lastWeekStartDate = date('Y-m-d', strtotime('-14 days'));
+        $lastWeekEndDate = date('Y-m-d', strtotime('-7 days'));
         $query = "SELECT COUNT(*) AS totalDocumentsLastWeek
                   FROM document d
                   WHERE d.UserId = :userId
@@ -194,6 +193,7 @@ class DocumentController
     {
         $DocumentsLastWeek = $this->getTotalDocumentsLastWeekByUserId($userId);
         $DocumentsThisWeek = $this->getTotalDocumentsThisWeekByUserId($userId);
+
         if ($DocumentsLastWeek == 0) {
             return ($DocumentsThisWeek > 0) ? 100 : 0; // Handle division by zero
         }

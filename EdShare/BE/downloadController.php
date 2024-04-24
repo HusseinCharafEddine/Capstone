@@ -140,8 +140,8 @@ class DownloadController
     public function getTotalDownloadsLastWeek($userId)
     {
         // Calculate the start and end date for the last week (7 days ago from today)
-        $startDate = date('Y-m-d', strtotime('-7 days'));
-        $endDate = date('Y-m-d');
+        $startDate = date('Y-m-d', strtotime('-14 days'));
+        $endDate = date('Y-m-d', strtotime('-7 days'));
 
         // SQL query to count downloads within the last week for user's documents
         $query = "SELECT COUNT(*) AS totalDownloadsLastWeek
@@ -156,15 +156,13 @@ class DownloadController
         $stmt->bindParam(':endDate', $endDate, PDO::PARAM_STR);
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
         return $result['totalDownloadsLastWeek'] ?? 0;
     }
 
     public function getTotalDownloadsThisWeek($userId)
     {
         // Calculate the start and end date for the current week (starting from Monday of this week)
-        $startDate = date('Y-m-d', strtotime('monday this week'));
-
+        $startDate = date('Y-m-d', strtotime('-7 days'));
         // SQL query to count downloads within the current week for user's documents
         $query = "SELECT COUNT(*) AS totalDownloadsThisWeek
               FROM downloaded d
@@ -179,6 +177,7 @@ class DownloadController
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
         return $result['totalDownloadsThisWeek'] ?? 0;
+
     }
 
 
@@ -187,14 +186,68 @@ class DownloadController
     {
         $downloadsLastWeek = $this->getTotalDownloadsLastWeek($userId);
         $downloadsThisWeek = $this->getTotalDownloadsThisWeek($userId);
-
         if ($downloadsLastWeek > 0) {
             $growthPercentage = (($downloadsThisWeek - $downloadsLastWeek) / $downloadsLastWeek) * 100;
+        } else if ($downloadsThisWeek > 0) {
+            $growthPercentage = 100;
         } else {
             $growthPercentage = 0; // Default if no downloads last week (avoid division by zero)
         }
 
         return $growthPercentage;
+    }
+    public function getAverageRatingByUserId($userId)
+    {
+        $query = "SELECT AVG(d.Rating) AS averageRating
+              FROM downloaded d
+              JOIN document doc ON d.DocumentId = doc.DocumentId
+              WHERE doc.UserId = :userId
+              AND d.Rating IS NOT NULL";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $averageRating = ($result !== false && isset($result['averageRating'])) ? $result['averageRating'] : 0;
+
+        // Round the average rating to 1 decimal place
+        return round($averageRating, 2);
+    }
+
+    public function getTotalNonNullRatingsByUserId($userId)
+    {
+        $query = "SELECT COUNT(d.Rating) AS totalNonNullRatings
+              FROM downloaded d
+              JOIN document doc ON d.DocumentId = doc.DocumentId
+              WHERE doc.UserId = :userId
+              AND d.Rating IS NOT NULL";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return ($result !== false && isset($result['totalNonNullRatings'])) ? $result['totalNonNullRatings'] : 0;
+    }
+
+    public function getCountOfRatingsEqualTo($userId, $ratingValue)
+    {
+        $query = "SELECT COUNT(*) AS ratingCount
+                  FROM downloaded d
+                  JOIN document doc ON d.DocumentId = doc.DocumentId
+                  WHERE doc.UserId = :userId
+                  AND d.Rating = :ratingValue";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+        $stmt->bindParam(':ratingValue', $ratingValue, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $ratingCount = ($result !== false && isset($result['ratingCount'])) ? $result['ratingCount'] : 0;
+
+        return $ratingCount;
     }
 
 }
