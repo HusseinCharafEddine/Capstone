@@ -1195,6 +1195,20 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </script>
 
 
+<script>
+window.embeddedChatbotConfig = {
+chatbotId: "WPQBRApLkrR6WgsWXNKXS",
+domain: "www.chatbase.co"
+}
+</script>
+<script
+src="https://www.chatbase.co/embed.min.js"
+chatbotId="WPQBRApLkrR6WgsWXNKXS"
+domain="www.chatbase.co"
+defer>
+</script>
+
+
 
 </body>
 
