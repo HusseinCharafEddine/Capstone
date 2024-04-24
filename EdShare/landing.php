@@ -58,7 +58,7 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <link rel="stylesheet" href="assets/vendor/css/core.css" class="template-customizer-core-css" />
   <link rel="stylesheet" href="assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
   <link rel="stylesheet" href="assets/css/demo.css" />
-  <link rel="stylesheet" href="assets/css/favs.css"/>
+  <link rel="stylesheet" href="assets/css/favs.css" />
 
   <!-- Vendors CSS -->
   <link rel="stylesheet" href="assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
@@ -157,7 +157,7 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         <nav
           class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
-          id="layout-navbar" >
+          id="layout-navbar">
           <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0   d-xl-none ">
             <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
               <i class="bx bx-menu bx-sm"></i>
@@ -556,6 +556,7 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             $document['DocumentId']
                           );
                           $buttonText = ($isFavorited ? 'Remove from Favorites' : 'Add to Favorites');
+                          $imgSrc = ($isFavorited ? 'assets/img/icons/unicons/heartfilled.png' : 'assets/img/icons/unicons/heart.png');
                           ?>
                           <div class="col">
                             <div class="card h-100">
@@ -564,13 +565,14 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                               <div class="card-body">
                                 <h5 class="card-title">
                                   <a href="app-academy-course-details.html" class="h5">
-                                  <?php echo $document['Title']; ?>
+                                    <?php echo $document['Title']; ?>
                                   </a>
-                                <span style="float: right;">
-                                  <a href="#" onclick="addToFavorites(<?php echo $document['DocumentId']; ?>)">
-                                  <img id="heart-fav<?php echo $document['DocumentId']; ?>" class="heart-favs" src="assets/img/icons/unicons/heart.png">
-                                  </a>
-                                </span>
+                                  <span style="float: right;">
+                                    <a onclick="addToFavorites(<?php echo $document['DocumentId']; ?>)">
+                                      <img id="heart-fav<?php echo $document['DocumentId']; ?>" class="heart-favs"
+                                        src="<?php echo $imgSrc ?>">
+                                    </a>
+                                  </span>
                                 </h5>
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                   <span class="badge bg-label-primary">
@@ -602,12 +604,7 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                   </a>
                                 </div>
                                 <!-- Favorite Button -->
-                                <div class="d-flex align-items-center bg-primary rounded p-1">
-                                  <button class="btn btn-primary toggle-favorite"
-                                    data-document-id="<?php echo $document['DocumentId']; ?>">
-                                    <?php echo $buttonText; ?> <i class="bx bx-star"></i>
-                                  </button>
-                                </div>
+
                               </div>
                             </div>
                           </div>
@@ -649,6 +646,7 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             $userId,
                             $document['DocumentId']
                           );
+                          $imgSrc = ($isFavorited ? 'assets/img/icons/unicons/heartfilled.png' : 'assets/img/icons/unicons/heart.png');
                           $buttonText = ($isFavorited ? 'Remove from Favorites' : 'Add to Favorites');
                           ?>
                           <div class="col">
@@ -658,13 +656,14 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                               <div class="card-body">
                                 <h5 class="card-title">
                                   <a href="app-academy-course-details.html" class="h5">
-                                  <?php echo $document['Title']; ?>
+                                    <?php echo $document['Title']; ?>
                                   </a>
-                                <span style="float: right;">
-                                  <a href="#" onclick="addToFavorites(<?php echo $document['DocumentId']; ?>)">
-                                  <img id="heart-fav<?php echo $document['DocumentId']; ?>" class="heart-favs" src="assets/img/icons/unicons/heart.png">
-                                  </a>
-                                </span>
+                                  <span style="float: right;">
+                                    <a onclick="addToFavorites(<?php echo $document['DocumentId']; ?>)">
+                                      <img id="heart-fav<?php echo $document['DocumentId']; ?>" class="heart-favs"
+                                        src="<?php echo $imgSrc ?>">
+                                    </a>
+                                  </span>
                                 </h5>
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                   <span class="badge bg-label-primary">
@@ -696,12 +695,7 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                   </a>
                                 </div>
                                 <!-- Favorite Button -->
-                                <div class="d-flex align-items-center bg-primary rounded p-1">
-                                  <button class="btn btn-primary toggle-favorite"
-                                    data-document-id="<?php echo $document['DocumentId']; ?>">
-                                    <?php echo $buttonText; ?> <i class="bx bx-star"></i>
-                                  </button>
-                                </div>
+
                               </div>
                             </div>
                           </div>
@@ -744,21 +738,24 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             $document['DocumentId']
                           );
                           $buttonText = ($isFavorited ? 'Remove from Favorites' : 'Add to Favorites');
+                          $imgSrc = ($isFavorited ? 'assets/img/icons/unicons/heartfilled.png' : 'assets/img/icons/unicons/heart.png');
+
                           ?>
                           <div class="col">
                             <div class="card h-100">
                               <img class="card-img-top"
                                 src="thumbnails/<?php echo $author ?>/<?php echo $document['ThumbnailPath']; ?>">
                               <div class="card-body">
-                              <h5 class="card-title">
+                                <h5 class="card-title">
                                   <a href="app-academy-course-details.html" class="h5">
-                                  <?php echo $document['Title']; ?>
+                                    <?php echo $document['Title']; ?>
                                   </a>
-                                <span style="float: right;">
-                                  <a href="#" onclick="addToFavorites(<?php echo $document['DocumentId']; ?>)">
-                                  <img id="heart-fav<?php echo $document['DocumentId']; ?>" class="heart-favs" src="assets/img/icons/unicons/heart.png">
-                                  </a>
-                                </span>
+                                  <span style="float: right;">
+                                    <a onclick="addToFavorites(<?php echo $document['DocumentId']; ?>)">
+                                      <img id="heart-fav<?php echo $document['DocumentId']; ?>" class="heart-favs"
+                                        src="<?php echo $imgSrc ?>">
+                                    </a>
+                                  </span>
                                 </h5>
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                   <span class="badge bg-label-primary">
@@ -890,6 +887,7 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                       $author = $userController->getUser((int) $document['UserId'])['Username'];
                       $isFavorited = $favoriteController->getFavoriteByUserIdAndDocumentId($userId, $document['DocumentId']);
                       $buttonText = ($isFavorited ? 'Remove from Favorites' : 'Add to Favorites');
+                      $imgSrc = ($isFavorited ? 'assets/img/icons/unicons/heartfilled.png' : 'assets/img/icons/unicons/heart.png');
                       ?>
 
                       <div class="col">
@@ -899,15 +897,16 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                           <div class="card-body">
                             <hr>
                             <h5 class="card-title">
-                                  <a href="app-academy-course-details.html" class="h5">
-                                  <?php echo $document['Title']; ?>
-                                  </a>
-                                <span style="float: right;">
-                                  <a href="#" onclick="addToFavorites(<?php echo $document['DocumentId']; ?>)">
-                                  <img id="heart-fav<?php echo $document['DocumentId']; ?>" class="heart-favs" src="assets/img/icons/unicons/heart.png">
-                                  </a>
-                                </span>
-                                </h5>
+                              <a href="app-academy-course-details.html" class="h5">
+                                <?php echo $document['Title']; ?>
+                              </a>
+                              <span style="float: right;">
+                                <a onclick="addToFavorites(<?php echo $document['DocumentId']; ?>)">
+                                  <img id="heart-fav<?php echo $document['DocumentId']; ?>" class="heart-favs"
+                                    src="<?php echo $imgSrc ?>">
+                                </a>
+                              </span>
+                            </h5>
                             <div class="d-flex justify-content-between align-items-center mb-3">
                               <span class="badge bg-label-primary">
                                 <?php
@@ -941,12 +940,12 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                               </a>
                             </div>
                             <!-- Favorite Button -->
-                            <div class="d-flex align-items-center bg-primary rounded p-1">
+                            <!-- <div class="d-flex align-items-center bg-primary rounded p-1">
                               <button class="btn btn-primary toggle-favorite"
                                 data-document-id="<?php echo $document['DocumentId']; ?>">
                                 <?php echo $buttonText; ?> <i class="bx bx-star"></i>
                               </button>
-                            </div>
+                            </div> -->
                           </div>
                         </div>
                       </div>
@@ -1091,6 +1090,15 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     document.getElementById("searchSuggestions").style.display = "none";
                   }
                 });
+
+                var applyFilterBtn = document.getElementById('applyFilterBtn');
+
+                // Add a click event listener to the button
+                applyFilterBtn.addEventListener('click', function () {
+                  // Call the submitFilter() function when the button is clicked
+                  submitFilter();
+                });
+
               });
             </script>
 
@@ -1157,35 +1165,34 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
               });
             </script> -->
 
-<script>
-    function addToFavorites(documentId) {
-        var heartIcon = document.getElementById('heart-fav' + documentId);
-        var isFavorite = heartIcon.src.includes('heartfilled.png');
+            <script>
+              function addToFavorites(documentId) {
+                // AJAX request to toggle favorite status
+                $.ajax({
+                  type: 'POST',
+                  url: 'BE/toggleFavorite.php',
+                  data: {
+                    documentId: documentId
+                  },
+                  success: function (response) {
+                    // Update all heart icons with matching documentId
+                    var heartIcons = document.querySelectorAll('[id^="heart-fav' + documentId + '"]');
 
-        
-        if (isFavorite) {
-            heartIcon.src = 'assets/img/icons/unicons/heart.png';
-        } else {
-            heartIcon.src = 'assets/img/icons/unicons/heartfilled.png';
-        }
-
-      
-        $.ajax({
-            type: 'POST',
-            url: 'BE/toggleFavorite.php',
-            data: {
-                documentId: documentId
-            },
-            success: function (response) {
-                
-                console.log(response);
-            },
-            error: function () {
-                
-            }
-        });
-    }
-</script>
+                    heartIcons.forEach(function (heartIcon) {
+                      // Update src based on response
+                      if (response === 'Favorite added successfully') {
+                        heartIcon.src = 'assets/img/icons/unicons/heartfilled.png';
+                      } else if (response === 'Favorite removed successfully') {
+                        heartIcon.src = 'assets/img/icons/unicons/heart.png';
+                      }
+                    });
+                  },
+                  error: function () {
+                    console.error('Error toggling favorite.');
+                  }
+                });
+              }
+            </script>
 
 
 
