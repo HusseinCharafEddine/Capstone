@@ -583,7 +583,7 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                   <h6 class="mb-5 mt-5">My Downloads</h6>
 
-                  <div class="row row-cols-1 row-cols-md-5 g-3 mb-3">
+                  <div class="row row-cols-1 row-cols-md-4 g-3 mb-3">
                     <?php foreach ($downloadsForPage as $download): ?>
                       <?php
                       $document = $documentController->getDocumentById($download['DocumentId']);
@@ -599,7 +599,7 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <?php echo $document['Title']; ?>
                               </a>
                             </h5>
-                            <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
                               <span class="badge bg-label-primary">
                                 <?php
                                 $course = $courseController->getCourse($document['CourseId']);
@@ -624,11 +624,26 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 }
                                 ?>
                               </span>
+                              
                               <?php echo $document['Rating']; ?> <span class="text-warning"><i
                                   class="bx bxs-star me-1"></i></span><span class="text-muted">(1.23k)</span>
+
                             </div>
+
+                            <div id="starRating">
+                            <span>
+    <i class="bx bx-star" onclick="toggleStar(0)"></i>
+    <i class="bx bx-star" onclick="toggleStar(1)"></i>
+    <i class="bx bx-star" onclick="toggleStar(2)"></i>
+    <i class="bx bx-star" onclick="toggleStar(3)"></i>
+    <i class="bx bx-star" onclick="toggleStar(4)"></i>
+  </span>
+</div>
+
+
+                              
                             <div class="d-flex align-items-center mb-3">
-                              <span class="text mb-3">Author:
+                              <span class="text">Author:
                                 <?php
                                 echo $username;
                                 ?>
@@ -725,6 +740,32 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
               window.location.href = window.location.pathname + "?universityId=" + universityId + "&courseId=" + courseId + "&rating=" + rating;
             });
           </script>
+
+<!-- for rating -->
+<script>
+function toggleStar(index) {
+  const stars = document.querySelectorAll('.bx-star');
+
+  const isStarFilled = stars[index].classList.contains('bxs-star');
+  
+  if (isStarFilled) {
+   
+    for (let i = 0; i < stars.length; i++) {
+      stars[i].classList.remove('bxs-star');
+    }
+  } else {
+    for (let i = 0; i < stars.length; i++) {
+      if (i <= index) {
+        stars[i].classList.add('bxs-star');
+      } else {
+        stars[i].classList.remove('bxs-star');
+      }
+    }
+  }
+}
+
+
+</script>
 </body>
 
 </html>
