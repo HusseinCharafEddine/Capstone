@@ -56,6 +56,7 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <link rel="stylesheet" href="../assets/vendor/css/core.css" class="template-customizer-core-css" />
   <link rel="stylesheet" href="../assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
   <link rel="stylesheet" href="../assets/css/demo.css" />
+  <link rel="stylesheet" href="../assets/css/rating.css" />
 
   <!-- Vendors CSS -->
   <link rel="stylesheet" href="../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
@@ -741,7 +742,7 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
             });
           </script>
 
-<!-- for rating -->
+<!-- for rating lioops -->
 <script>
 function toggleStar(index) {
   const stars = document.querySelectorAll('.bx-star');
