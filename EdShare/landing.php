@@ -787,12 +787,12 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                   </a>
                                 </div>
                                 <!-- Favorite Button -->
-                                <div class="d-flex align-items-center bg-primary rounded p-1">
+                                <!-- <div class="d-flex align-items-center bg-primary rounded p-1">
                                   <button class="btn btn-primary toggle-favorite"
                                     data-document-id="<?php echo $document['DocumentId']; ?>">
                                     <?php echo $buttonText; ?> <i class="bx bx-star"></i>
                                   </button>
-                                </div>
+                                </div> -->
                               </div>
                             </div>
                           </div>
@@ -1195,18 +1195,15 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </script>
 
 
-<script>
-window.embeddedChatbotConfig = {
-chatbotId: "WPQBRApLkrR6WgsWXNKXS",
-domain: "www.chatbase.co"
-}
-</script>
-<script
-src="https://www.chatbase.co/embed.min.js"
-chatbotId="WPQBRApLkrR6WgsWXNKXS"
-domain="www.chatbase.co"
-defer>
-</script>
+            <script>
+              window.embeddedChatbotConfig = {
+                chatbotId: "WPQBRApLkrR6WgsWXNKXS",
+                domain: "www.chatbase.co"
+              }
+            </script>
+            <script src="https://www.chatbase.co/embed.min.js" chatbotId="WPQBRApLkrR6WgsWXNKXS"
+              domain="www.chatbase.co" defer>
+              </script>
 
 
 
