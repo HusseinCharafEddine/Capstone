@@ -196,14 +196,12 @@ class DownloadController
         if (!$result && !empty($excludeDocumentIds) && count($excludeDocumentIds) > 1) {
             $fallbackQuery = "SELECT DocumentId, COUNT(*) AS downloads_count
                               FROM downloaded
-                              WHERE Date >= :yesterday AND Date < DATE_ADD(:yesterday, INTERVAL 1 DAY)
                               GROUP BY DocumentId
                               ORDER BY downloads_count DESC
                               LIMIT 1";
 
             // Prepare and execute the fallback query without exclusions
             $fallbackStmt = $this->db->prepare($fallbackQuery);
-            $fallbackStmt->bindParam(':yesterday', $yesterday, PDO::PARAM_STR);
             $fallbackStmt->execute();
 
             // Fetch the fallback result
