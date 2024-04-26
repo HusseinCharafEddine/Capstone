@@ -12,11 +12,13 @@ require ("../BE/coursesController.php");
 require ("../BE/userController.php");
 require ("../BE/documentController.php");
 require ("../BE/universityController.php");
+require ("../BE/downloadController.php");
 
 $userController = new UserController();
 $courseController = new CoursesController();
 $documentController = new DocumentController();
 $universityController = new UniversityController();
+$downloadController = new DownloadController();
 
 $db = DBConnect();
 $username = $_SESSION['username'];
@@ -527,34 +529,37 @@ $username = $_SESSION['username'];
                         <div class="input-group">
                           <input type="text" class="form-control" aria-label="University Name" id="course-name-input"
                             name="course-name" placeholder="Enter Course Name">
-                          <label class="input-group-text" for="inputGroupFile02">Course Name</label>
+                          <label class="input-group-text">Course Name</label>
                         </div>
                         <div class="input-group">
                           <input type="text" class="form-control" aria-label="Text input with dropdown button"
                             id="course-code-input" name="course-code" placeholder="Enter Course Code">
-                          <label class="input-group-text" for="inputGroupFile02">Course Code</label>
+                          <label class="input-group-text">Course Code</label>
                         </div>
                         <div class="input-group">
                           <input type="text" class="form-control" aria-label="Text input with dropdown button"
                             name="title" placeholder="Enter Document Title">
-                          <label class="input-group-text" for="inputGroupFile02">Document Title</label>
+                          <label class="input-group-text">Document Title</label>
                         </div>
                         <div class="input-group">
                           <input type="text" class="form-control" aria-label="Text input with dropdown button"
                             id="category-input" name="category" placeholder="Enter Document Category">
-                          <label class="input-group-text" for="inputGroupFile02">Category</label>
+                          <label class="input-group-text">Category</label>
                         </div>
                         <div class="input-group">
-                          <select id="largeSelect" class="form-select form-select-md" placeholder="Document Type">
+                          <select id="largeSelect" class="form-select form-select-md" placeholder="Document Type"
+                            name="type">
                             <option value="" disabled selected>Select Document Type</option>
-                            <option value="1">Summary</option>
-                            <option value="2">Notes</option>
-                            <option value="3">Exercises</option>
+                            <option value="Summary">Summary</option>
+                            <option value="Notes">Notes</option>
+                            <option value="Exercises">Exercises</option>
+                            <option value="Practice Sheets">Practice Sheets</option>
+
                           </select>
                         </div>
                         <div class="input-group">
                           <input type="file" class="form-control" id="inputGroupFile02" name="file">
-                          <label class="input-group-text" for="inputGroupFile02">Upload</label>
+                          <label class="input-group-text">Upload</label>
                         </div>
                         <div class="container d-flex justify-content-center">
                           <input type="submit" class="btn btn-outline-primary" value="Upload" name="submit">
@@ -584,7 +589,7 @@ $username = $_SESSION['username'];
 
             <h6 class="mb-5 mt-5">My Uploads</h6>
 
-            <div class="row row-cols-1 row-cols-md-5 g-3 mb-3">
+            <div class="row row-cols-1 row-cols-md-4 g-3 mb-3">
               <?php foreach ($uploadsForPage as $document): ?>
                 <div class="col">
                   <div class="card h-100">
@@ -628,9 +633,11 @@ $username = $_SESSION['username'];
                         </span>
                         <h6 class="d-flex align-items-center justify-content-center gap-1 mb-0">
                         </h6>
-                        <?php echo $document['Rating']; ?> <span class="text-warning"><i
-                            class="bx bxs-star me-1"></i></span><span class="text-muted">(1.23k)</span>
+                        <?php echo round($downloadController->getAverageRatingByDocumentId($document["DocumentId"]), 1) ?>
+                        <span class="text-warning"><i class="bx bxs-star me-1"></i></span><span class="text-muted">
+                          <?php echo "(" . $downloadController->getTotalRatingByDocumentId($document["DocumentId"]) . ")" ?>
                         </span>
+
                         </h6>
 
                         <br>
