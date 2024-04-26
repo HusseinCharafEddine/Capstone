@@ -587,8 +587,31 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     echo $university ? $university['UniversityAcronym'] : 'University Not Found';
                                     ?>
                                   </span>
-                                  <span><?php echo $document['Rating']; ?> <i
-                                      class="bx bxs-star me-1"></i>(1.23k)</span>
+                                  </span>
+                                  <?php echo round($downloadController->getAverageRatingByDocumentId($document["DocumentId"]), 1) ?>
+                                  <span class="text-warning"><i class="bx bxs-star me-1"></i></span><span
+                                    class="text-muted">
+                                    <?php echo "(" . $downloadController->getTotalRatingByDocumentId($document["DocumentId"]) . ")" ?>
+                                  </span>
+                                </div>
+                                <div id="starRating_<?php echo $document['DocumentId']; ?>">
+                                  <?php
+                                  // Fetch the user's rating for the document
+                                  $testRating = $downloadController->getDownloadByUserAndDocument($userId, $document['DocumentId']);
+                                  if ($testRating) {
+                                    $userRating = $testRating['Rating'];
+                                  } else {
+                                    $userRating = 0;
+                                  }
+                                  // Render stars based on user's rating
+                                  for ($i = 0; $i < 5; $i++) {
+                                    if ($userRating !== null && $i < $userRating) {
+                                      echo '<i class="bx bx-star bxs-star" style="color: #ffab00;" onclick="toggleStar(' . $i . ', ' . $document['DocumentId'] . ')"></i>';
+                                    } else {
+                                      echo '<i class="bx bx-star" onclick="toggleStar(' . $i . ', ' . $document['DocumentId'] . ')"></i>';
+                                    }
+                                  }
+                                  ?>
                                 </div>
                                 <div class="d-flex align-items-center mb-3">
                                   <span class="text mb-3">Author: <?php echo $author; ?></span>
@@ -678,8 +701,31 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     echo $university ? $university['UniversityAcronym'] : 'University Not Found';
                                     ?>
                                   </span>
-                                  <span><?php echo $document['Rating']; ?> <i
-                                      class="bx bxs-star me-1"></i>(1.23k)</span>
+                                  </span>
+                                  <?php echo round($downloadController->getAverageRatingByDocumentId($document["DocumentId"]), 1) ?>
+                                  <span class="text-warning"><i class="bx bxs-star me-1"></i></span><span
+                                    class="text-muted">
+                                    <?php echo "(" . $downloadController->getTotalRatingByDocumentId($document["DocumentId"]) . ")" ?>
+                                  </span>
+                                </div>
+                                <div id="starRating_<?php echo $document['DocumentId']; ?>">
+                                  <?php
+                                  // Fetch the user's rating for the document
+                                  $testRating = $downloadController->getDownloadByUserAndDocument($userId, $document['DocumentId']);
+                                  if ($testRating) {
+                                    $userRating = $testRating['Rating'];
+                                  } else {
+                                    $userRating = 0;
+                                  }
+                                  // Render stars based on user's rating
+                                  for ($i = 0; $i < 5; $i++) {
+                                    if ($userRating !== null && $i < $userRating) {
+                                      echo '<i class="bx bx-star bxs-star" style="color: #ffab00;" onclick="toggleStar(' . $i . ', ' . $document['DocumentId'] . ')"></i>';
+                                    } else {
+                                      echo '<i class="bx bx-star" onclick="toggleStar(' . $i . ', ' . $document['DocumentId'] . ')"></i>';
+                                    }
+                                  }
+                                  ?>
                                 </div>
                                 <div class="d-flex align-items-center mb-3">
                                   <span class="text mb-3">Author: <?php echo $author; ?></span>
@@ -770,8 +816,31 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     echo $university ? $university['UniversityAcronym'] : 'University Not Found';
                                     ?>
                                   </span>
-                                  <span><?php echo $document['Rating']; ?> <i
-                                      class="bx bxs-star me-1"></i>(1.23k)</span>
+                                  </span>
+                                  <?php echo round($downloadController->getAverageRatingByDocumentId($document["DocumentId"]), 1) ?>
+                                  <span class="text-warning"><i class="bx bxs-star me-1"></i></span><span
+                                    class="text-muted">
+                                    <?php echo "(" . $downloadController->getTotalRatingByDocumentId($document["DocumentId"]) . ")" ?>
+                                  </span>
+                                </div>
+                                <div id="starRating_<?php echo $document['DocumentId']; ?>">
+                                  <?php
+                                  // Fetch the user's rating for the document
+                                  $testRating = $downloadController->getDownloadByUserAndDocument($userId, $document['DocumentId']);
+                                  if ($testRating) {
+                                    $userRating = $testRating['Rating'];
+                                  } else {
+                                    $userRating = 0;
+                                  }
+                                  // Render stars based on user's rating
+                                  for ($i = 0; $i < 5; $i++) {
+                                    if ($userRating !== null && $i < $userRating) {
+                                      echo '<i class="bx bx-star bxs-star" style="color: #ffab00;" onclick="toggleStar(' . $i . ', ' . $document['DocumentId'] . ')"></i>';
+                                    } else {
+                                      echo '<i class="bx bx-star" onclick="toggleStar(' . $i . ', ' . $document['DocumentId'] . ')"></i>';
+                                    }
+                                  }
+                                  ?>
                                 </div>
                                 <div class="d-flex align-items-center mb-3">
                                   <span class="text mb-3">Author: <?php echo $author; ?></span>
@@ -878,7 +947,7 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                   <h6 class="mb-5 mt-5">Documents</h6>
 
-                  <div class="row row-cols-1 row-cols-md-5 g-3 mb-3">
+                  <div class="row row-cols-1 row-cols-md-4 g-3 mb-3">
                     <?php
                     $users = $userController->getAllUsers();
                     foreach ($downloadsForPage as $download): ?>
@@ -922,8 +991,29 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                               <span class="badge bg-label-primary">
                                 <?php echo $course ? $course['CourseCode'] : 'Course not found'; ?>
                               </span>
-                              <?php echo $document['Rating']; ?> <span class="text-warning"><i
-                                  class="bx bxs-star me-1"></i></span><span class="text-muted">(1.23k)</span>
+                              <?php echo round($downloadController->getAverageRatingByDocumentId($document["DocumentId"]), 1) ?>
+                              <span class="text-warning"><i class="bx bxs-star me-1"></i></span><span class="text-muted">
+                                <?php echo "(" . $downloadController->getTotalRatingByDocumentId($document["DocumentId"]) . ")" ?>
+                              </span>
+                            </div>
+                            <div id="starRating_<?php echo $document['DocumentId']; ?>">
+                              <?php
+                              // Fetch the user's rating for the document
+                              $testRating = $downloadController->getDownloadByUserAndDocument($userId, $document['DocumentId']);
+                              if ($testRating) {
+                                $userRating = $testRating['Rating'];
+                              } else {
+                                $userRating = 0;
+                              }
+                              // Render stars based on user's rating
+                              for ($i = 0; $i < 5; $i++) {
+                                if ($userRating !== null && $i < $userRating) {
+                                  echo '<i class="bx bx-star bxs-star" style="color: #ffab00;" onclick="toggleStar(' . $i . ', ' . $document['DocumentId'] . ')"></i>';
+                                } else {
+                                  echo '<i class="bx bx-star" onclick="toggleStar(' . $i . ', ' . $document['DocumentId'] . ')"></i>';
+                                }
+                              }
+                              ?>
                             </div>
                             <div class="d-flex align-items-center mb-3">
                               <span class="text mb-3">Author:
@@ -1102,6 +1192,51 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
               });
             </script>
 
+            <script>
+              const userId = <?php echo isset($_SESSION['userId']) ? $_SESSION['userId'] : 'null'; ?>;
+              function toggleStar(index, documentId) {
+                const stars = document.querySelectorAll('#starRating_' + documentId + ' .bx-star');
+                console.log(stars);
+                const newRating = index + 1;
+
+                // Update star styles (visual feedback)
+                for (let i = 0; i < stars.length; i++) {
+                  const starGroupIndex = Math.floor(i / 5); // Calculate the index of the star group
+                  const starIndex = i % 5; // Calculate the index within the star group
+
+                  if (starIndex <= index) {
+                    stars[i].classList.add('bxs-star');
+                    stars[i].style.color = '#ffab00';
+                  } else {
+                    stars[i].classList.remove('bxs-star');
+                    stars[i].style.color = ''; // Reset color for empty stars
+                  }
+                }
+
+                // Send a POST request to update the rating
+                fetch('BE/updateRating.php', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    userId: userId,
+                    documentId: documentId,
+                    newRating: newRating
+                  })
+                })
+                  .then(response => {
+                    if (response.ok) {
+                      console.log('Rating updated successfully');
+                    } else {
+                      console.error('Failed to update rating:', response.statusText);
+                    }
+                  })
+                  .catch(error => {
+                    console.error('Error updating rating:', error);
+                  });
+              }
+            </script>
 
             <!-- <script>
               // Add event listener to the Apply Filter button (assuming you're using jQuery for AJAX)

@@ -58,6 +58,7 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <link rel="stylesheet" href="../assets/vendor/css/core.css" class="template-customizer-core-css" />
   <link rel="stylesheet" href="../assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
   <link rel="stylesheet" href="../assets/css/demo.css" />
+  <link rel="stylesheet" href="../assets/css/favs.css" />
 
   <!-- Vendors CSS -->
   <link rel="stylesheet" href="../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
@@ -586,13 +587,13 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                   <h6 class="mb-5 mt-5">Favorites</h6>
 
-                  <div class="row row-cols-1 row-cols-md-5 g-3 mb-3">
+                  <div class="row row-cols-1 row-cols-md-4 g-3 mb-3">
                     <?php foreach ($favoritesForPage as $favorite): ?>
                       <?php
                       $document = $documentController->getDocumentById($favorite['DocumentId']);
                       $author = $userController->getUser((int) $document['UserId'])['Username'];
                       $isFavorited = $favoriteController->getFavoriteByUserIdAndDocumentId($userId, $document['DocumentId']);
-                      $buttonText = ($isFavorited ? 'Remove from Favorites' : 'Add to Favorites'); ?>
+                      $imgSrc = ($isFavorited ? '../assets/img/icons/unicons/heartfilled.png' : '../assets/img/icons/unicons/heart.png'); ?>
                       <div class="col">
                         <div class="card h-100">
                           <img class="card-img-top" src="../thumbnails/<?php
@@ -603,6 +604,12 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                               <a href="app-academy-course-details.html" class="h5">
                                 <?php echo $document['Title']; ?>
                               </a>
+                              <span style="float: right;">
+                                <a onclick="addToFavorites(<?php echo $document['DocumentId']; ?>)">
+                                  <img id="heart-fav<?php echo $document['DocumentId']; ?>" class="heart-favs"
+                                    src="<?php echo $imgSrc ?>">
+                                </a>
+                              </span>
                             </h5>
                             <div class="d-flex justify-content-between align-items-center mb-3">
                               <span class="badge bg-label-primary">
@@ -629,8 +636,29 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 }
                                 ?>
                               </span>
-                              <?php echo $document['Rating']; ?> <span class="text-warning"><i
-                                  class="bx bxs-star me-1"></i></span><span class="text-muted">(1.23k)</span>
+                              <?php echo round($downloadController->getAverageRatingByDocumentId($document["DocumentId"]), 1) ?>
+                              <span class="text-warning"><i class="bx bxs-star me-1"></i></span><span class="text-muted">
+                                <?php echo "(" . $downloadController->getTotalRatingByDocumentId($document["DocumentId"]) . ")" ?>
+                              </span>
+                            </div>
+                            <div id="starRating_<?php echo $document['DocumentId']; ?>">
+                              <?php
+                              // Fetch the user's rating for the document
+                              $testRating = $downloadController->getDownloadByUserAndDocument($userId, $document['DocumentId']);
+                              if ($testRating) {
+                                $userRating = $testRating['Rating'];
+                              } else {
+                                $userRating = 0;
+                              }
+                              // Render stars based on user's rating
+                              for ($i = 0; $i < 5; $i++) {
+                                if ($userRating !== null && $i < $userRating) {
+                                  echo '<i class="bx bx-star bxs-star" style="color: #ffab00;" onclick="toggleStar(' . $i . ', ' . $document['DocumentId'] . ')"></i>';
+                                } else {
+                                  echo '<i class="bx bx-star" onclick="toggleStar(' . $i . ', ' . $document['DocumentId'] . ')"></i>';
+                                }
+                              }
+                              ?>
                             </div>
                             <div class="d-flex align-items-center mb-3">
                               <span class="text mb-3">Author:
@@ -652,14 +680,14 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </div>
                             <div class="d-flex justify-content-center gap-3  text-white ">
                               <!-- First Download Button -->
-                              <div class="d-flex align-items-center bg-primary rounded p-1">
+                              <!-- <div class="d-flex align-items-center bg-primary rounded p-1">
                                 <div class="d-flex align-items-center bg-primary rounded p-1">
                                   <button class="btn btn-primary toggle-favorite"
                                     data-document-id="<?php echo $document['DocumentId']; ?>">
                                     <?php echo $buttonText; ?> <i class="bx bx-star"></i>
                                   </button>
                                 </div>
-                              </div>
+                              </div> -->
 
                               <!-- Second Download Button -->
 
@@ -702,7 +730,6 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                   <!-- / Footer -->
 
                   <div class="content-backdrop fade"></div>
-
                 </div>
                 <!-- Content wrapper -->
               </div>
@@ -750,7 +777,7 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
             });
           </script>
           <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-          <script>
+          <!-- <script>
             $(document).ready(function () {
               $('.toggle-favorite').click(function () {
                 var documentId = $(this).data('document-id');
@@ -776,7 +803,81 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 });
               });
             });
+          </script> -->
+          <script>
+            const userId = <?php echo isset($_SESSION['userId']) ? $_SESSION['userId'] : 'null'; ?>;
+            function toggleStar(index, documentId) {
+              const stars = document.querySelectorAll('#starRating_' + documentId + ' .bx-star');
+              console.log(stars);
+              const newRating = index + 1;
+
+              // Update star styles (visual feedback)
+              for (let i = 0; i < stars.length; i++) {
+                const starGroupIndex = Math.floor(i / 5); // Calculate the index of the star group
+                const starIndex = i % 5; // Calculate the index within the star group
+
+                if (starIndex <= index) {
+                  stars[i].classList.add('bxs-star');
+                  stars[i].style.color = '#ffab00';
+                } else {
+                  stars[i].classList.remove('bxs-star');
+                  stars[i].style.color = ''; // Reset color for empty stars
+                }
+              }
+
+              // Send a POST request to update the rating
+              fetch('../BE/updateRating.php', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  userId: userId,
+                  documentId: documentId,
+                  newRating: newRating
+                })
+              })
+                .then(response => {
+                  if (response.ok) {
+                    console.log('Rating updated successfully');
+                  } else {
+                    console.error('Failed to update rating:', response.statusText);
+                  }
+                })
+                .catch(error => {
+                  console.error('Error updating rating:', error);
+                });
+            }
           </script>
+          <script>
+            function addToFavorites(documentId) {
+              // AJAX request to toggle favorite status
+              $.ajax({
+                type: 'POST',
+                url: '../BE/toggleFavorite.php',
+                data: {
+                  documentId: documentId
+                },
+                success: function (response) {
+                  // Update all heart icons with matching documentId
+                  var heartIcons = document.querySelectorAll('[id^="heart-fav' + documentId + '"]');
+
+                  heartIcons.forEach(function (heartIcon) {
+                    // Update src based on response
+                    if (response === 'Favorite added successfully') {
+                      heartIcon.src = '../assets/img/icons/unicons/heartfilled.png';
+                    } else if (response === 'Favorite removed successfully') {
+                      heartIcon.src = '../assets/img/icons/unicons/heart.png';
+                    }
+                  });
+                },
+                error: function () {
+                  console.error('Error toggling favorite.');
+                }
+              });
+            }
+          </script>
+
 </body>
 
 </html>

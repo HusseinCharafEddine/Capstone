@@ -13,13 +13,14 @@ require ("../BE/userController.php");
 require ("../BE/documentController.php");
 require ("../BE/universityController.php");
 require ("../BE/downloadController.php");
+require ("../BE/favoriteController.php");
 
 $userController = new UserController();
 $courseController = new CoursesController();
 $documentController = new DocumentController();
 $universityController = new UniversityController();
 $downloadController = new DownloadController();
-
+$favoriteController = new FavoriteController();
 $db = DBConnect();
 $username = $_SESSION['username'];
 
@@ -58,6 +59,7 @@ $userId = $userController->getUserByUsername($username)['UserId'];
   <link rel="stylesheet" href="../assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
   <link rel="stylesheet" href="../assets/css/demo.css" />
   <link rel="stylesheet" href="../assets/css/rating.css" />
+  <link rel="stylesheet" href="../assets/css/favs.css" />
 
   <!-- Vendors CSS -->
   <link rel="stylesheet" href="../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
@@ -589,6 +591,8 @@ $userId = $userController->getUserByUsername($username)['UserId'];
                     <?php foreach ($downloadsForPage as $download): ?>
                       <?php
                       $document = $documentController->getDocumentById($download['DocumentId']);
+                      $isFavorited = $favoriteController->getFavoriteByUserIdAndDocumentId($userId, $document['DocumentId']);
+                      $imgSrc = ($isFavorited ? '../assets/img/icons/unicons/heartfilled.png' : '../assets/img/icons/unicons/heart.png');
                       ?>
                       <div class="col">
                         <div class="card h-100">
@@ -600,6 +604,12 @@ $userId = $userController->getUserByUsername($username)['UserId'];
                               <a href="app-academy-course-details.html" class="h5">
                                 <?php echo $document['Title']; ?>
                               </a>
+                              <span style="float: right;">
+                                <a onclick="addToFavorites(<?php echo $document['DocumentId']; ?>)">
+                                  <img id="heart-fav<?php echo $document['DocumentId']; ?>" class="heart-favs"
+                                    src="<?php echo $imgSrc ?>">
+                                </a>
+                              </span>
                             </h5>
                             <div class="d-flex justify-content-between align-items-center mb-1">
                               <span class="badge bg-label-primary">
@@ -637,8 +647,12 @@ $userId = $userController->getUserByUsername($username)['UserId'];
                             <div id="starRating_<?php echo $document['DocumentId']; ?>">
                               <?php
                               // Fetch the user's rating for the document
-                              $userRating = $downloadController->getDownloadByUserAndDocument($userId, $document['DocumentId'])['Rating'];
-
+                              $testRating = $downloadController->getDownloadByUserAndDocument($userId, $document['DocumentId']);
+                              if ($testRating) {
+                                $userRating = $testRating['Rating'];
+                              } else {
+                                $userRating = 0;
+                              }
                               // Render stars based on user's rating
                               for ($i = 0; $i < 5; $i++) {
                                 if ($userRating !== null && $i < $userRating) {
@@ -754,29 +768,57 @@ $userId = $userController->getUserByUsername($username)['UserId'];
           <!-- for rating lioops -->
 
           <script>
-            const userId = <?php echo isset($_SESSION['userId']) ? $_SESSION['userId'] : 'null'; ?>;
+            function addToFavorites(documentId) {
+              // AJAX request to toggle favorite status
+              $.ajax({
+                type: 'POST',
+                url: '../BE/toggleFavorite.php',
+                data: {
+                  documentId: documentId
+                },
+                success: function (response) {
+                  // Update all heart icons with matching documentId
+                  var heartIcons = document.querySelectorAll('[id^="heart-fav' + documentId + '"]');
 
-            function createStarToggleHandler(index, documentId) {
-              return function () {
-                toggleStar(index, documentId);
-              };
+                  heartIcons.forEach(function (heartIcon) {
+                    // Update src based on response
+                    if (response === 'Favorite added successfully') {
+                      heartIcon.src = '../assets/img/icons/unicons/heartfilled.png';
+                    } else if (response === 'Favorite removed successfully') {
+                      heartIcon.src = '../assets/img/icons/unicons/heart.png';
+                    }
+                  });
+                },
+                error: function () {
+                  console.error('Error toggling favorite.');
+                }
+              });
             }
+          </script>
 
+          <script>
+            const userId = <?php echo isset($_SESSION['userId']) ? $_SESSION['userId'] : 'null'; ?>;
             function toggleStar(index, documentId) {
               const stars = document.querySelectorAll('#starRating_' + documentId + ' .bx-star');
+              console.log(stars);
               const newRating = index + 1;
 
               // Update star styles (visual feedback)
               for (let i = 0; i < stars.length; i++) {
-                if (i <= index) {
+                const starGroupIndex = Math.floor(i / 5); // Calculate the index of the star group
+                const starIndex = i % 5; // Calculate the index within the star group
+
+                if (starIndex <= index) {
                   stars[i].classList.add('bxs-star');
+                  stars[i].style.color = '#ffab00';
                 } else {
                   stars[i].classList.remove('bxs-star');
+                  stars[i].style.color = ''; // Reset color for empty stars
                 }
               }
 
               // Send a POST request to update the rating
-              fetch('../BE/updateRating.php', {
+              fetch('BE/updateRating.php', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json'
@@ -799,7 +841,6 @@ $userId = $userController->getUserByUsername($username)['UserId'];
                 });
             }
           </script>
-
 </body>
 
 </html>
