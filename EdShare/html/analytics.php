@@ -748,7 +748,7 @@ $userId = $user['UserId'];
                     <ul class="p-0 m-0">
                       <li class="d-flex mb-4 pb-1">
                         <div class="avatar flex-shrink-0 me-3">
-                          <span class="avatar-initial rounded bg-label-primary"><i class="bx bx-mobile-alt"></i></span>
+                          <span class="avatar-initial rounded bg-label-primary"><i class="bx bx-edit"></i></span>
                         </div>
                         <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                           <div class="me-2">
@@ -762,7 +762,7 @@ $userId = $user['UserId'];
                       </li>
                       <li class="d-flex mb-4 pb-1">
                         <div class="avatar flex-shrink-0 me-3">
-                          <span class="avatar-initial rounded bg-label-success"><i class="bx bx-closet"></i></span>
+                          <span class="avatar-initial rounded bg-label-success"><i class="bx bx-note"></i></span>
                         </div>
                         <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                           <div class="me-2">
@@ -776,7 +776,7 @@ $userId = $user['UserId'];
                       </li>
                       <li class="d-flex mb-4 pb-1">
                         <div class="avatar flex-shrink-0 me-3">
-                          <span class="avatar-initial rounded bg-label-info"><i class="bx bx-home-alt"></i></span>
+                          <span class="avatar-initial rounded bg-label-info"><i class="bx bx-math"></i></span>
                         </div>
                         <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                           <div class="me-2">
@@ -792,7 +792,7 @@ $userId = $user['UserId'];
                       </li>
                       <li class="d-flex">
                         <div class="avatar flex-shrink-0 me-3">
-                          <span class="avatar-initial rounded bg-label-secondary"><i class="bx bx-football"></i></span>
+                          <span class="avatar-initial rounded bg-label-secondary"><i class="bx bx-spreadsheet"></i></span>
                         </div>
                         <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                           <div class="me-2">
