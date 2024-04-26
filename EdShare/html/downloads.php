@@ -27,6 +27,7 @@ $getUploadedDocumentsQuery = "SELECT * FROM Document WHERE UserId = (SELECT User
 $stmt = $db->prepare($getUploadedDocumentsQuery);
 $stmt->execute([$username]);
 $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$userId = $userController->getUserByUsername($username)['UserId'];
 ?>
 <html lang="en" class="light-style layout-menu-fixed layout-compact" dir="ltr" data-theme="theme-default"
   data-assets-path="../assets/" data-template="vertical-menu-template-free">
@@ -625,24 +626,32 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 }
                                 ?>
                               </span>
-                              
-                              <?php echo $document['Rating']; ?> <span class="text-warning"><i
-                                  class="bx bxs-star me-1"></i></span><span class="text-muted">(1.23k)</span>
+
+                              <?php echo round($downloadController->getAverageRatingByDocumentId($document["DocumentId"]), 1) ?>
+                              <span class="text-warning"><i class="bx bxs-star me-1"></i></span><span class="text-muted">
+                                <?php echo "(" . $downloadController->getTotalRatingByDocumentId($document["DocumentId"]) . ")" ?>
+                              </span>
 
                             </div>
 
-                            <div id="starRating">
-                            <span>
-    <i class="bx bx-star" onclick="toggleStar(0)"></i>
-    <i class="bx bx-star" onclick="toggleStar(1)"></i>
-    <i class="bx bx-star" onclick="toggleStar(2)"></i>
-    <i class="bx bx-star" onclick="toggleStar(3)"></i>
-    <i class="bx bx-star" onclick="toggleStar(4)"></i>
-  </span>
-</div>
+                            <div id="starRating_<?php echo $document['DocumentId']; ?>">
+                              <?php
+                              // Fetch the user's rating for the document
+                              $userRating = $downloadController->getDownloadByUserAndDocument($userId, $document['DocumentId'])['Rating'];
 
+                              // Render stars based on user's rating
+                              for ($i = 0; $i < 5; $i++) {
+                                if ($userRating !== null && $i < $userRating) {
+                                  echo '<i class="bx bx-star bxs-star" style="color: #ffab00;" onclick="toggleStar(' . $i . ', ' . $document['DocumentId'] . ')"></i>';
+                                } else {
+                                  echo '<i class="bx bx-star" onclick="toggleStar(' . $i . ', ' . $document['DocumentId'] . ')"></i>';
+                                }
+                              }
+                              ?>
+                            </div>
+                            <input type="hidden" id="newRatingInput_<?php echo $document['DocumentId']; ?>"
+                              name="newRating" value="">
 
-                              
                             <div class="d-flex align-items-center mb-3">
                               <span class="text">Author:
                                 <?php
@@ -742,31 +751,55 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
             });
           </script>
 
-<!-- for rating lioops -->
-<script>
-function toggleStar(index) {
-  const stars = document.querySelectorAll('.bx-star');
+          <!-- for rating lioops -->
 
-  const isStarFilled = stars[index].classList.contains('bxs-star');
-  
-  if (isStarFilled) {
-   
-    for (let i = 0; i < stars.length; i++) {
-      stars[i].classList.remove('bxs-star');
-    }
-  } else {
-    for (let i = 0; i < stars.length; i++) {
-      if (i <= index) {
-        stars[i].classList.add('bxs-star');
-      } else {
-        stars[i].classList.remove('bxs-star');
-      }
-    }
-  }
-}
+          <script>
+            const userId = <?php echo isset($_SESSION['userId']) ? $_SESSION['userId'] : 'null'; ?>;
 
+            function createStarToggleHandler(index, documentId) {
+              return function () {
+                toggleStar(index, documentId);
+              };
+            }
 
-</script>
+            function toggleStar(index, documentId) {
+              const stars = document.querySelectorAll('#starRating_' + documentId + ' .bx-star');
+              const newRating = index + 1;
+
+              // Update star styles (visual feedback)
+              for (let i = 0; i < stars.length; i++) {
+                if (i <= index) {
+                  stars[i].classList.add('bxs-star');
+                } else {
+                  stars[i].classList.remove('bxs-star');
+                }
+              }
+
+              // Send a POST request to update the rating
+              fetch('../BE/updateRating.php', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  userId: userId,
+                  documentId: documentId,
+                  newRating: newRating
+                })
+              })
+                .then(response => {
+                  if (response.ok) {
+                    console.log('Rating updated successfully');
+                  } else {
+                    console.error('Failed to update rating:', response.statusText);
+                  }
+                })
+                .catch(error => {
+                  console.error('Error updating rating:', error);
+                });
+            }
+          </script>
+
 </body>
 
 </html>

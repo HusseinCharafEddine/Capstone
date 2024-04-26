@@ -66,8 +66,9 @@ class DownloadController
     {
         // Start building the query
         $query = "SELECT d.*, doc.*
-                  FROM downloaded d
-                  JOIN document doc ON d.DocumentId = doc.DocumentId";
+              FROM downloaded d
+              JOIN document doc ON d.DocumentId = doc.DocumentId
+              WHERE d.UserId = :userId"; // Filter by UserId
 
         // Initialize a flag to track if any filter is applied
         $filterApplied = false;
@@ -76,7 +77,7 @@ class DownloadController
         if ($filter) {
             // Check if any filter parameters are present
             if (!empty($filter['universityId']) || !empty($filter['courseId']) || !empty($filter['rating'])) {
-                $query .= " WHERE 1"; // Start WHERE clause
+                $query .= " AND 1"; // Continue with AND clause
                 $filterApplied = true;
 
                 if (!empty($filter['universityId'])) {
@@ -101,6 +102,7 @@ class DownloadController
         $stmt = $this->db->prepare($query);
 
         // Bind common parameters
+        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
         $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
         $stmt->bindParam(':downloadsPerPage', $downloadsPerPage, PDO::PARAM_INT);
 
@@ -121,8 +123,10 @@ class DownloadController
         $stmt->execute();
 
         // Return the result
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
     }
+
     // Get the most downloaded document today or on the latest date
     public function getMostDownloadedToday()
     {
@@ -222,19 +226,12 @@ class DownloadController
             $fallbackStmt->bindParam(':yesterday', $yesterday, PDO::PARAM_STR);
             $fallbackStmt->execute();
 
-            // Fetch the fallback result
             $result = $fallbackStmt->fetch(PDO::FETCH_ASSOC);
         }
-
-        // Debugging: Output the executed query for troubleshooting
 
         return $result;
     }
 
-
-
-
-    // Get the newest downloaded document
     public function getNewestDownloadedDocument($excludeDocumentId = null)
     {
         $query = "SELECT DocumentId, MAX(Date) AS latest_download_date
@@ -255,9 +252,65 @@ class DownloadController
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+    public function getAverageRatingByDocumentId($documentId)
+    {
+        $query = "SELECT AVG(rating) AS averageRating
+                  FROM downloaded
+                  WHERE DocumentId = :documentId
+                  AND rating IS NOT NULL";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':documentId', $documentId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return ($result !== false && isset($result['averageRating'])) ? $result['averageRating'] : 0;
+    }
+    public function getTotalRatingByDocumentId($documentId)
+    {
+        $query = "SELECT COUNT(*) AS totalDownloads
+                  FROM downloaded
+                  WHERE DocumentId = :documentId               
+                  AND rating IS NOT NULL";
 
 
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':documentId', $documentId, PDO::PARAM_INT);
+        $stmt->execute();
 
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return ($result !== false && isset($result['totalDownloads'])) ? $result['totalDownloads'] : 0;
+    }
+    public function getDownloadByUserAndDocument($userId, $documentId)
+    {
+        $query = "SELECT * FROM downloaded WHERE UserId = :userId AND DocumentId = :documentId";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+        $stmt->bindParam(':documentId', $documentId, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+
+    public function updateDocumentRating($userId, $documentId, $newRating)
+    {
+        $query = "UPDATE downloaded SET Rating = :newRating WHERE UserId = :userId AND DocumentId = :documentId";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+        $stmt->bindParam(':documentId', $documentId, PDO::PARAM_INT);
+        $stmt->bindParam(':newRating', $newRating, PDO::PARAM_INT);
+        echo $userId, $documentId, $newRating;
+        print_r($stmt);
+        try {
+            $result = $stmt->execute();
+            return $result;
+        } catch (PDOException $e) {
+            // Handle database error
+            echo "Database Error: " . $e->getMessage();
+            return false;
+        }
+    }
 
 }
 
