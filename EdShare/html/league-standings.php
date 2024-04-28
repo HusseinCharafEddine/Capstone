@@ -566,7 +566,7 @@ $userId = $userController->getUserByUsername($username)['UserId'];
                         <th style="width: 25%;">Rank</th>
                         <th style="width: 25%;">Username</th>
                         <th style="width: 25%;">Title</th>
-                        <th style="width: 25%;">Token Score</th>
+                        <th style="width: 25%;">Contribution Score</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -579,25 +579,25 @@ $userId = $userController->getUserByUsername($username)['UserId'];
                             // Determine badge/title based on user's rating
                             $badge = 'Iron'; // Default badge (lowest)
                             $badgeImg = 1;
-                            if ($user['TokenScore'] >= 2101) {
+                            if ($user['ContributionScore'] >= 2101) {
                               $badge = 'Immortal';
                               $badgeImg = 8;
-                            } elseif ($user['TokenScore'] >= 1700) {
+                            } elseif ($user['ContributionScore'] >= 1700) {
                               $badge = 'Ascendant';
                               $badgeImg = 7;
-                            } elseif ($user['TokenScore'] >= 1300) {
+                            } elseif ($user['ContributionScore'] >= 1300) {
                               $badge = 'Diamond';
                               $badgeImg = 6;
-                            } elseif ($user['TokenScore'] >= 1000) {
+                            } elseif ($user['ContributionScore'] >= 1000) {
                               $badge = 'Platinum';
                               $badgeImg = 5;
-                            } elseif ($user['TokenScore'] >= 700) {
+                            } elseif ($user['ContributionScore'] >= 700) {
                               $badge = 'Gold';
                               $badgeImg = 4;
-                            } elseif ($user['TokenScore'] >= 400) {
+                            } elseif ($user['ContributionScore'] >= 400) {
                               $badge = 'Silver';
                               $badgeImg = 3;
-                            } elseif ($user['TokenScore'] >= 200) {
+                            } elseif ($user['ContributionScore'] >= 200) {
                               $badge = 'Bronze';
                               $badgeImg = 2;
                             }
@@ -616,7 +616,7 @@ $userId = $userController->getUserByUsername($username)['UserId'];
                               </div>
                             </div>
                           </td>
-                          <td><?php echo $user['TokenScore']; ?></td>
+                          <td><?php echo $user['ContributionScore']; ?></td>
                         </tr>
                       <?php endforeach; ?>
                     </tbody>

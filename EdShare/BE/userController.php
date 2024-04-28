@@ -15,7 +15,7 @@ class UserController
     // Create a new user
     public function createUser($data)
     {
-        $query = "INSERT INTO user (UserId, Username, Password, Email, FirstName, LastName, UniversityId, Rating, UploadCount, DownloadCount, TokenScore, ResetTokenHash) VALUES (:UserId, :Username, :Password, :Email, :FirstName, :LastName, :UniversityId, :Rating, :UploadCount, :DownloadCount, :TokenScore, :ResetTokenHash)";
+        $query = "INSERT INTO user (UserId, Username, Password, Email, FirstName, LastName, UniversityId, Rating, UploadCount, DownloadCount, ContributionScore, ResetTokenHash) VALUES (:UserId, :Username, :Password, :Email, :FirstName, :LastName, :UniversityId, :Rating, :UploadCount, :DownloadCount, :ContributionScore, :ResetTokenHash)";
         $stmt = $this->db->prepare($query);
         $stmt->execute($data);
         return $stmt->rowCount();
@@ -58,31 +58,31 @@ class UserController
         }
 
         // Determine league range based on user's rating
-        $tokenScore = $user['TokenScore'];
+        $ContributionScore = $user['ContributionScore'];
         $minRating = 0;
         $maxRating = PHP_INT_MAX; // Use a large value for the maximum rating
 
-        if ($tokenScore >= 0 && $tokenScore < 200) {
+        if ($ContributionScore >= 0 && $ContributionScore < 200) {
             $maxRating = 200;
-        } elseif ($tokenScore >= 200 && $tokenScore < 400) {
+        } elseif ($ContributionScore >= 200 && $ContributionScore < 400) {
             $minRating = 200;
             $maxRating = 400;
-        } elseif ($tokenScore >= 400 && $tokenScore < 700) {
+        } elseif ($ContributionScore >= 400 && $ContributionScore < 700) {
             $minRating = 400;
             $maxRating = 700;
-        } elseif ($tokenScore >= 700 && $tokenScore < 1000) {
+        } elseif ($ContributionScore >= 700 && $ContributionScore < 1000) {
             $minRating = 700;
             $maxRating = 1000;
-        } elseif ($tokenScore >= 1000 && $tokenScore < 1300) {
+        } elseif ($ContributionScore >= 1000 && $ContributionScore < 1300) {
             $minRating = 1000;
             $maxRating = 1300;
-        } elseif ($tokenScore >= 1300 && $tokenScore < 1700) {
+        } elseif ($ContributionScore >= 1300 && $ContributionScore < 1700) {
             $minRating = 1300;
             $maxRating = 1700;
-        } elseif ($tokenScore >= 1700 && $tokenScore < 2100) {
+        } elseif ($ContributionScore >= 1700 && $ContributionScore < 2100) {
             $minRating = 1700;
             $maxRating = 2100;
-        } elseif ($tokenScore >= 2100) {
+        } elseif ($ContributionScore >= 2100) {
             $minRating = 2101; // Start from 2101 and no upper limit
         } else {
             // Unknown league or rating, handle accordingly
@@ -90,7 +90,7 @@ class UserController
         }
 
         // Prepare SQL query to count users within the determined rating range
-        $query = "SELECT COUNT(*) AS userCount FROM user WHERE TokenScore >= :minRating AND TokenScore < :maxRating";
+        $query = "SELECT COUNT(*) AS userCount FROM user WHERE ContributionScore >= :minRating AND ContributionScore < :maxRating";
         $stmt = $this->db->prepare($query);
         $stmt->bindParam(':minRating', $minRating, PDO::PARAM_INT);
         $stmt->bindParam(':maxRating', $maxRating, PDO::PARAM_INT);
@@ -209,30 +209,30 @@ class UserController
 
         // Determine the SQL query based on the selected standings type
         if ($standingsType === 'worldwide') {
-            $query = "SELECT * FROM user ORDER BY TokenScore DESC";
+            $query = "SELECT * FROM user ORDER BY ContributionScore DESC";
         } else {
             // Retrieve the user's rating to determine the league
-            $userTokenScoreQuery = "SELECT TokenScore FROM user WHERE UserId = :userId";
-            $userTokenScoreStmt = $this->db->prepare($userTokenScoreQuery);
-            $userTokenScoreStmt->bindParam(':userId', $userId);
-            $userTokenScoreStmt->execute();
-            $userTokenScore = $userTokenScoreStmt->fetch(PDO::FETCH_ASSOC)['TokenScore'];
+            $userContributionScoreQuery = "SELECT ContributionScore FROM user WHERE UserId = :userId";
+            $userContributionScoreStmt = $this->db->prepare($userContributionScoreQuery);
+            $userContributionScoreStmt->bindParam(':userId', $userId);
+            $userContributionScoreStmt->execute();
+            $userContributionScore = $userContributionScoreStmt->fetch(PDO::FETCH_ASSOC)['ContributionScore'];
 
             // Determine the league range based on the user's rating
             $leagueMinRating = 0;
             $leagueMaxRating = 0;
 
-            if ($userTokenScore >= 0 && $userTokenScore < 200) {
+            if ($userContributionScore >= 0 && $userContributionScore < 200) {
                 $leagueMinRating = 0;
                 $leagueMaxRating = 200;
-            } elseif ($userTokenScore >= 200 && $userTokenScore < 400) {
+            } elseif ($userContributionScore >= 200 && $userContributionScore < 400) {
                 $leagueMinRating = 200;
                 $leagueMaxRating = 400;
             }
             // Add more league ranges as needed...
 
             // Construct the query for league standings
-            $query = "SELECT * FROM user WHERE TokenScore BETWEEN :leagueMinRating AND :leagueMaxRating ORDER BY TokenScore DESC";
+            $query = "SELECT * FROM user WHERE ContributionScore BETWEEN :leagueMinRating AND :leagueMaxRating ORDER BY ContributionScore DESC";
         }
 
         // Prepare the SQL statement
