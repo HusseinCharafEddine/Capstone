@@ -21,16 +21,40 @@ class DocumentController
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-    public function fetchDocumentsForPage($UserId, $offset, $documentsPerPage)
+    public function fetchDocumentsForPage($UserId, $offset, $documentsPerPage, $searchTerm =null)
     {
-        $query = "SELECT * FROM document WHERE UserId = :UserId LIMIT :offset, :documentsPerPage";
+        // Define the base SQL query
+        $query = "SELECT * FROM document WHERE UserId = :UserId";
+    
+        // If a search term is provided, add the search condition to the query
+        if (!empty($searchTerm)) {
+            $query .= " AND Title LIKE :searchTerm";
+        }
+    
+        // Add LIMIT clause for pagination
+        $query .= " LIMIT :offset, :documentsPerPage";
+    
+        // Prepare the SQL statement
         $stmt = $this->db->prepare($query);
+    
+        // Bind parameters
         $stmt->bindParam(':UserId', $UserId, PDO::PARAM_INT);
         $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
         $stmt->bindParam(':documentsPerPage', $documentsPerPage, PDO::PARAM_INT);
+    
+        // If a search term is provided, bind the search parameter
+        if (!empty($searchTerm)) {
+            $searchTerm = "%{$searchTerm}%"; // Add wildcard characters to search term
+            $stmt->bindParam(':searchTerm', $searchTerm, PDO::PARAM_STR);
+        }
+    
+        // Execute the query
         $stmt->execute();
+    
+        // Fetch the results
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
     // public function fetchAllDocumentsForPage($offset, $documentsPerPage)
     // {
     //     $query = "SELECT * FROM document LIMIT :offset, :documentsPerPage";
