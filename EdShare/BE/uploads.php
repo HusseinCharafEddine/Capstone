@@ -95,7 +95,7 @@ $document->ThumbnailPath = $thumbnailPath;
 
 $DocumentId = InsertDocumentToDBFromObject($db, $document);
 
-echo "File uploaded successfully.";
+header("location:../html/uploads.php");
 
 function generateThumbnail($filePath, $thumbnailDirectory)
 {

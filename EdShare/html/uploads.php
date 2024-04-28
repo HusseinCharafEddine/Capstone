@@ -22,6 +22,7 @@ $downloadController = new DownloadController();
 
 $db = DBConnect();
 $username = $_SESSION['username'];
+$user = $userController->getUserByUsername($username);
 
 
 ?>
@@ -53,10 +54,12 @@ $username = $_SESSION['username'];
   <link rel="stylesheet" href="../assets/vendor/css/core.css" class="template-customizer-core-css" />
   <link rel="stylesheet" href="../assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
   <link rel="stylesheet" href="../assets/css/demo.css" />
+  <link rel="stylesheet" href="../assets/css/spinner.css" />
 
   <!-- Vendors CSS -->
   <link rel="stylesheet" href="../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
   <link rel="stylesheet" href="../assets/vendor/libs/apex-charts/apex-charts.css" />
+  <link rel="stylesheet" href="../assets/vendor/libs/spinkit/spinkit.css" />
 
   <!-- Page CSS -->
 
@@ -95,6 +98,30 @@ $username = $_SESSION['username'];
         <div class="menu-inner-shadow"></div>
 
         <ul class="menu-inner py-1">
+          <li>
+            <div id="token-container" style="display: flex; margin: 18px; margin-top:0px">
+              <div id="uploads-token" style="margin-right: auto;">
+                <span>
+                  <img src="../assets/img/icons/tokens/uploadstoken.png">
+                  <?php
+                  $contributionScore = $user['ContributionScore'];
+                  $totalDownloaded = $user['TotalDownloaded'];
+                  $tokenScore = $contributionScore - 2 * $totalDownloaded;
+                  echo $tokenScore;
+                  ?>
+                </span>
+              </div>
+              <div class="vertical-divider" style="width: 20px;"></div>
+              <div id="downloads-token" style="margin-left: auto;">
+                <span>
+                  <img src="../assets/img/icons/tokens/downloadstoken.png">
+                  <?php
+                  echo $contributionScore;
+                  ?>
+                </span>
+              </div>
+            </div>
+          </li>
           <!-- Dashboards -->
           <li class="menu-item">
             <a href="../landing.html" class="menu-link">
@@ -525,7 +552,7 @@ $username = $_SESSION['username'];
                   <div class="card mb-4">
                     <h5 class="card-header">Upload a File</h5>
                     <div class="card-body demo-vertical-spacing demo-only-element">
-                      <form action="../BE/uploads.php" method="post" enctype="multipart/form-data">
+                      <form action="../BE/uploads.php" method="post" enctype="multipart/form-data" id="uploadForm">
                         <div class="input-group">
                           <input type="text" class="form-control" aria-label="University Name" id="course-name-input"
                             name="course-name" placeholder="Enter Course Name">
@@ -547,15 +574,17 @@ $username = $_SESSION['username'];
                           <label class="input-group-text">Category</label>
                         </div>
                         <div class="input-group">
-                          <select id="largeSelect" class="form-select form-select-md" placeholder="Document Type"
-                            name="type">
+                          <input type="hidden" name="type" id="type-hidden">
+                          <!-- Hidden input field to store the selected value -->
+                          <select id="type" class="form-select form-select-md" placeholder="type"
+                            onchange="updateHiddenInput()" aria-label="Document Type">
                             <option value="" disabled selected>Select Document Type</option>
                             <option value="Summary">Summary</option>
                             <option value="Notes">Notes</option>
                             <option value="Exercises">Exercises</option>
                             <option value="Practice Sheets">Practice Sheets</option>
-
                           </select>
+                          <label class="input-group-text">Type</label>
                         </div>
                         <div class="input-group">
                           <input type="file" class="form-control" id="inputGroupFile02" name="file">
@@ -565,6 +594,14 @@ $username = $_SESSION['username'];
                           <input type="submit" class="btn btn-outline-primary" value="Upload" name="submit">
                         </div>
                       </form>
+                      <div id="loadingContainer">
+                        <div id="loadingSpinner" class="sk-fold sk-primary">
+                          <div class="sk-fold-cube"></div>
+                          <div class="sk-fold-cube"></div>
+                          <div class="sk-fold-cube"></div>
+                          <div class="sk-fold-cube"></div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -687,11 +724,14 @@ $username = $_SESSION['username'];
               <?php endif; ?>
             </ul>
 
+
+
             <footer class="content-footer footer bg-footer-theme">
               <div class="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
                 <div class="mb-2 mb-md-0">
 
                 </div>
+
                 <div class="d-none d-lg-inline-block">
 
 
@@ -762,7 +802,29 @@ $username = $_SESSION['username'];
       });
 
     </script>
+    <script>
+      // Function to show the loading spinner
+      function showLoadingSpinner() {
+        console.log("hit 1");
+        document.getElementById('loadingContainer').style.display = 'block';
+      }
 
+      // Function to hide the loading spinner
+      function hideLoadingSpinner() {
+        console.log("hit 2");
+        document.getElementById('loadingContainer').style.display = 'none';
+      }
+
+      // Event listener for form submission
+      document.getElementById('uploadForm').addEventListener('submit', function () {
+        showLoadingSpinner(); // Show loading spinner when form is submitted
+      });
+
+      // Simulate upload completion after 3 seconds (you can replace this with actual upload logic)
+      setTimeout(function () {
+        hideLoadingSpinner(); // Hide loading spinner after 3 seconds (simulating upload completion)
+      }, 3000);
+    </script>
     <script>
       // JavaScript code for autocomplete
       $(document).ready(function () {
@@ -772,6 +834,13 @@ $username = $_SESSION['username'];
         });
       });
 
+    </script>
+    <script>
+      function updateHiddenInput() {
+        var select = document.getElementById('type');
+        var hiddenInput = document.getElementById('type-hidden');
+        hiddenInput.value = select.value;
+      }
     </script>
 </body>
 

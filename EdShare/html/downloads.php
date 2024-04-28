@@ -29,6 +29,7 @@ $stmt = $db->prepare($getUploadedDocumentsQuery);
 $stmt->execute([$username]);
 $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $userId = $userController->getUserByUsername($username)['UserId'];
+$_SESSION["userId"] = $userId;
 ?>
 <html lang="en" class="light-style layout-menu-fixed layout-compact" dir="ltr" data-theme="theme-default"
   data-assets-path="../assets/" data-template="vertical-menu-template-free">
@@ -100,19 +101,19 @@ $userId = $userController->getUserByUsername($username)['UserId'];
         <ul class="menu-inner py-1">
           <!-- Dashboards -->
           <li class="menu-item">
-            <a href="../landing.html" class="menu-link">
+            <a href="../landing.php" class="menu-link">
               <i class="menu-icon tf-icons bx bx-home-circle"></i>
               <div data-i18n="Home">Home</div>
             </a>
           </li>
           <li class="menu-item ">
-            <a href="history.html" class="menu-link">
-              <i class="menu-icon tf-icons bx bx-history"></i>
-              <div data-i18n="History">History</div>
+            <a href="favorites.php" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-heart"></i>
+              <div data-i18n="Favorites">Favorites</div>
             </a>
           </li>
           <li class="menu-item active ">
-            <a href="downloads.html" class="menu-link">
+            <a href="downloads.php" class="menu-link">
               <i class="menu-icon tf-icons bx bx-download"></i>
               <div data-i18n="Downloads">Downloads</div>
             </a>
@@ -124,29 +125,18 @@ $userId = $userController->getUserByUsername($username)['UserId'];
             </a>
           </li>
           <li class="menu-item ">
-            <a href="analytics.html" class="menu-link">
+            <a href="analytics.php" class="menu-link">
               <i class="menu-icon tf-icons bx bx-chart"></i>
               <div data-i18n="Analytics">Analytics</div>
             </a>
           </li>
           <li class="menu-item ">
-            <a href="league-standings.html" class="menu-link">
+            <a href="league-standings.php" class="menu-link">
               <i class="menu-icon tf-icons bx bx-crown"></i>
               <div data-i18n="LeagueStandings">League Standings</div>
             </a>
           </li>
-          <li class="menu-item ">
-            <a href="studybuddy.html" class="menu-link">
-              <i class="menu-icon tf-icons bx bx-brain"></i>
-              <div data-i18n="StudyBuddy">StudyBuddy AI</div>
-            </a>
-          </li>
-          <li class="menu-item ">
-            <a href="contact-us.html" class="menu-link">
-              <i class="menu-icon tf-icons bx bx-phone"></i>
-              <div data-i18n="ContactUs">Contact Us</div>
-            </a>
-          </li>
+
         </ul>
         </ul>
       </aside>
@@ -593,11 +583,12 @@ $userId = $userController->getUserByUsername($username)['UserId'];
                       $document = $documentController->getDocumentById($download['DocumentId']);
                       $isFavorited = $favoriteController->getFavoriteByUserIdAndDocumentId($userId, $document['DocumentId']);
                       $imgSrc = ($isFavorited ? '../assets/img/icons/unicons/heartfilled.png' : '../assets/img/icons/unicons/heart.png');
+                      $author = $userController->getUser($document['UserId'])['Username'];
                       ?>
                       <div class="col">
                         <div class="card h-100">
                           <img class="card-img-top"
-                            src="../thumbnails/<?php echo $username ?>/<?php echo $document['ThumbnailPath']; ?>">
+                            src="../thumbnails/<?php echo $author ?>/<?php echo $document['ThumbnailPath']; ?>">
                           <div class="card-body">
                             <hr>
                             <h5 class="card-title">
@@ -669,11 +660,11 @@ $userId = $userController->getUserByUsername($username)['UserId'];
                             <div class="d-flex align-items-center mb-3">
                               <span class="text">Author:
                                 <?php
-                                echo $username;
+                                echo $author;
                                 ?>
                               </span>
                             </div>
-                            <a href="../uploads/<?php echo $username ?>/<?php echo $document['FilePath']; ?>" download>
+                            <a href="../uploads/<?php echo $author ?>/<?php echo $document['FilePath']; ?>" download>
                               <div
                                 class="d-flex justify-content-center text-center flex-column flex-md-row gap-2 text-nowrap pe-xl-3 pe-xxl-0 bg-primary text-white rounded">
                                 <span class="me-2 ml-3">Download</span><i class="bx bx-download lh-1 scaleX-n1-rtl"></i>

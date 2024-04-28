@@ -24,7 +24,8 @@ $favoriteController = new FavoriteController();
 
 $db = DBConnect();
 $username = $_SESSION['username'];
-$userId = $userController->getUserByUsername($username)['UserId'];
+$user = $userController->getUserByUsername($username);
+$userId = $user['UserId'];
 $getUploadedDocumentsQuery = "SELECT * FROM Document WHERE UserId = (SELECT UserId FROM User WHERE Username = ?)";
 $stmt = $db->prepare($getUploadedDocumentsQuery);
 $stmt->execute([$username]);
@@ -97,6 +98,30 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="menu-inner-shadow"></div>
 
         <ul class="menu-inner py-1">
+          <li>
+            <div id="token-container" style="display: flex; margin: 18px; margin-top:0px">
+              <div id="uploads-token" style="margin-right: auto;">
+                <span>
+                  <img src="../assets/img/icons/tokens/uploadstoken.png">
+                  <?php
+                  $contributionScore = $user['ContributionScore'];
+                  $totalDownloaded = $user['TotalDownloaded'];
+                  $tokenScore = $contributionScore - 2 * $totalDownloaded;
+                  echo $tokenScore;
+                  ?>
+                </span>
+              </div>
+              <div class="vertical-divider" style="width: 20px;"></div>
+              <div id="downloads-token" style="margin-left: auto;">
+                <span>
+                  <img src="../assets/img/icons/tokens/downloadstoken.png">
+                  <?php
+                  echo $contributionScore;
+                  ?>
+                </span>
+              </div>
+            </div>
+          </li>
           <!-- Dashboards -->
           <li class="menu-item ">
             <a href="../landing.php" class="menu-link">
@@ -651,18 +676,31 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <div id="starRating_<?php echo $document['DocumentId']; ?>">
                               <?php
                               // Fetch the user's rating for the document
+                              $canRate;
                               $testRating = $downloadController->getDownloadByUserAndDocument($userId, $document['DocumentId']);
                               if ($testRating) {
                                 $userRating = $testRating['Rating'];
+                                $canRate = true;
                               } else {
                                 $userRating = 0;
+                                $canRate = false;
                               }
+
+
                               // Render stars based on user's rating
                               for ($i = 0; $i < 5; $i++) {
-                                if ($userRating !== null && $i < $userRating) {
-                                  echo '<i class="bx bx-star bxs-star" style="color: #ffab00;" onclick="toggleStar(' . $i . ', ' . $document['DocumentId'] . ')"></i>';
+                                if ($canRate) {
+                                  if ($userRating !== null && $i < $userRating) {
+                                    echo '<i class="bx bx-star bxs-star" style="color: #ffab00;" onclick="toggleStar(' . $i . ', ' . $document['DocumentId'] . ')"></i>';
+                                  } else {
+                                    echo '<i class="bx bx-star" onclick="toggleStar(' . $i . ', ' . $document['DocumentId'] . ')"></i>';
+                                  }
                                 } else {
-                                  echo '<i class="bx bx-star" onclick="toggleStar(' . $i . ', ' . $document['DocumentId'] . ')"></i>';
+                                  if ($i < $userRating) {
+                                    echo '<i class="bx bx-star bxs-star" style="color: #ffab00;"></i>';
+                                  } else {
+                                    echo '<i class="bx bx-star"></i>';
+                                  }
                                 }
                               }
                               ?>
@@ -678,27 +716,22 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <div class="d-flex justify-content-center gap-3 mb-2 text-white ">
                               <!-- First Download Button -->
                               <div class="d-flex align-items-center bg-primary rounded p-1">
-                                <button id="applyFilterBtn" class="btn btn-primary me-2">Download</button>
-                                <i class="bx bx-download"></i>
+                                <?php
+                                $test = $downloadController->getDownloadByUserAndDocument($userId, $document['DocumentId']);
+                                $downloadAllowed = ($tokenScore > 2 || $test);
+                                if ($downloadAllowed): ?>
+                                  <button class="btn btn-primary download-btn"
+                                    data-document-id="<?php echo $document['DocumentId']; ?>"
+                                    onclick="initiateDownload(<?php echo $userId; ?>, <?php echo $document['DocumentId']; ?>, '../uploads/<?php echo $author ?>/<?php echo $document['FilePath']; ?>', '<?php echo $document['Title']; ?>')">
+                                    Download </button>
+                                <?php else: ?>
+                                  <button class="btn btn-primary download-btn"> Insufficient Tokens! </button>
+                                <?php endif; ?>
                               </div>
 
-                              <!-- Second Download Button -->
 
                             </div>
-                            <div class="d-flex justify-content-center gap-3  text-white ">
-                              <!-- First Download Button -->
-                              <!-- <div class="d-flex align-items-center bg-primary rounded p-1">
-                                <div class="d-flex align-items-center bg-primary rounded p-1">
-                                  <button class="btn btn-primary toggle-favorite"
-                                    data-document-id="<?php echo $document['DocumentId']; ?>">
-                                    <?php echo $buttonText; ?> <i class="bx bx-star"></i>
-                                  </button>
-                                </div>
-                              </div> -->
 
-                              <!-- Second Download Button -->
-
-                            </div>
                           </div>
                         </div>
                       </div>
@@ -964,6 +997,34 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 },
                 error: function () {
                   console.error('Error toggling favorite.');
+                }
+              });
+            }
+          </script>
+          <script>
+            function initiateDownload(userId, documentId, filePath, fileName) {
+              // Send AJAX request to decrement token score and initiate download
+              $.ajax({
+                url: "../BE/download.php",
+                type: "POST",
+                data: { documentId: documentId },
+                success: function (response) {
+                  if (response === "success") {
+                    var downloadLink = filePath;
+                    var anchor = document.createElement('a');
+                    anchor.href = downloadLink;
+                    console.log(fileName);
+                    anchor.download = fileName;
+                    document.body.appendChild(anchor);
+                    anchor.click();
+                    document.body.removeChild(anchor);
+                  } else {
+                    alert("Failed to download the document. Please try again later.");
+                  }
+                },
+                error: function (xhr, status, error) {
+                  console.error(xhr.responseText);
+                  alert("An error occurred while processing your request. Please try again later.");
                 }
               });
             }

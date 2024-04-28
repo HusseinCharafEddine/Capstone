@@ -291,7 +291,19 @@ class DownloadController
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result;
     }
-
+    function addDocumentToDownloads($userId, $documentId)
+    {
+        $downloadController = new DownloadController(); // Instantiate the controller if not already instantiated
+        // Check if the user has not downloaded the document yet
+        if (!$downloadController->getDownloadByUserAndDocument($userId, $documentId)) {
+            $query = "INSERT INTO Downloaded (UserId, DocumentId) VALUES (?, ?)";
+            $stmt = $this->db->prepare($query);
+            $stmt->execute([$userId, $documentId]);
+            return $stmt->rowCount() > 0; // Return true if insertion was successful
+        } else {
+            return true;
+        }
+    }
 
     public function updateDocumentRating($userId, $documentId, $newRating)
     {
@@ -311,6 +323,10 @@ class DownloadController
             return false;
         }
     }
+    // Function to add a document to the downloads table
+
+
+
 
 }
 
