@@ -189,19 +189,18 @@ $user = $userController->getUserByUsername($username);
               <i class="bx bx-menu bx-sm"></i>
             </a>
           </div>
+ <!-- /Search -->
+          <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse" style="width=100%;">
 
-
-          <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
-
-
-
-
-            <!-- Search -->
-            <div class="navbar-nav align-items-center">
-              <div class="nav-item d-flex align-items-center">
+            <div class="navbar-nav align-items-center" style="width=100%;">
+              <div class="nav-item d-flex align-items-center position-relative" style="width=100%;">
                 <i class="bx bx-search fs-4 lh-0"></i>
-                <input type="text" class="form-control border-0 shadow-none ps-1 ps-sm-2" placeholder="Search..."
-                  aria-label="Search...">
+                <input id="searchInput" type="text" class="form-control border-0 shadow-none ps-1 ps-sm-2"
+                  placeholder="Search..." aria-label="Search..." onkeyup="fetchSearchSuggestions(this.value)">
+                <div id="searchSuggestions" class="search-suggestions" style="position: absolute; top: 134%; left: 5%;background-color: #fff;
+                width:100%; border-top: none; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+                max-height: 200px; overflow-y: auto; ">
+                </div>
               </div>
             </div>
             <!-- /Search -->
@@ -619,7 +618,7 @@ $user = $userController->getUserByUsername($username);
 
             // Calculate the offset
             $offset = ($page - 1) * $uploadsPerPage;
-
+            $searchTerm = isset($_GET['searchTerm']) ? $_GET['searchTerm'] : '';
             // Fetch uploads for the current page from your data source
             $uploadsForPage = $documentController->fetchDocumentsForPage($user['UserId'], $offset, $uploadsPerPage);
             ?>
@@ -841,6 +840,34 @@ $user = $userController->getUserByUsername($username);
         var hiddenInput = document.getElementById('type-hidden');
         hiddenInput.value = select.value;
       }
+    </script>
+
+    <script>
+    //search suggestions
+    const UserId = <?php echo isset($_SESSION['userId']) ? $_SESSION['userId'] : 'null'; ?>;
+    function fetchSearchSuggestions() {
+                var searchTerm = document.getElementById("searchInput").value;
+                if (searchTerm.trim() === '') {
+                  return; // No suggestions for empty search term
+                }
+
+                // AJAX call to fetch search suggestions based on the input
+                $.ajax({
+                  url: '../BE/fetchSearchSuggestionsUploads.php',
+                  method: 'GET',
+                  data: { searchTerm: searchTerm,
+                  UserId: UserId},
+                  success: function (response) {
+                    // Update the search suggestions dropdown with retrieved suggestions
+                    var suggestionsDropdown = document.getElementById("searchSuggestions");
+                    suggestionsDropdown.innerHTML = response;
+                    suggestionsDropdown.style.display = 'block'; // Show the suggestions dropdown
+                  },
+                  error: function (xhr, status, error) {
+                    console.error(error);
+                  }
+                });
+              }
     </script>
 </body>
 

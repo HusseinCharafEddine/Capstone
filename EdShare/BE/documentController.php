@@ -153,5 +153,29 @@ class DocumentController
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function searchUserDocuments($UserId, $searchTerm)
+{
+    // Prepare the search query to match document names or categories for a specific user
+    $query = "SELECT *
+              FROM document
+              WHERE UserId = :UserId
+              AND (Title LIKE :searchTerm OR Category LIKE :searchTerm)";
+
+    // Prepare the query
+    $stmt = $this->db->prepare($query);
+
+    // Bind the user ID and search term parameters
+    $searchParam = '%' . $searchTerm . '%'; // Wrap the search term with wildcards for partial matching
+    $stmt->bindParam(':UserId', $UserId, PDO::PARAM_INT);
+    $stmt->bindParam(':searchTerm', $searchParam, PDO::PARAM_STR);
+
+    // Execute the query
+    $stmt->execute();
+
+    // Return the search results
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
 }
 ?>
