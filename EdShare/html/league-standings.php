@@ -79,19 +79,19 @@ $userId = $userController->getUserByUsername($username)['UserId'];
         <ul class="menu-inner py-1">
           <!-- Dashboards -->
           <li class="menu-item">
-            <a href="../landing.html" class="menu-link">
+            <a href="../landing.php" class="menu-link">
               <i class="menu-icon tf-icons bx bx-home-circle"></i>
               <div data-i18n="Home">Home</div>
             </a>
           </li>
           <li class="menu-item ">
-            <a href="history.html" class="menu-link">
-              <i class="menu-icon tf-icons bx bx-history"></i>
-              <div data-i18n="History">History</div>
+            <a href="favorites.php" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-heart"></i>
+              <div data-i18n="Favorites">Favorites</div>
             </a>
           </li>
           <li class="menu-item  ">
-            <a href="downloads.html" class="menu-link">
+            <a href="downloads.php" class="menu-link">
               <i class="menu-icon tf-icons bx bx-download"></i>
               <div data-i18n="Downloads">Downloads</div>
             </a>
@@ -103,29 +103,18 @@ $userId = $userController->getUserByUsername($username)['UserId'];
             </a>
           </li>
           <li class="menu-item ">
-            <a href="analytics.html" class="menu-link">
+            <a href="analytics.php" class="menu-link">
               <i class="menu-icon tf-icons bx bx-chart"></i>
               <div data-i18n="Analytics">Analytics</div>
             </a>
           </li>
           <li class="menu-item active">
-            <a href="league-standings.html" class="menu-link">
+            <a href="league-standings.pgp" class="menu-link">
               <i class="menu-icon tf-icons bx bx-crown"></i>
               <div data-i18n="LeagueStandings">League Standings</div>
             </a>
           </li>
-          <li class="menu-item ">
-            <a href="studybuddy.html" class="menu-link">
-              <i class="menu-icon tf-icons bx bx-brain"></i>
-              <div data-i18n="StudyBuddy">StudyBuddy AI</div>
-            </a>
-          </li>
-          <li class="menu-item ">
-            <a href="contact-us.html" class="menu-link">
-              <i class="menu-icon tf-icons bx bx-phone"></i>
-              <div data-i18n="ContactUs">Contact Us</div>
-            </a>
-          </li>
+
         </ul>
         </ul>
       </aside>
