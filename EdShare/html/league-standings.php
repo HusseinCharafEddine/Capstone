@@ -9,7 +9,8 @@ require ("../BE/common/commonFunctions.php");
 require ("../BE/userController.php");
 $username = $_SESSION['username'];
 $userController = new UserController();
-$userId = $userController->getUserByUsername($username)['UserId'];
+$user = $userController->getUserByUsername($username);
+$userId = $user['UserId'];
 ?>
 <html lang="en" class="light-style layout-menu-fixed layout-compact" dir="ltr" data-theme="theme-default"
   data-assets-path="../assets/" data-template="vertical-menu-template-free">
@@ -78,6 +79,29 @@ $userId = $userController->getUserByUsername($username)['UserId'];
 
         <ul class="menu-inner py-1">
           <!-- Dashboards -->
+          <li>
+            <div id="token-container" style="display: flex; margin: 18px; margin-top:0px">
+              <div id="uploads-token" style="margin-right: auto;">
+                <span>
+                  <img src="../assets/img/icons/tokens/uploadstoken.png">
+                  <?php
+                  $contributionScore = $user['ContributionScore'];
+                  echo $contributionScore - 2 * $user['TotalDownloaded'];
+                  ?>
+                </span>
+              </div>
+              <div class="vertical-divider" style="width: 20px;"></div>
+              <div id="downloads-token" style="margin-left: auto;">
+                <span>
+                  <img src="../assets/img/icons/tokens/downloadstoken.png">
+                  <?php
+                  echo $contributionScore;
+
+                  ?>
+                </span>
+              </div>
+            </div>
+          </li>
           <li class="menu-item">
             <a href="../landing.php" class="menu-link">
               <i class="menu-icon tf-icons bx bx-home-circle"></i>

@@ -27,6 +27,8 @@ $getUploadedDocumentsQuery = "SELECT * FROM Document WHERE UserId = (SELECT User
 $stmt = $db->prepare($getUploadedDocumentsQuery);
 $stmt->execute([$username]);
 $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$user = $userController->getUserByUsername($username);
+
 ?>
 <html lang="en" class="light-style layout-menu-fixed layout-compact" dir="ltr" data-theme="theme-default"
   data-assets-path="assets/" data-template="vertical-menu-template-free">
@@ -97,22 +99,22 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
           <!-- Dashboards -->
           <li>
             <div id="token-container" style="display: flex; margin: 18px; margin-top:0px">
-              <div id="uploads-token" style="margin-right: auto;"> 
+              <div id="uploads-token" style="margin-right: auto;">
                 <span>
-                <img src="assets/img/icons/tokens/uploadstoken.png">
+                  <img src="assets/img/icons/tokens/uploadstoken.png">
                   <?php
-                    $uploadcount = $userController->getUploadCount($_SESSION['username']);
-                    echo $uploadcount['UploadCount'];
+                  $contributionScore = $user['ContributionScore'];
+                  echo $contributionScore - 2 * $user['TotalDownloaded'];
                   ?>
                 </span>
               </div>
               <div class="vertical-divider" style="width: 20px;"></div>
               <div id="downloads-token" style="margin-left: auto;">
                 <span>
-                <img src="assets/img/icons/tokens/downloadstoken.png">
+                  <img src="assets/img/icons/tokens/downloadstoken.png">
                   <?php
-                    $downloadcount = $userController->getDownloadCount($_SESSION['username']);
-                    echo $downloadcount['DownloadCount'];
+                  echo $contributionScore;
+
                   ?>
                 </span>
               </div>
