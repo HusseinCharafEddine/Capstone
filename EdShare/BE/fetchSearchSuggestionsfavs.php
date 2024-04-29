@@ -5,9 +5,10 @@ $favoriteController = new FavoriteController();
 
 // Retrieve search term from AJAX request
 $searchTerm = isset($_GET['searchTerm']) ? $_GET['searchTerm'] : '';
+$UserId = isset($_GET['UserId']) ? $_GET['UserId'] : ''; // Remove the extra space
 
 // Fetch document titles based on the search term (for suggestions)
-$searchSuggestions = $favoriteController->searchDocuments($searchTerm);
+$searchSuggestions = $favoriteController->searchDocuments($UserId, $searchTerm);
 
 echo '<style>
         

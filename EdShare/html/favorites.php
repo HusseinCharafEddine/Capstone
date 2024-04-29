@@ -912,6 +912,7 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
           <!-- search -->
 
           <script>
+            const UserId = <?php echo isset($_SESSION['userId']) ? $_SESSION['userId'] : 'null'; ?>;
             function fetchSearchSuggestions() {
               var searchTerm = document.getElementById("searchInput").value;
               if (searchTerm.trim() === '') {
@@ -922,7 +923,7 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
               $.ajax({
                 url: '../BE/fetchSearchSuggestionsfavs.php',
                 method: 'GET',
-                data: { searchTerm: searchTerm },
+                data: { searchTerm: searchTerm, UserId: UserId},
                 success: function (response) {
                   // Update the search suggestions dropdown with retrieved suggestions
                   var suggestionsDropdown = document.getElementById("searchSuggestions");
