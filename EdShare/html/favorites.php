@@ -641,7 +641,7 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
                                   Close
                                 </button>
-                                <button type="button" class="btn btn-primary" onclick="createFile()">Create</button>
+                                <button type="button" class="btn btn-primary" onclick="createFolder()">Create</button>
                               </div>
                             </div>
                           </div>
@@ -1062,10 +1062,36 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
           </script>
 
           <script>
-             function createFile() {
-       alert("heyman");
-         
+          
+  function createFolder() {
+    var folderName = document.getElementById('nameBasic').value;
+    // Check if the folder name is not empty
+    if (folderName.trim() === "") {
+      alert("Please enter a folder name.");
+      return;
     }
+    
+    // Send AJAX request to create the folder
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '../BE/create_folder.php', true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === XMLHttpRequest.DONE) {
+        if (xhr.status === 200) {
+          // Folder created successfully, do something if needed
+          console.log(xhr.responseText);
+          // Optionally, you can close the modal here
+          $('#basicModal').modal('hide');
+        } else {
+          // Error handling if folder creation fails
+          console.error('Failed to create folder.');
+        }
+      }
+    };
+    xhr.send('folderName=' + encodeURIComponent(folderName));
+  }
+</script>
+
           </script>
 </body>
 
