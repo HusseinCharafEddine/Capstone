@@ -617,7 +617,37 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                   $favoritesForPage = $favoriteController->fetchFavorites($userId, $offset, $uploadsPerPage, $filter, $searchTerm);
                   ?>
 
-                  <h6 class="mb-5 mt-5">Favorites</h6>
+                <div style="display: flex; align-items: center;">
+                <h6 class="mb-5 mt-5">Favorites</h6>
+                <button type="button" class="btn rounded-pill btn-primary ms-3" data-bs-toggle="modal" data-bs-target="#basicModal">
+                <span class="tf-icons bx bx-folder me-1"></span>New Folder
+                </button>
+                <div class="modal fade" id="basicModal" tabindex="-1" aria-hidden="true">
+                          <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel1">Create New Folder</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+                              <div class="modal-body">
+                                <div class="row">
+                                  <div class="col mb-3">
+                                    <label for="nameBasic" class="form-label">Name</label>
+                                    <input type="text" id="nameBasic" class="form-control" placeholder="Enter Name">
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                  Close
+                                </button>
+                                <button type="button" class="btn btn-primary" onclick="createFile()">Create</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                </div>
+
 
                   <div class="row row-cols-1 row-cols-md-4 g-3 mb-3">
                     <?php foreach ($favoritesForPage as $favorite): ?>
@@ -1029,6 +1059,13 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 }
               });
             }
+          </script>
+
+          <script>
+             function createFile() {
+       alert("heyman");
+         
+    }
           </script>
 </body>
 
