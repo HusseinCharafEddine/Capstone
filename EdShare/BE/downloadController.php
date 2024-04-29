@@ -62,6 +62,7 @@ class DownloadController
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
     public function fetchDownloadsForPage($userId, $offset, $downloadsPerPage, $filter = null)
     {
         // Start building the query
@@ -325,9 +326,30 @@ class DownloadController
     }
     // Function to add a document to the downloads table
 
+    public function searchUserDownloads($UserId, $searchTerm)
+    {
+        // Prepare the search query to match document names or categories
+        $query = "SELECT d.*
+        FROM document d
+        INNER JOIN downloaded dl ON d.DocumentId = dl.DocumentId
+        WHERE (d.Title LIKE :searchTerm OR d.Category LIKE :searchTerm)
+          AND dl.UserId = :UserId
+        ";
+    
+        // Prepare the query
+        $stmt = $this->db->prepare($query);
+    
+        // Bind the user ID and search term parameters
+        $searchParam = '%' . $searchTerm . '%'; // Wrap the search term with wildcards for partial matching
+        $stmt->bindParam(':UserId', $UserId, PDO::PARAM_INT);
+        $stmt->bindParam(':searchTerm', $searchParam, PDO::PARAM_STR);
 
-
-
+    
+        // Execute the query
+        $stmt->execute();
+    
+        // Return the search results
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
-
 ?>

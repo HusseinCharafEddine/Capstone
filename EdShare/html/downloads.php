@@ -154,16 +154,21 @@ $_SESSION["userId"] = $userId;
               <i class="bx bx-menu bx-sm"></i>
             </a>
           </div>
-          <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
 
-            <!-- Search -->
-            <div class="navbar-nav align-items-center">
-              <div class="nav-item d-flex align-items-center">
-                <i class="bx bx-search fs-4 lh-0"></i>
-                <input type="text" class="form-control border-0 shadow-none ps-1 ps-sm-2" placeholder="Search..."
-                  aria-label="Search...">
-              </div>
-            </div>
+          <!-- /Search -->
+
+          <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse" style="width=100%;">
+<div class="navbar-nav align-items-center" style="width=100%;">
+  <div class="nav-item d-flex align-items-center position-relative" style="width=100%;">
+    <i class="bx bx-search fs-4 lh-0"></i>
+    <input id="searchInput" type="text" class="form-control border-0 shadow-none ps-1 ps-sm-2"
+      placeholder="Search..." aria-label="Search..." onkeyup="fetchSearchSuggestions(this.value)">
+    <div id="searchSuggestions" class="search-suggestions" style="position: absolute; top: 134%; left: 5%;background-color: #fff;
+    width:100%; border-top: none; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    max-height: 200px; overflow-y: auto; ">
+    </div>
+  </div>
+</div>
             <!-- /Search -->
 
 
@@ -559,7 +564,7 @@ $_SESSION["userId"] = $userId;
                   $universityId = isset($_GET['universityId']) ? intval($_GET['universityId']) : 0;
                   $courseId = isset($_GET['courseId']) ? intval($_GET['courseId']) : 0;
                   $rating = isset($_GET['rating']) ? intval($_GET['rating']) : 0;
-
+                  $searchTerm = isset($_GET['searchTerm']) ? $_GET['searchTerm'] : '';
                   // Build the filter string based on the selected filter values
                   $filter = array();
                   if ($universityId != 0) {
@@ -572,7 +577,7 @@ $_SESSION["userId"] = $userId;
                     $filter['rating'] = $rating;
                   }
 
-                  $downloadsForPage = $downloadController->fetchDownloadsForPage($user['UserId'], $offset, $downloadsPerPage, $filter);
+                  $downloadsForPage = $downloadController->fetchDownloadsForPage($user['UserId'], $offset, $downloadsPerPage, $filter, $searchTerm);
                   ?>
 
                   <h6 class="mb-5 mt-5">My Downloads</h6>
@@ -746,14 +751,77 @@ $_SESSION["userId"] = $userId;
 
 
           <script>
-            document.getElementById("applyFilterBtn").addEventListener("click", function () {
+             function submitFilter() {
               var universityId = document.getElementById("University").value;
               var courseId = document.getElementById("Category").value;
               var rating = document.getElementById("Rating").value;
+              var searchTerm = document.getElementById("searchInput").value;
 
               // Redirect to the same page with filter parameters
-              window.location.href = window.location.pathname + "?universityId=" + universityId + "&courseId=" + courseId + "&rating=" + rating;
-            });
+              window.location.href = window.location.pathname + "?universityId=" + universityId + "&courseId=" + courseId + "&rating=" + rating +
+                  "&searchTerm=" + encodeURIComponent(searchTerm);
+            }
+            const UserId = <?php echo isset($_SESSION['userId']) ? $_SESSION['userId'] : 'null'; ?>;
+            function fetchSearchSuggestions() {
+                var searchTerm = document.getElementById("searchInput").value;
+                if (searchTerm.trim() === '') {
+                  return; // No suggestions for empty search term
+                }
+
+                // AJAX call to fetch search suggestions based on the input
+                $.ajax({
+                  url: '../BE/fetchSearchSuggestionsDownloads.php',
+                  method: 'GET',
+                  data: { searchTerm: searchTerm, UserId: UserId},
+                  success: function (response) {
+                    // Update the search suggestions dropdown with retrieved suggestions
+                    var suggestionsDropdown = document.getElementById("searchSuggestions");
+                    suggestionsDropdown.innerHTML = response;
+                    suggestionsDropdown.style.display = 'block'; // Show the suggestions dropdown
+                  },
+                  error: function (xhr, status, error) {
+                    console.error(error);
+                  }
+                });
+              }
+
+              // Add event listeners to search icon, search input field, and search suggestions
+              document.addEventListener("DOMContentLoaded", function () {
+                // Event listener for clicking the search icon
+                document.querySelector(".bx-search").addEventListener("click", function () {
+                  submitFilter(); // Trigger filter submission
+                });
+
+                // Event listener for Enter key press in the search input field
+                document.getElementById("searchInput").addEventListener("keypress", function (event) {
+                  if (event.key === "Enter") {
+                    submitFilter(); // Trigger filter submission
+                  }
+                });
+
+                // Event listener for input change in the search input field (for suggestions)
+                document.getElementById("searchInput").addEventListener("input", function () {
+                  fetchSearchSuggestions(); // Fetch search suggestions as user types
+                });
+                document.addEventListener("click", function (event) {
+                  var clickedElement = event.target;
+                  if (clickedElement.classList.contains("search-suggestion")) {
+                    // Set the search input value to the clicked suggestion
+                    document.getElementById("searchInput").value = clickedElement.textContent.trim();
+                    // Hide the suggestions container after selection
+                    document.getElementById("searchSuggestions").style.display = "none";
+                  }
+                });
+
+                var applyFilterBtn = document.getElementById('applyFilterBtn');
+
+                // Add a click event listener to the button
+                applyFilterBtn.addEventListener('click', function () {
+                  // Call the submitFilter() function when the button is clicked
+                  submitFilter();
+                });
+
+              });
           </script>
 
           <!-- for rating lioops -->
