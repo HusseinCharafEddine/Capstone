@@ -13,16 +13,19 @@ require ("BE/userController.php");
 require ("BE/documentController.php");
 require ("BE/universityController.php");
 require ("BE/downloadController.php");
+require ("BE/favoriteController.php");
 
 $userController = new UserController();
 $courseController = new CoursesController();
 $documentController = new DocumentController();
 $universityController = new UniversityController();
 $downloadController = new DownloadController();
-
+$favoriteController = new FavoriteController();
 $db = DBConnect();
 $username = $_SESSION['username'];
-
+$user = $userController->getUserByUsername($username);
+$userId = $user["UserId"];
+$_SESSION["userId"] = $userId;
 $getUploadedDocumentsQuery = "SELECT * FROM Document WHERE UserId = (SELECT UserId FROM User WHERE Username = ?)";
 $stmt = $db->prepare($getUploadedDocumentsQuery);
 $stmt->execute([$username]);
@@ -58,6 +61,7 @@ $user = $userController->getUserByUsername($username);
   <link rel="stylesheet" href="assets/vendor/css/core.css" class="template-customizer-core-css" />
   <link rel="stylesheet" href="assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
   <link rel="stylesheet" href="assets/css/demo.css" />
+  <link rel="stylesheet" href="assets/css/favs.css" />
 
   <!-- Vendors CSS -->
   <link rel="stylesheet" href="assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
@@ -96,6 +100,30 @@ $user = $userController->getUserByUsername($username);
         <div class="menu-inner-shadow"></div>
 
         <ul class="menu-inner py-1">
+          <li>
+            <div id="token-container" style="display: flex; margin: 18px; margin-top:0px">
+              <div id="uploads-token" style="margin-right: auto;">
+                <span>
+                  <img src="assets/img/icons/tokens/uploadstoken.png">
+                  <?php
+                  $contributionScore = $user['ContributionScore'];
+                  $totalDownloaded = $user['TotalDownloaded'];
+                  $tokenScore = $contributionScore - 2 * $totalDownloaded;
+                  echo $tokenScore;
+                  ?>
+                </span>
+              </div>
+              <div class="vertical-divider" style="width: 20px;"></div>
+              <div id="downloads-token" style="margin-left: auto;">
+                <span>
+                  <img src="assets/img/icons/tokens/downloadstoken.png">
+                  <?php
+                  echo $contributionScore;
+                  ?>
+                </span>
+              </div>
+            </div>
+          </li>
           <!-- Dashboards -->
           <li>
             <div id="token-container" style="display: flex; margin: 18px; margin-top:0px">
@@ -121,15 +149,15 @@ $user = $userController->getUserByUsername($username);
             </div>
           </li>
           <li class="menu-item active">
-            <a href="landing.html" class="menu-link">
+            <a href="landing.php" class="menu-link">
               <i class="menu-icon tf-icons bx bx-home-circle"></i>
               <div data-i18n="Home">Home</div>
             </a>
           </li>
           <li class="menu-item ">
-            <a href="html/history.html" class="menu-link">
-              <i class="menu-icon tf-icons bx bx-history"></i>
-              <div data-i18n="History">History</div>
+            <a href="html/favorites.php" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-heart"></i>
+              <div data-i18n="Favorites">Favorites</div>
             </a>
           </li>
           <li class="menu-item ">
@@ -145,29 +173,18 @@ $user = $userController->getUserByUsername($username);
             </a>
           </li>
           <li class="menu-item ">
-            <a href="html/analytics.html" class="menu-link">
+            <a href="html/analytics.php" class="menu-link">
               <i class="menu-icon tf-icons bx bx-chart"></i>
               <div data-i18n="Analytics">Analytics</div>
             </a>
           </li>
           <li class="menu-item ">
-            <a href="html/league-standings.html" class="menu-link">
+            <a href="html/league-standings.php" class="menu-link">
               <i class="menu-icon tf-icons bx bx-crown"></i>
               <div data-i18n="LeagueStandings">League Standings</div>
             </a>
           </li>
-          <li class="menu-item ">
-            <a href="html/studybuddy.html" class="menu-link">
-              <i class="menu-icon tf-icons bx bx-brain"></i>
-              <div data-i18n="StudyBuddy">StudyBuddy AI</div>
-            </a>
-          </li>
-          <li class="menu-item ">
-            <a href="html/contact-us.html" class="menu-link">
-              <i class="menu-icon tf-icons bx bx-phone"></i>
-              <div data-i18n="ContactUs">Contact Us</div>
-            </a>
-          </li>
+
         </ul>
         </ul>
       </aside>
@@ -185,17 +202,22 @@ $user = $userController->getUserByUsername($username);
               <i class="bx bx-menu bx-sm"></i>
             </a>
           </div>
-          <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+          <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse" style="width=100%;">
 
-            <!-- Search -->
-            <div class="navbar-nav align-items-center">
-              <div class="nav-item d-flex align-items-center">
+            <div class="navbar-nav align-items-center" style="width=100%;">
+              <div class="nav-item d-flex align-items-center position-relative" style="width=100%;">
                 <i class="bx bx-search fs-4 lh-0"></i>
-                <input type="text" class="form-control border-0 shadow-none ps-1 ps-sm-2" placeholder="Search..."
-                  aria-label="Search...">
+                <input id="searchInput" type="text" class="form-control border-0 shadow-none ps-1 ps-sm-2"
+                  placeholder="Search..." aria-label="Search..." onkeyup="fetchSearchSuggestions(this.value)">
+                <div id="searchSuggestions" class="search-suggestions" style="position: absolute; top: 134%; left: 5%;background-color: #fff;
+                width:100%; border-top: none; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+                max-height: 200px; overflow-y: auto; ">
+                </div>
               </div>
             </div>
-            <!-- /Search -->
+
+
+
 
 
 
@@ -536,7 +558,372 @@ $user = $userController->getUserByUsername($username);
           <!-- Content -->
 
           <div class="container-xxl flex-grow-1 container-p-y">
-            <div class="app-academy">
+            <div class="row">
+              <div class="col-lg-4 col-md-12 col-6 mb-4">
+                <div class="card">
+                  <div class="card-body">
+                    <span>Hottest Today</span>
+                    <?php
+                    $downloadController = new DownloadController();
+                    $mostDownloadedToday = $downloadController->getMostDownloadedToday();
+                    $downloadController = new DownloadController();
+                    $newestDownloadedDocument = $downloadController->getNewestDownloadedDocument($mostDownloadedToday['DocumentId']);
+                    $excludeDocumentIds = [$mostDownloadedToday['DocumentId'], $newestDownloadedDocument['DocumentId']];
+
+                    $mostDownloadedYesterday = $downloadController->getMostDownloadedYesterday($excludeDocumentIds);
+                    if ($mostDownloadedToday) {
+                      $documentId = $mostDownloadedToday['DocumentId'];
+                      $document = $documentController->getDocumentById($documentId);
+
+                      // Display document details
+                      if ($document) {
+                        echo '<h5>' . $document['Title'] . '</h5>';
+                        // Add more details as needed
+                      }
+                    }
+                    ?>
+                    <div class="row row-cols-1 row-cols-md-3 g-3 mb-3">
+
+                      <div class="col-lg-12 col-md-6 mb-4">
+                        <div class="card h-100">
+                          <?php
+                          $download = $downloadController->getMostDownloadedToday();
+                          $document = $documentController->getDocumentById($download['DocumentId']);
+                          $author = $userController->getUser((int) $document['UserId'])['Username'];
+                          $isFavorited = $favoriteController->getFavoriteByUserIdAndDocumentId(
+                            $userId,
+                            $document['DocumentId']
+                          );
+                          $buttonText = ($isFavorited ? 'Remove from Favorites' : 'Add to Favorites');
+                          $imgSrc = ($isFavorited ? 'assets/img/icons/unicons/heartfilled.png' : 'assets/img/icons/unicons/heart.png');
+                          ?>
+                          <div class="col">
+                            <div class="card h-100">
+                              <img class="card-img-top"
+                                src="thumbnails/<?php echo $author ?>/<?php echo $document['ThumbnailPath']; ?>">
+                              <div class="card-body">
+                                <h5 class="card-title">
+                                  <a href="app-academy-course-details.html" class="h5">
+                                    <?php echo $document['Title']; ?>
+                                  </a>
+                                  <span style="float: right;">
+                                    <a onclick="addToFavorites(<?php echo $document['DocumentId']; ?>)">
+                                      <img id="heart-fav<?php echo $document['DocumentId']; ?>" class="heart-favs"
+                                        src="<?php echo $imgSrc ?>">
+                                    </a>
+                                  </span>
+                                </h5>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                  <span class="badge bg-label-primary">
+                                    <?php
+                                    $course = $courseController->getCourse($document['CourseId']);
+                                    echo $course ? $course['CourseCode'] : 'Course Not Found';
+                                    ?>
+                                  </span>
+                                  <span class="badge bg-label-primary">
+                                    <?php
+                                    $university = $universityController->getUniversityById($course['UniversityId']);
+                                    echo $university ? $university['UniversityAcronym'] : 'University Not Found';
+                                    ?>
+                                  </span>
+                                  </span>
+                                  <?php echo round($downloadController->getAverageRatingByDocumentId($document["DocumentId"]), 1) ?>
+                                  <span class="text-warning"><i class="bx bxs-star me-1"></i></span><span
+                                    class="text-muted">
+                                    <?php echo "(" . $downloadController->getTotalRatingByDocumentId($document["DocumentId"]) . ")" ?>
+                                  </span>
+                                </div>
+                                <div id="starRating_<?php echo $document['DocumentId']; ?>">
+                                  <?php
+                                  // Fetch the user's rating for the document
+                                  $testRating = $downloadController->getDownloadByUserAndDocument($userId, $document['DocumentId']);
+                                  if ($testRating) {
+                                    $userRating = $testRating['Rating'];
+                                  } else {
+                                    $userRating = 0;
+                                  }
+                                  // Render stars based on user's rating
+                                  for ($i = 0; $i < 5; $i++) {
+                                    if ($userRating !== null && $i < $userRating) {
+                                      echo '<i class="bx bx-star bxs-star" style="color: #ffab00;" onclick="toggleStar(' . $i . ', ' . $document['DocumentId'] . ')"></i>';
+                                    } else {
+                                      echo '<i class="bx bx-star" onclick="toggleStar(' . $i . ', ' . $document['DocumentId'] . ')"></i>';
+                                    }
+                                  }
+                                  ?>
+                                </div>
+                                <div class="d-flex align-items-center mb-3">
+                                  <span class="text mb-3">Author: <?php echo $author; ?></span>
+                                </div>
+                                <div class="d-flex justify-content-center gap-3 mb-2 text-white">
+                                  <?php
+                                  $test = $downloadController->getDownloadByUserAndDocument($userId, $document['DocumentId']);
+                                  $downloadAllowed = ($tokenScore > 2 || $test);
+                                  if ($downloadAllowed): ?>
+                                    <button class="btn btn-primary download-btn"
+                                      data-document-id="<?php echo $document['DocumentId']; ?>"
+                                      onclick="initiateDownload(<?php echo $userId; ?>, <?php echo $document['DocumentId']; ?>, 'uploads/<?php echo $author ?>/<?php echo $document['FilePath']; ?>', '<?php echo $document['Title']; ?>')">
+                                      Download </button>
+                                  <?php else: ?>
+                                    <button class="btn btn-primary download-btn"> Insufficient Tokens! </button>
+                                  <?php endif; ?>
+                                </div>
+                                <!-- Favorite Button -->
+
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-4 col-md-12 col-6 mb-4">
+                <div class="card">
+                  <div class="card-body">
+                    <span>Yesterday's Pick</span>
+                    <?php
+                    // Get the most downloaded document today
+                    
+                    if ($mostDownloadedYesterday) {
+                      $documentId = $mostDownloadedYesterday['DocumentId'];
+                      $documentController = new DocumentController();
+                      $document = $documentController->getDocumentById($documentId);
+
+                      // Display document details
+                      if ($document) {
+                        echo '<h5>' . $document['Title'] . '</h5>';
+                        // Add more details as needed
+                      }
+                    }
+                    ?>
+                    <div class="row row-cols-1 row-cols-md-3 g-3 mb-3">
+
+                      <div class="col-lg-12 col-md-6 mb-4">
+                        <div class="card h-100">
+                          <?php
+                          $document = $documentController->getDocumentById($mostDownloadedYesterday['DocumentId']);
+                          $author = $userController->getUser((int) $document['UserId'])['Username'];
+                          $isFavorited = $favoriteController->getFavoriteByUserIdAndDocumentId(
+                            $userId,
+                            $document['DocumentId']
+                          );
+                          $imgSrc = ($isFavorited ? 'assets/img/icons/unicons/heartfilled.png' : 'assets/img/icons/unicons/heart.png');
+                          $buttonText = ($isFavorited ? 'Remove from Favorites' : 'Add to Favorites');
+                          ?>
+                          <div class="col">
+                            <div class="card h-100">
+                              <img class="card-img-top"
+                                src="thumbnails/<?php echo $author ?>/<?php echo $document['ThumbnailPath']; ?>">
+                              <div class="card-body">
+                                <h5 class="card-title">
+                                  <a href="app-academy-course-details.html" class="h5">
+                                    <?php echo $document['Title']; ?>
+                                  </a>
+                                  <span style="float: right;">
+                                    <a onclick="addToFavorites(<?php echo $document['DocumentId']; ?>)">
+                                      <img id="heart-fav<?php echo $document['DocumentId']; ?>" class="heart-favs"
+                                        src="<?php echo $imgSrc ?>">
+                                    </a>
+                                  </span>
+                                </h5>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                  <span class="badge bg-label-primary">
+                                    <?php
+                                    $course = $courseController->getCourse($document['CourseId']);
+                                    echo $course ? $course['CourseCode'] : 'Course Not Found';
+                                    ?>
+                                  </span>
+                                  <span class="badge bg-label-primary">
+                                    <?php
+                                    $university = $universityController->getUniversityById($course['UniversityId']);
+                                    echo $university ? $university['UniversityAcronym'] : 'University Not Found';
+                                    ?>
+                                  </span>
+                                  </span>
+                                  <?php echo round($downloadController->getAverageRatingByDocumentId($document["DocumentId"]), 1) ?>
+                                  <span class="text-warning"><i class="bx bxs-star me-1"></i></span><span
+                                    class="text-muted">
+                                    <?php echo "(" . $downloadController->getTotalRatingByDocumentId($document["DocumentId"]) . ")" ?>
+                                  </span>
+                                </div>
+                                <div id="starRating_<?php echo $document['DocumentId']; ?>">
+                                  <?php
+                                  // Fetch the user's rating for the document
+                                  $testRating = $downloadController->getDownloadByUserAndDocument($userId, $document['DocumentId']);
+                                  if ($testRating) {
+                                    $userRating = $testRating['Rating'];
+                                  } else {
+                                    $userRating = 0;
+                                  }
+                                  // Render stars based on user's rating
+                                  for ($i = 0; $i < 5; $i++) {
+                                    if ($userRating !== null && $i < $userRating) {
+                                      echo '<i class="bx bx-star bxs-star" style="color: #ffab00;" onclick="toggleStar(' . $i . ', ' . $document['DocumentId'] . ')"></i>';
+                                    } else {
+                                      echo '<i class="bx bx-star" onclick="toggleStar(' . $i . ', ' . $document['DocumentId'] . ')"></i>';
+                                    }
+                                  }
+                                  ?>
+                                </div>
+                                <div class="d-flex align-items-center mb-3">
+                                  <span class="text mb-3">Author: <?php echo $author; ?></span>
+                                </div>
+                                <div class="d-flex justify-content-center gap-3 mb-2 text-white">
+                                  <!-- Download Button -->
+                                  <?php
+                                  $test = $downloadController->getDownloadByUserAndDocument($userId, $document['DocumentId']);
+                                  $downloadAllowed = ($tokenScore > 2 || $test);
+                                  if ($downloadAllowed): ?>
+                                    <button class="btn btn-primary download-btn"
+                                      data-document-id="<?php echo $document['DocumentId']; ?>"
+                                      onclick="initiateDownload(<?php echo $userId; ?>, <?php echo $document['DocumentId']; ?>, 'uploads/<?php echo $author ?>/<?php echo $document['FilePath']; ?>', '<?php echo $document['Title']; ?>')">
+                                      Download </button>
+                                  <?php else: ?>
+                                    <button class="btn btn-primary download-btn"> Insufficient Tokens! </button>
+                                  <?php endif; ?>
+                                </div>
+                                <!-- Favorite Button -->
+
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4 col-md-12 col-6 mb-4">
+                <div class="card">
+                  <div class="card-body">
+                    <span>New Drops</span>
+                    <?php
+                    // Get the most downloaded document today
+                    
+
+                    if ($newestDownloadedDocument) {
+                      $documentId = $newestDownloadedDocument['DocumentId'];
+                      $documentController = new DocumentController();
+                      $document = $documentController->getDocumentById($documentId);
+
+                      // Display document details
+                      if ($document) {
+                        echo '<h5>' . $document['Title'] . '</h5>';
+                        // Add more details as needed
+                      }
+                    }
+                    ?>
+                    <div class="row row-cols-1 row-cols-md-3 g-3 mb-3">
+
+                      <div class="col-lg-12 col-md-6 mb-4">
+                        <div class="card h-100">
+                          <?php
+                          $document = $documentController->getDocumentById($newestDownloadedDocument['DocumentId']);
+                          $author = $userController->getUser((int) $document['UserId'])['Username'];
+                          $isFavorited = $favoriteController->getFavoriteByUserIdAndDocumentId(
+                            $userId,
+                            $document['DocumentId']
+                          );
+                          $buttonText = ($isFavorited ? 'Remove from Favorites' : 'Add to Favorites');
+                          $imgSrc = ($isFavorited ? 'assets/img/icons/unicons/heartfilled.png' : 'assets/img/icons/unicons/heart.png');
+
+                          ?>
+                          <div class="col">
+                            <div class="card h-100">
+                              <img class="card-img-top"
+                                src="thumbnails/<?php echo $author ?>/<?php echo $document['ThumbnailPath']; ?>">
+                              <div class="card-body">
+                                <h5 class="card-title">
+                                  <a href="app-academy-course-details.html" class="h5">
+                                    <?php echo $document['Title']; ?>
+                                  </a>
+                                  <span style="float: right;">
+                                    <a onclick="addToFavorites(<?php echo $document['DocumentId']; ?>)">
+                                      <img id="heart-fav<?php echo $document['DocumentId']; ?>" class="heart-favs"
+                                        src="<?php echo $imgSrc ?>">
+                                    </a>
+                                  </span>
+                                </h5>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                  <span class="badge bg-label-primary">
+                                    <?php
+                                    $course = $courseController->getCourse($document['CourseId']);
+                                    echo $course ? $course['CourseCode'] : 'Course Not Found';
+                                    ?>
+                                  </span>
+                                  <span class="badge bg-label-primary">
+                                    <?php
+                                    $university = $universityController->getUniversityById($course['UniversityId']);
+                                    echo $university ? $university['UniversityAcronym'] : 'University Not Found';
+                                    ?>
+                                  </span>
+                                  </span>
+                                  <?php echo round($downloadController->getAverageRatingByDocumentId($document["DocumentId"]), 1) ?>
+                                  <span class="text-warning"><i class="bx bxs-star me-1"></i></span><span
+                                    class="text-muted">
+                                    <?php echo "(" . $downloadController->getTotalRatingByDocumentId($document["DocumentId"]) . ")" ?>
+                                  </span>
+                                </div>
+                                <div id="starRating_<?php echo $document['DocumentId']; ?>">
+                                  <?php
+                                  // Fetch the user's rating for the document
+                                  $testRating = $downloadController->getDownloadByUserAndDocument($userId, $document['DocumentId']);
+                                  if ($testRating) {
+                                    $userRating = $testRating['Rating'];
+                                  } else {
+                                    $userRating = 0;
+                                  }
+                                  // Render stars based on user's rating
+                                  for ($i = 0; $i < 5; $i++) {
+                                    if ($userRating !== null && $i < $userRating) {
+                                      echo '<i class="bx bx-star bxs-star" style="color: #ffab00;" onclick="toggleStar(' . $i . ', ' . $document['DocumentId'] . ')"></i>';
+                                    } else {
+                                      echo '<i class="bx bx-star" onclick="toggleStar(' . $i . ', ' . $document['DocumentId'] . ')"></i>';
+                                    }
+                                  }
+                                  ?>
+                                </div>
+                                <div class="d-flex align-items-center mb-3">
+                                  <span class="text mb-3">Author: <?php echo $author; ?></span>
+                                </div>
+                                <div class="d-flex justify-content-center gap-3 mb-2 text-white">
+                                  <!-- Download Button -->
+                                  <?php
+                                  $test = $downloadController->getDownloadByUserAndDocument($userId, $document['DocumentId']);
+                                  $downloadAllowed = ($tokenScore > 2 || $test);
+                                  if ($downloadAllowed): ?>
+                                    <button class="btn btn-primary download-btn"
+                                      data-document-id="<?php echo $document['DocumentId']; ?>"
+                                      onclick="initiateDownload(<?php echo $userId; ?>, <?php echo $document['DocumentId']; ?>, 'uploads/<?php echo $author ?>/<?php echo $document['FilePath']; ?>', '<?php echo $document['Title']; ?>')">
+                                      Download </button>
+                                  <?php else: ?>
+                                    <button class="btn btn-primary download-btn"> Insufficient Tokens! </button>
+                                  <?php endif; ?>
+
+                                </div>
+                                <!-- Favorite Button -->
+                                <!-- <div class="d-flex align-items-center bg-primary rounded p-1">
+                                  <button class="btn btn-primary toggle-favorite"
+                                    data-document-id="<?php echo $document['DocumentId']; ?>">
+                                    <?php echo $buttonText; ?> <i class="bx bx-star"></i>
+                                  </button>
+                                </div> -->
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
               <div class="card mb-4">
                 <div class="card-header">
                   <h5 class="card-title">Filter</h5>
@@ -592,6 +979,7 @@ $user = $userController->getUserByUsername($username);
                   $universityId = isset($_GET['universityId']) ? intval($_GET['universityId']) : 0;
                   $courseId = isset($_GET['courseId']) ? intval($_GET['courseId']) : 0;
                   $rating = isset($_GET['rating']) ? intval($_GET['rating']) : 0;
+                  $searchTerm = isset($_GET['searchTerm']) ? $_GET['searchTerm'] : '';
 
                   // Build the filter string based on the selected filter values
                   $filter = array();
@@ -604,30 +992,40 @@ $user = $userController->getUserByUsername($username);
                   if (!empty($rating)) {
                     $filter['rating'] = $rating;
                   }
-                  $downloadsForPage = $documentController->fetchAllDocumentsForPage($offset, $uploadsPerPage, $filter);
+                  $downloadsForPage = $documentController->fetchAllDocumentsForPage($offset, $uploadsPerPage, $filter, $searchTerm);
 
                   ?>
 
                   <h6 class="mb-5 mt-5">Documents</h6>
 
-                  <div class="row row-cols-1 row-cols-md-5 g-3 mb-3">
+                  <div class="row row-cols-1 row-cols-md-4 g-3 mb-3">
                     <?php
                     $users = $userController->getAllUsers();
                     foreach ($downloadsForPage as $download): ?>
                       <?php
                       $document = $documentController->getDocumentById($download['DocumentId']);
-                      $author = $userController->getUser((int) $document['UserId'])['Username']
-                        ?>
+                      $author = $userController->getUser((int) $document['UserId'])['Username'];
+                      $isFavorited = $favoriteController->getFavoriteByUserIdAndDocumentId($userId, $document['DocumentId']);
+                      $buttonText = ($isFavorited ? 'Remove from Favorites' : 'Add to Favorites');
+                      $imgSrc = ($isFavorited ? 'assets/img/icons/unicons/heartfilled.png' : 'assets/img/icons/unicons/heart.png');
+                      ?>
+
                       <div class="col">
                         <div class="card h-100">
-                          <img class="card-img-top" src="thumbnails/<?php
-                          echo $author ?>/<?php echo $document['ThumbnailPath']; ?>">
+                          <img class="card-img-top"
+                            src="thumbnails/<?php echo $author ?>/<?php echo $document['ThumbnailPath']; ?>">
                           <div class="card-body">
                             <hr>
                             <h5 class="card-title">
                               <a href="app-academy-course-details.html" class="h5">
                                 <?php echo $document['Title']; ?>
                               </a>
+                              <span style="float: right;">
+                                <a onclick="addToFavorites(<?php echo $document['DocumentId']; ?>)">
+                                  <img id="heart-fav<?php echo $document['DocumentId']; ?>" class="heart-favs"
+                                    src="<?php echo $imgSrc ?>">
+                                </a>
+                              </span>
                             </h5>
                             <div class="d-flex justify-content-between align-items-center mb-3">
                               <span class="badge bg-label-primary">
@@ -635,41 +1033,80 @@ $user = $userController->getUserByUsername($username);
                                 $course = $courseController->getCourse($document['CourseId']);
                                 if ($course) {
                                   $university = $universityController->getUniversityById($course['UniversityId']);
-                                  if ($university) {
-                                    echo $university['UniversityAcronym'];
-                                  } else {
-                                    echo "University Not Found";
-                                  }
+                                  echo $university ? $university['UniversityAcronym'] : 'University Not Found';
                                 } else {
-                                  echo "Course Not Found";
+                                  echo 'Course Not Found';
                                 }
                                 ?>
                               </span>
                               <span class="badge bg-label-primary">
-                                <?php
-                                if ($course) {
-                                  echo $course['CourseCode'];
-                                } else {
-                                  echo "Course not found";
-                                }
-                                ?>
+                                <?php echo $course ? $course['CourseCode'] : 'Course not found'; ?>
                               </span>
-                              <?php echo $document['Rating']; ?> <span class="text-warning"><i
-                                  class="bx bxs-star me-1"></i></span><span class="text-muted">(1.23k)</span>
+                              <?php echo round($downloadController->getAverageRatingByDocumentId($document["DocumentId"]), 1) ?>
+                              <span class="text-warning"><i class="bx bxs-star me-1"></i></span><span class="text-muted">
+                                <?php echo "(" . $downloadController->getTotalRatingByDocumentId($document["DocumentId"]) . ")" ?>
+                              </span>
+                            </div>
+                            <div id="starRating_<?php echo $document['DocumentId']; ?>">
+                              <?php
+                              // Fetch the user's rating for the document
+                              $canRate;
+                              $testRating = $downloadController->getDownloadByUserAndDocument($userId, $document['DocumentId']);
+                              if ($testRating) {
+                                $userRating = $testRating['Rating'];
+                                $canRate = true;
+                              } else {
+                                $userRating = 0;
+                                $canRate = false;
+                              }
+
+
+                              // Render stars based on user's rating
+                              for ($i = 0; $i < 5; $i++) {
+                                if ($canRate) {
+                                  if ($userRating !== null && $i < $userRating) {
+                                    echo '<i class="bx bx-star bxs-star" style="color: #ffab00;" onclick="toggleStar(' . $i . ', ' . $document['DocumentId'] . ')"></i>';
+                                  } else {
+                                    echo '<i class="bx bx-star" onclick="toggleStar(' . $i . ', ' . $document['DocumentId'] . ')"></i>';
+                                  }
+                                } else {
+                                  if ($i < $userRating) {
+                                    echo '<i class="bx bx-star bxs-star" style="color: #ffab00;"></i>';
+                                  } else {
+                                    echo '<i class="bx bx-star"></i>';
+                                  }
+                                }
+                              }
+                              ?>
                             </div>
                             <div class="d-flex align-items-center mb-3">
                               <span class="text mb-3">Author:
-                                <?php
-                                echo $author;
-                                ?>
+                                <?php echo $author; ?>
                               </span>
                             </div>
-                            <a href="uploads/<?php echo $username ?>/<?php echo $document['FilePath']; ?>" download>
-                              <div
-                                class="d-flex justify-content-center text-center flex-column flex-md-row gap-2 text-nowrap pe-xl-3 pe-xxl-0 bg-primary text-white rounded">
-                                <span class="me-2 ml-3">Download</span><i class="bx bx-download lh-1 scaleX-n1-rtl"></i>
-                              </div>
-                            </a>
+                            <div class="d-flex justify-content-center gap-3 mb-2 text-white">
+                              <!-- Download Button -->
+                              <?php
+                              $test = $downloadController->getDownloadByUserAndDocument($userId, $document['DocumentId']);
+                              $downloadAllowed = ($tokenScore > 2 || $test);
+                              if ($downloadAllowed): ?>
+                                <button class="btn btn-primary download-btn"
+                                  data-document-id="<?php echo $document['DocumentId']; ?>"
+                                  onclick="initiateDownload(<?php echo $userId; ?>, <?php echo $document['DocumentId']; ?>, 'uploads/<?php echo $author ?>/<?php echo $document['FilePath']; ?>', '<?php echo $document['Title']; ?>')">
+                                  Download </button>
+                              <?php else: ?>
+                                <button class="btn btn-primary download-btn"> Insufficient Tokens! </button>
+                              <?php endif; ?>
+                            </div>
+
+
+                            <!-- Favorite Button -->
+                            <!-- <div class="d-flex align-items-center bg-primary rounded p-1">
+                              <button class="btn btn-primary toggle-favorite"
+                                data-document-id="<?php echo $document['DocumentId']; ?>">
+                                <?php echo $buttonText; ?> <i class="bx bx-star"></i>
+                              </button>
+                            </div> -->
                           </div>
                         </div>
                       </div>
@@ -713,48 +1150,300 @@ $user = $userController->getUserByUsername($username);
                 <!-- Content wrapper -->
               </div>
               <!-- / Layout page -->
+
+              <!-- Overlay -->
+              <div class="layout-overlay layout-menu-toggle"></div>
             </div>
-
-            <!-- Overlay -->
-            <div class="layout-overlay layout-menu-toggle"></div>
-          </div>
-          <!-- / Layout wrapper -->
+            <!-- / Layout wrapper -->
 
 
 
-          <!-- Core JS -->
-          <!-- build:js assets/vendor/js/core.js -->
+            <!-- Core JS -->
+            <!-- build:js assets/vendor/js/core.js -->
 
-          <script src="assets/vendor/libs/jquery/jquery.js"></script>
-          <script src="assets/vendor/libs/popper/popper.js"></script>
-          <script src="assets/vendor/js/bootstrap.js"></script>
-          <script src="assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
-          <script src="assets/vendor/js/menu.js"></script>
+            <script src="assets/vendor/libs/jquery/jquery.js"></script>
+            <script src="assets/vendor/libs/popper/popper.js"></script>
+            <script src="assets/vendor/js/bootstrap.js"></script>
+            <script src="assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+            <script src="assets/vendor/js/menu.js"></script>
 
-          <!-- endbuild -->
+            <!-- endbuild -->
 
-          <!-- Vendors JS -->
-          <script src="assets/vendor/libs/apex-charts/apexcharts.js"></script>
+            <!-- Vendors JS -->
+            <script src="assets/vendor/libs/apex-charts/apexcharts.js"></script>
 
-          <!-- Main JS -->
-          <script src="assets/js/main.js"></script>
+            <!-- Main JS -->
+            <script src="assets/js/main.js"></script>
 
-          <!-- Page JS -->
-          <script src="assets/js/dashboards-analytics.js"></script>
+            <!-- Page JS -->
+            <script src="assets/js/dashboards-analytics.js"></script>
 
-          <!-- Place this tag in your head or just before your close body tag. -->
+            <!-- Place this tag in your head or just before your close body tag. -->
 
 
-          <script>
-            document.getElementById("applyFilterBtn").addEventListener("click", function () {
-              var universityId = document.getElementById("University").value;
-              var courseId = document.getElementById("Category").value;
-              var rating = document.getElementById("Rating").value;
+            <script>
+              // Function to handle filter submission
+              function submitFilter() {
+                var universityId = document.getElementById("University").value;
+                var courseId = document.getElementById("Category").value;
+                var rating = document.getElementById("Rating").value;
+                var searchTerm = document.getElementById("searchInput").value;
 
-              // Redirect to the same page with filter parameters
-              window.location.href = window.location.pathname + "?universityId=" + universityId + "&courseId=" + courseId + "&rating=" + rating;
-            });
-          </script>
+                // Construct the URL with filter parameters and search term
+                var url = window.location.pathname +
+                  "?universityId=" + universityId +
+                  "&courseId=" + courseId +
+                  "&rating=" + rating +
+                  "&searchTerm=" + encodeURIComponent(searchTerm); // Encode search term
+
+                // Redirect to the constructed URL
+                window.location.href = url;
+              }
+
+              // Function to fetch search suggestions
+              function fetchSearchSuggestions() {
+                var searchTerm = document.getElementById("searchInput").value;
+                if (searchTerm.trim() === '') {
+                  return; // No suggestions for empty search term
+                }
+
+                // AJAX call to fetch search suggestions based on the input
+                $.ajax({
+                  url: 'BE/fetchSearchSuggestions.php',
+                  method: 'GET',
+                  data: { searchTerm: searchTerm },
+                  success: function (response) {
+                    // Update the search suggestions dropdown with retrieved suggestions
+                    var suggestionsDropdown = document.getElementById("searchSuggestions");
+                    suggestionsDropdown.innerHTML = response;
+                    suggestionsDropdown.style.display = 'block'; // Show the suggestions dropdown
+                  },
+                  error: function (xhr, status, error) {
+                    console.error(error);
+                  }
+                });
+              }
+
+              // Add event listeners to search icon, search input field, and search suggestions
+              document.addEventListener("DOMContentLoaded", function () {
+                // Event listener for clicking the search icon
+                document.querySelector(".bx-search").addEventListener("click", function () {
+                  submitFilter(); // Trigger filter submission
+                });
+
+                // Event listener for Enter key press in the search input field
+                document.getElementById("searchInput").addEventListener("keypress", function (event) {
+                  if (event.key === "Enter") {
+                    submitFilter(); // Trigger filter submission
+                  }
+                });
+
+                // Event listener for input change in the search input field (for suggestions)
+                document.getElementById("searchInput").addEventListener("input", function () {
+                  fetchSearchSuggestions(); // Fetch search suggestions as user types
+                });
+                document.addEventListener("click", function (event) {
+                  var clickedElement = event.target;
+                  if (clickedElement.classList.contains("search-suggestion")) {
+                    // Set the search input value to the clicked suggestion
+                    document.getElementById("searchInput").value = clickedElement.textContent.trim();
+                    // Hide the suggestions container after selection
+                    document.getElementById("searchSuggestions").style.display = "none";
+                  }
+                });
+
+                var applyFilterBtn = document.getElementById('applyFilterBtn');
+
+                // Add a click event listener to the button
+                applyFilterBtn.addEventListener('click', function () {
+                  // Call the submitFilter() function when the button is clicked
+                  submitFilter();
+                });
+
+              });
+            </script>
+
+            <script>
+              const userId = <?php echo isset($_SESSION['userId']) ? $_SESSION['userId'] : 'null'; ?>;
+              function toggleStar(index, documentId) {
+                const stars = document.querySelectorAll('#starRating_' + documentId + ' .bx-star');
+                console.log(stars);
+                const newRating = index + 1;
+
+                // Update star styles (visual feedback)
+                for (let i = 0; i < stars.length; i++) {
+                  const starGroupIndex = Math.floor(i / 5); // Calculate the index of the star group
+                  const starIndex = i % 5; // Calculate the index within the star group
+
+                  if (starIndex <= index) {
+                    stars[i].classList.add('bxs-star');
+                    stars[i].style.color = '#ffab00';
+                  } else {
+                    stars[i].classList.remove('bxs-star');
+                    stars[i].style.color = ''; // Reset color for empty stars
+                  }
+                }
+
+                // Send a POST request to update the rating
+                fetch('BE/updateRating.php', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    userId: userId,
+                    documentId: documentId,
+                    newRating: newRating
+                  })
+                })
+                  .then(response => {
+                    if (response.ok) {
+                      console.log('Rating updated successfully');
+                    } else {
+                      console.error('Failed to update rating:', response.statusText);
+                    }
+                  })
+                  .catch(error => {
+                    console.error('Error updating rating:', error);
+                  });
+              }
+            </script>
+
+            <!-- <script>
+              // Add event listener to the Apply Filter button (assuming you're using jQuery for AJAX)
+              $('#applyFilterBtn').click(function () {
+                // Get selected filter values
+                var universityId = $('#University').val();
+                var courseId = $('#Category').val();
+                var rating = $('#Rating').val();
+
+                // Get search term
+                var searchTerm = $('#searchInput').val();
+
+                // AJAX call to fetch filtered documents based on filter values and search term
+                $.ajax({
+                  url: 'fetchFilteredDocuments.php',
+                  method: 'GET',
+                  data: {
+                    universityId: universityId,
+                    courseId: courseId,
+                    rating: rating,
+                    searchTerm: searchTerm
+                  },
+                  success: function (response) {
+                    // Update document listing with the filtered/searched documents
+                    $('#documentListing').html(response);
+                  },
+                  error: function (xhr, status, error) {
+                    // Handle error
+                    console.error(error);
+                  }
+                });
+              });
+
+            </script> -->
+
+            <!-- <script>
+              $(document).ready(function () {
+                $('.toggle-favorite').click(function () {
+                  var documentId = $(this).data('document-id');
+                  var button = $(this); // Reference to the clicked button
+
+                  // AJAX request to toggle favorite status
+                  $.ajax({
+                    type: 'POST',
+                    url: 'BE/toggleFavorite.php',
+                    data: {
+                      documentId: documentId
+                    },
+                    success: function (response) {
+                      if (response === 'Favorite added successfully') {
+                        button.text('Remove from Favorites');
+                      } else if (response === 'Favorite removed successfully') {
+                        button.text('Add to Favorites');
+                      }
+
+                    },
+                    error: function () {
+                    }
+                  });
+                });
+              });
+            </script> -->
+
+            <script>
+              function addToFavorites(documentId) {
+                // AJAX request to toggle favorite status
+                $.ajax({
+                  type: 'POST',
+                  url: 'BE/toggleFavorite.php',
+                  data: {
+                    documentId: documentId
+                  },
+                  success: function (response) {
+                    // Update all heart icons with matching documentId
+                    var heartIcons = document.querySelectorAll('[id^="heart-fav' + documentId + '"]');
+
+                    heartIcons.forEach(function (heartIcon) {
+                      // Update src based on response
+                      if (response === 'Favorite added successfully') {
+                        heartIcon.src = 'assets/img/icons/unicons/heartfilled.png';
+                      } else if (response === 'Favorite removed successfully') {
+                        heartIcon.src = 'assets/img/icons/unicons/heart.png';
+                      }
+                    });
+                  },
+                  error: function () {
+                    console.error('Error toggling favorite.');
+                  }
+                });
+              }
+            </script>
+
+            <script>
+              function initiateDownload(userId, documentId, filePath, fileName) {
+                // Send AJAX request to decrement token score and initiate download
+                $.ajax({
+                  url: "BE/download.php",
+                  type: "POST",
+                  data: { documentId: documentId },
+                  success: function (response) {
+                    if (response === "success") {
+                      var downloadLink = filePath;
+                      var anchor = document.createElement('a');
+                      anchor.href = downloadLink;
+                      console.log(fileName);
+                      anchor.download = fileName;
+                      document.body.appendChild(anchor);
+                      anchor.click();
+                      document.body.removeChild(anchor);
+                    } else {
+                      alert("Failed to download the document. Please try again later.");
+                    }
+                  },
+                  error: function (xhr, status, error) {
+                    console.error(xhr.responseText);
+                    alert("An error occurred while processing your request. Please try again later.");
+                  }
+                });
+              }
+            </script>
+
+
+
+            </script>
+            <script>
+              window.embeddedChatbotConfig = {
+                chatbotId: "WPQBRApLkrR6WgsWXNKXS",
+                domain: "www.chatbase.co"
+              }
+            </script>
+            <script src="https://www.chatbase.co/embed.min.js" chatbotId="WPQBRApLkrR6WgsWXNKXS"
+              domain="www.chatbase.co" defer>
+              </script>
+
+
+
 </body>
 
 </html>

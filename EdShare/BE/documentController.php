@@ -21,16 +21,40 @@ class DocumentController
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-    public function fetchDocumentsForPage($UserId, $offset, $documentsPerPage)
+    public function fetchDocumentsForPage($UserId, $offset, $documentsPerPage, $searchTerm =null)
     {
-        $query = "SELECT * FROM document WHERE UserId = :UserId LIMIT :offset, :documentsPerPage";
+        // Define the base SQL query
+        $query = "SELECT * FROM document WHERE UserId = :UserId";
+    
+        // If a search term is provided, add the search condition to the query
+        if (!empty($searchTerm)) {
+            $query .= " AND Title LIKE :searchTerm";
+        }
+    
+        // Add LIMIT clause for pagination
+        $query .= " LIMIT :offset, :documentsPerPage";
+    
+        // Prepare the SQL statement
         $stmt = $this->db->prepare($query);
+    
+        // Bind parameters
         $stmt->bindParam(':UserId', $UserId, PDO::PARAM_INT);
         $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
         $stmt->bindParam(':documentsPerPage', $documentsPerPage, PDO::PARAM_INT);
+    
+        // If a search term is provided, bind the search parameter
+        if (!empty($searchTerm)) {
+            $searchTerm = "%{$searchTerm}%"; // Add wildcard characters to search term
+            $stmt->bindParam(':searchTerm', $searchTerm, PDO::PARAM_STR);
+        }
+    
+        // Execute the query
         $stmt->execute();
+    
+        // Fetch the results
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
     // public function fetchAllDocumentsForPage($offset, $documentsPerPage)
     // {
     //     $query = "SELECT * FROM document LIMIT :offset, :documentsPerPage";
@@ -54,7 +78,7 @@ class DocumentController
             return 0; // Default value if query fails or no documents found
         }
     }
-    public function fetchAllDocumentsForPage($offset, $uploadsForPage, $filter = null)
+    public function fetchAllDocumentsForPage($offset, $uploadsForPage, $filter = null, $searchTerm = null)
     {
         // Start building the query
         $query = "SELECT *
@@ -85,6 +109,16 @@ class DocumentController
             }
         }
 
+        // Add search term condition if provided
+        if ($searchTerm !== null && trim($searchTerm) !== '') {
+            if ($filterApplied) {
+                $query .= " AND"; // Add AND if filters are already applied
+            } else {
+                $query .= " WHERE"; // Start WHERE clause if no filters applied
+            }
+            $query .= " (Title LIKE :searchTerm OR Category LIKE :searchTerm)";
+        }
+
         // Add limit and offset to the query
         $query .= " LIMIT :offset, :uploadsForPage";
 
@@ -106,6 +140,12 @@ class DocumentController
             if (!empty($filter['rating'])) {
                 $stmt->bindParam(':rating', $filter['rating'], PDO::PARAM_INT);
             }
+        }
+
+        // Bind search term parameter if provided
+        if ($searchTerm !== null && trim($searchTerm) !== '') {
+            $searchParam = '%' . $searchTerm . '%'; // Wrap the search term with wildcards for partial matching
+            $stmt->bindParam(':searchTerm', $searchParam, PDO::PARAM_STR);
         }
 
         // Execute the query
@@ -315,6 +355,52 @@ class DocumentController
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return ($result !== false && isset($result['totalDownloads'])) ? $result['totalDownloads'] : 0;
     }
+
+    public function searchDocuments($searchTerm)
+    {
+        // Prepare the search query to match document names or categories
+        $query = "SELECT *
+                  FROM document
+                  WHERE Title LIKE :searchTerm
+                     OR Category LIKE :searchTerm";
+
+        // Prepare the query
+        $stmt = $this->db->prepare($query);
+
+        // Bind the search term parameter
+        $searchParam = '%' . $searchTerm . '%'; // Wrap the search term with wildcards for partial matching
+        $stmt->bindParam(':searchTerm', $searchParam, PDO::PARAM_STR);
+
+        // Execute the query
+        $stmt->execute();
+
+        // Return the search results
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function searchUserDocuments($UserId, $searchTerm)
+{
+    // Prepare the search query to match document names or categories for a specific user
+    $query = "SELECT *
+              FROM document
+              WHERE UserId = :UserId
+              AND (Title LIKE :searchTerm OR Category LIKE :searchTerm)";
+
+    // Prepare the query
+    $stmt = $this->db->prepare($query);
+
+    // Bind the user ID and search term parameters
+    $searchParam = '%' . $searchTerm . '%'; // Wrap the search term with wildcards for partial matching
+    $stmt->bindParam(':UserId', $UserId, PDO::PARAM_INT);
+    $stmt->bindParam(':searchTerm', $searchParam, PDO::PARAM_STR);
+
+    // Execute the query
+    $stmt->execute();
+
+    // Return the search results
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 
 }
 ?>

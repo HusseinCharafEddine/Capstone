@@ -89,12 +89,13 @@ $document->UserId = getUserId($db, $username);
 $document->CourseId = getCourseId($db, $_POST["course-name"], $universityId, $_POST["course-code"]);
 $document->Category = VarExist($_POST["category"]);
 $document->Title = VarExist($_POST["title"]);
+$document->Type = VarExist($_POST["type"]);
 $document->FilePath = $destination;
 $document->ThumbnailPath = $thumbnailPath;
 
 $DocumentId = InsertDocumentToDBFromObject($db, $document);
 
-echo "File uploaded successfully.";
+header("location:../html/uploads.php");
 
 function generateThumbnail($filePath, $thumbnailDirectory)
 {
@@ -175,9 +176,9 @@ function InsertDocumentToDBFromObject($db, $document)
 {
     $fileName = basename($document->FilePath);
 
-    $query = "INSERT INTO Document (UserId, CourseId, Category, Title, FilePath, ThumbnailPath) VALUES (?, ?, ?, ?, ?, ?)";
+    $query = "INSERT INTO Document (UserId, CourseId, Category, Title, Type, FilePath, ThumbnailPath) VALUES (?, ?, ?, ?, ?, ?, ?)";
     $stmt = $db->prepare($query);
-    $stmt->execute([$document->UserId, $document->CourseId, $document->Category, $document->Title, $fileName, $document->ThumbnailPath]);
+    $stmt->execute([$document->UserId, $document->CourseId, $document->Category, $document->Title, $document->Type, $fileName, $document->ThumbnailPath]);
     if ($stmt->rowCount() > 0) {
         return $db->lastInsertId();
     } else {
