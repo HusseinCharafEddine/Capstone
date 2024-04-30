@@ -26,7 +26,7 @@ $university = $universityController->getUniversityById($user['UniversityId']);
   <meta name="viewport"
     content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-  <title>Account settings - Account | Sneat - Bootstrap 5 HTML Admin Template - Pro</title>
+  <title>Profile</title>
 
   <meta name="description" content="" />
 
@@ -138,15 +138,7 @@ $university = $universityController->getUniversityById($user['UniversityId']);
           </div>
 
           <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
-            <!-- Search -->
-            <div class="navbar-nav align-items-center">
-              <div class="nav-item d-flex align-items-center">
-                <i class="bx bx-search fs-4 lh-0"></i>
-                <input type="text" class="form-control border-0 shadow-none ps-1 ps-sm-2" placeholder="Search..."
-                  aria-label="Search..." />
-              </div>
-            </div>
-            <!-- /Search -->
+
 
             <ul class="navbar-nav flex-row align-items-center ms-auto">
               <!-- Place this tag where you want the button to render. -->
@@ -176,23 +168,10 @@ $university = $universityController->getUniversityById($user['UniversityId']);
           <!-- Content -->
 
           <div class="container-xxl flex-grow-1 container-p-y">
-            <h4 class="py-3 mb-4"><span class="text-muted fw-light">Account Settings /</span> Account</h4>
+            <h4 class="py-3 mb-4"><span class="text-muted fw-light"></span> Account</h4>
 
             <div class="row">
               <div class="col-md-12">
-                <ul class="nav nav-pills flex-column flex-md-row mb-3">
-                  <li class="nav-item">
-                    <a class="nav-link active" href="javascript:void(0);"><i class="bx bx-user me-1"></i> Account</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="pages-account-settings-notifications.html"><i class="bx bx-bell me-1"></i>
-                      Notifications</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="pages-account-settings-connections.html"><i
-                        class="bx bx-link-alt me-1"></i> Connections</a>
-                  </li>
-                </ul>
                 <div class="card mb-4">
                   <h5 class="card-header">Profile Details</h5>
                   <!-- Account -->
@@ -297,7 +276,6 @@ $university = $universityController->getUniversityById($user['UniversityId']);
           </div>
           <!-- / Content -->
 
-       
 
           <div class="content-backdrop fade"></div>
         </div>
