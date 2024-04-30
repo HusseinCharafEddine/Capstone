@@ -341,74 +341,6 @@ class DownloadController
                   WHERE DocumentId = :documentId               
                   AND rating IS NOT NULL";
 
-    // Function to compute the percentage growth of downloads between last week and this week
-    public function computeDownloadGrowthPercentage($userId)
-    {
-        $downloadsLastWeek = $this->getTotalDownloadsLastWeek($userId);
-        $downloadsThisWeek = $this->getTotalDownloadsThisWeek($userId);
-        if ($downloadsLastWeek > 0) {
-            $growthPercentage = (($downloadsThisWeek - $downloadsLastWeek) / $downloadsLastWeek) * 100;
-        } else if ($downloadsThisWeek > 0) {
-            $growthPercentage = 100;
-        } else {
-            $growthPercentage = 0; // Default if no downloads last week (avoid division by zero)
-        }
-
-        return $growthPercentage;
-    }
-    public function getAverageRatingByUserId($userId)
-    {
-        $query = "SELECT AVG(d.Rating) AS averageRating
-              FROM downloaded d
-              JOIN document doc ON d.DocumentId = doc.DocumentId
-              WHERE doc.UserId = :userId
-              AND d.Rating IS NOT NULL";
-
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
-        $stmt->execute();
-
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        $averageRating = ($result !== false && isset($result['averageRating'])) ? $result['averageRating'] : 0;
-
-        // Round the average rating to 1 decimal place
-        return round($averageRating, 2);
-    }
-
-    public function getTotalNonNullRatingsByUserId($userId)
-    {
-        $query = "SELECT COUNT(d.Rating) AS totalNonNullRatings
-              FROM downloaded d
-              JOIN document doc ON d.DocumentId = doc.DocumentId
-              WHERE doc.UserId = :userId
-              AND d.Rating IS NOT NULL";
-
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
-        $stmt->execute();
-
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return ($result !== false && isset($result['totalNonNullRatings'])) ? $result['totalNonNullRatings'] : 0;
-    }
-
-    public function getCountOfRatingsEqualTo($userId, $ratingValue)
-    {
-        $query = "SELECT COUNT(*) AS ratingCount
-                  FROM downloaded d
-                  JOIN document doc ON d.DocumentId = doc.DocumentId
-                  WHERE doc.UserId = :userId
-                  AND d.Rating = :ratingValue";
-
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
-        $stmt->bindParam(':ratingValue', $ratingValue, PDO::PARAM_INT);
-        $stmt->execute();
-
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        $ratingCount = ($result !== false && isset($result['ratingCount'])) ? $result['ratingCount'] : 0;
-
-        return $ratingCount;
-    }
 
         $stmt = $this->db->prepare($query);
         $stmt->bindParam(':documentId', $documentId, PDO::PARAM_INT);
@@ -486,5 +418,144 @@ class DownloadController
         // Return the search results
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    // Function to compute the percentage growth of downloads between last week and this week
+    public function computeDownloadGrowthPercentage($userId)
+    {
+        $downloadsLastWeek = $this->getTotalDownloadsLastWeek($userId);
+        $downloadsThisWeek = $this->getTotalDownloadsThisWeek($userId);
+        if ($downloadsLastWeek > 0) {
+            $growthPercentage = (($downloadsThisWeek - $downloadsLastWeek) / $downloadsLastWeek) * 100;
+        } else if ($downloadsThisWeek > 0) {
+            $growthPercentage = 100;
+        } else {
+            $growthPercentage = 0; // Default if no downloads last week (avoid division by zero)
+        }
+
+        return $growthPercentage;
+    }
+    public function getAverageRatingByUserId($userId)
+    {
+        $query = "SELECT AVG(d.Rating) AS averageRating
+              FROM downloaded d
+              JOIN document doc ON d.DocumentId = doc.DocumentId
+              WHERE doc.UserId = :userId
+              AND d.Rating IS NOT NULL";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $averageRating = ($result !== false && isset($result['averageRating'])) ? $result['averageRating'] : 0;
+
+        // Round the average rating to 1 decimal place
+        return round($averageRating, 2);
+    }
+
+    public function getTotalNonNullRatingsByUserId($userId)
+    {
+        $query = "SELECT COUNT(d.Rating) AS totalNonNullRatings
+              FROM downloaded d
+              JOIN document doc ON d.DocumentId = doc.DocumentId
+              WHERE doc.UserId = :userId
+              AND d.Rating IS NOT NULL";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return ($result !== false && isset($result['totalNonNullRatings'])) ? $result['totalNonNullRatings'] : 0;
+    }
+
+    public function getCountOfRatingsEqualTo($userId, $ratingValue)
+    {
+        $query = "SELECT COUNT(*) AS ratingCount
+                  FROM downloaded d
+                  JOIN document doc ON d.DocumentId = doc.DocumentId
+                  WHERE doc.UserId = :userId
+                  AND d.Rating = :ratingValue";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+        $stmt->bindParam(':ratingValue', $ratingValue, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $ratingCount = ($result !== false && isset($result['ratingCount'])) ? $result['ratingCount'] : 0;
+
+        return $ratingCount;
+    }
+
+   
+    // public function getDownloadByUserAndDocument($userId, $documentId)
+    // {
+    //     $query = "SELECT * FROM downloaded WHERE UserId = :userId AND DocumentId = :documentId";
+    //     $stmt = $this->db->prepare($query);
+    //     $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+    //     $stmt->bindParam(':documentId', $documentId, PDO::PARAM_INT);
+    //     $stmt->execute();
+    //     $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    //     return $result;
+    // }
+    // function addDocumentToDownloads($userId, $documentId)
+    // {
+    //     $downloadController = new DownloadController(); // Instantiate the controller if not already instantiated
+    //     // Check if the user has not downloaded the document yet
+    //     if (!$downloadController->getDownloadByUserAndDocument($userId, $documentId)) {
+    //         $query = "INSERT INTO Downloaded (UserId, DocumentId) VALUES (?, ?)";
+    //         $stmt = $this->db->prepare($query);
+    //         $stmt->execute([$userId, $documentId]);
+    //         return $stmt->rowCount() > 0; // Return true if insertion was successful
+    //     } else {
+    //         return true;
+    //     }
+    // }
+
+    // public function updateDocumentRating($userId, $documentId, $newRating)
+    // {
+    //     $query = "UPDATE downloaded SET Rating = :newRating WHERE UserId = :userId AND DocumentId = :documentId";
+    //     $stmt = $this->db->prepare($query);
+    //     $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+    //     $stmt->bindParam(':documentId', $documentId, PDO::PARAM_INT);
+    //     $stmt->bindParam(':newRating', $newRating, PDO::PARAM_INT);
+    //     echo $userId, $documentId, $newRating;
+    //     print_r($stmt);
+    //     try {
+    //         $result = $stmt->execute();
+    //         return $result;
+    //     } catch (PDOException $e) {
+    //         // Handle database error
+    //         echo "Database Error: " . $e->getMessage();
+    //         return false;
+    //     }
+    // }
+    // // Function to add a document to the downloads table
+
+    // public function searchUserDownloads($UserId, $searchTerm)
+    // {
+    //     // Prepare the search query to match document names or categories
+    //     $query = "SELECT d.*
+    //     FROM document d
+    //     INNER JOIN downloaded dl ON d.DocumentId = dl.DocumentId
+    //     WHERE (d.Title LIKE :searchTerm OR d.Category LIKE :searchTerm)
+    //       AND dl.UserId = :UserId
+    //     ";
+    
+    //     // Prepare the query
+    //     $stmt = $this->db->prepare($query);
+    
+    //     // Bind the user ID and search term parameters
+    //     $searchParam = '%' . $searchTerm . '%'; // Wrap the search term with wildcards for partial matching
+    //     $stmt->bindParam(':UserId', $UserId, PDO::PARAM_INT);
+    //     $stmt->bindParam(':searchTerm', $searchParam, PDO::PARAM_STR);
+
+    
+    //     // Execute the query
+    //     $stmt->execute();
+    
+    //     // Return the search results
+    //     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // }
 }
 ?>
