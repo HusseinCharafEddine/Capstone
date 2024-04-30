@@ -90,9 +90,9 @@ $university = $universityController->getUniversityById($user['UniversityId']);
             </a>
           </li>
           <li class="menu-item ">
-            <a href="history.php" class="menu-link">
-              <i class="menu-icon tf-icons bx bx-history"></i>
-              <div data-i18n="History">History</div>
+            <a href="favorites.php" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-heart"></i>
+              <div data-i18n="Favorites">Favorites</div>
             </a>
           </li>
           <li class="menu-item  ">
@@ -101,7 +101,7 @@ $university = $universityController->getUniversityById($user['UniversityId']);
               <div data-i18n="Downloads">Downloads</div>
             </a>
           </li>
-          <li class="menu-item active">
+          <li class="menu-item">
             <a href="uploads.php" class="menu-link">
               <i class="menu-icon tf-icons bx bx-upload"></i>
               <div data-i18n="Uploads">Uploads</div>
@@ -117,18 +117,6 @@ $university = $universityController->getUniversityById($user['UniversityId']);
             <a href="league-standings.php" class="menu-link">
               <i class="menu-icon tf-icons bx bx-crown"></i>
               <div data-i18n="LeagueStandings">League Standings</div>
-            </a>
-          </li>
-          <li class="menu-item ">
-            <a href="studybuddy.php" class="menu-link">
-              <i class="menu-icon tf-icons bx bx-brain"></i>
-              <div data-i18n="StudyBuddy">StudyBuddy AI</div>
-            </a>
-          </li>
-          <li class="menu-item ">
-            <a href="contact-us.html" class="menu-link">
-              <i class="menu-icon tf-icons bx bx-phone"></i>
-              <div data-i18n="ContactUs">Contact Us</div>
             </a>
           </li>
         </ul>
@@ -170,62 +158,12 @@ $university = $universityController->getUniversityById($user['UniversityId']);
 
               <!-- User -->
               <li class="nav-item navbar-dropdown dropdown-user dropdown">
-                <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
-                  <div class="avatar avatar-online">
-                    <img src="../assets/img/avatars/1.png" alt class="w-px-40 h-auto rounded-circle" />
-                  </div>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end">
-                  <li>
-                    <a class="dropdown-item" href="#">
-                      <div class="d-flex">
-                        <div class="flex-shrink-0 me-3">
-                          <div class="avatar avatar-online">
-                            <img src="../assets/img/avatars/1.png" alt class="w-px-40 h-auto rounded-circle" />
-                          </div>
-                        </div>
-                        <div class="flex-grow-1">
-                          <span class="fw-medium d-block">John Doe</span>
-                          <small class="text-muted">Admin</small>
-                        </div>
-                      </div>
-                    </a>
-                  </li>
-                  <li>
-                    <div class="dropdown-divider"></div>
-                  </li>
-                  <li>
-                    <a class="dropdown-item" href="#">
-                      <i class="bx bx-user me-2"></i>
-                      <span class="align-middle">My Profile</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a class="dropdown-item" href="#">
-                      <i class="bx bx-cog me-2"></i>
-                      <span class="align-middle">Settings</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a class="dropdown-item" href="#">
-                      <span class="d-flex align-items-center align-middle">
-                        <i class="flex-shrink-0 bx bx-credit-card me-2"></i>
-                        <span class="flex-grow-1 align-middle ms-1">Billing</span>
-                        <span class="flex-shrink-0 badge badge-center rounded-pill bg-danger w-px-20 h-px-20">4</span>
-                      </span>
-                    </a>
-                  </li>
-                  <li>
-                    <div class="dropdown-divider"></div>
-                  </li>
-                  <li>
-                    <a class="dropdown-item" href="javascript:void(0);">
-                      <i class="bx bx-power-off me-2"></i>
-                      <span class="align-middle">Log Out</span>
-                    </a>
-                  </li>
-                </ul>
-              </li>
+    <div class="avatar avatar-online">
+        <a class="dropdown-item" href="pages-account-settings-account.php">
+            <img src="../assets/img/avatars/1.png" alt="" class="w-px-40 h-auto rounded-circle">
+        </a>
+    </div>
+</li>
               <!--/ User -->
             </ul>
           </div>
