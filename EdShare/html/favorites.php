@@ -647,9 +647,21 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                           </div>
                         </div>
                 </div>
-
+                <div class="row row-cols-1 row-cols-md-6 g-3 mb-3">
+    <div class="col">
+        <button type="button" class="btn btn-outline-primary w-100">
+            <span class="tf-icons bx bx-all me-1"></span>All Files
+        </button>
+    </div>
+    <div class="col">
+        <button type="button" class="btn btn-outline-primary w-100">
+            <span class="tf-icons bx bx-all me-1"></span>View Folders
+        </button>
+    </div>
+</div>
 
                   <div class="row row-cols-1 row-cols-md-4 g-3 mb-3">
+                 
                     <?php foreach ($favoritesForPage as $favorite): ?>
                       <?php
                       $document = $documentController->getDocumentById($favorite['DocumentId']);
@@ -766,6 +778,9 @@ $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </div>
                       </div>
                     <?php endforeach; ?>
+                    <button type="button" class="btn btn-outline-primary">
+                   <span class="tf-icons bx bx-plus me-1"></span>New Folder
+                    </button>
                   </div>
 
                   <ul class="pagination justify-content-center mt-5">
