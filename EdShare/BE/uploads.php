@@ -106,7 +106,7 @@ try {
 
 if ($DocumentId > 0) {
     // User details updated successfully
-    header("location:../html/uploads.php?success=0");
+    header("location:../html/uploads.php?success=4");
     exit; // Ensure no further output is sent
 } else {
     // Failed to update user details
