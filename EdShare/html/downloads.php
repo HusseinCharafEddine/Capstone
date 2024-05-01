@@ -28,7 +28,8 @@ $getUploadedDocumentsQuery = "SELECT * FROM Document WHERE UserId = (SELECT User
 $stmt = $db->prepare($getUploadedDocumentsQuery);
 $stmt->execute([$username]);
 $uploadedDocuments = $stmt->fetchAll(PDO::FETCH_ASSOC);
-$userId = $userController->getUserByUsername($username)['UserId'];
+$user = $userController->getUserByUsername($username);
+$userId = $user['UserId'];
 $_SESSION["userId"] = $userId;
 ?>
 <html lang="en" class="light-style layout-menu-fixed layout-compact" dir="ltr" data-theme="theme-default"
@@ -99,7 +100,30 @@ $_SESSION["userId"] = $userId;
         <div class="menu-inner-shadow"></div>
 
         <ul class="menu-inner py-1">
-          <!-- Dashboards -->
+          <li>
+            <div id="token-container" style="display: flex; margin: 18px; margin-top:0px">
+              <div id="uploads-token" style="margin-right: auto;">
+                <span>
+                  <img src="../assets/img/icons/tokens/uploadstoken.png">
+                  <?php
+                  $contributionScore = $user['ContributionScore'];
+                  $totalDownloaded = $user['TotalDownloaded'];
+                  $tokenScore = $contributionScore - 2 * $totalDownloaded;
+                  echo $tokenScore;
+                  ?>
+                </span>
+              </div>
+              <div class="vertical-divider" style="width: 20px;"></div>
+              <div id="downloads-token" style="margin-left: auto;">
+                <span>
+                  <img src="../assets/img/icons/tokens/downloadstoken.png">
+                  <?php
+                  echo $contributionScore;
+                  ?>
+                </span>
+              </div>
+            </div>
+          </li><!-- Dashboards -->
           <li class="menu-item">
             <a href="../landing.php" class="menu-link">
               <i class="menu-icon tf-icons bx bx-home-circle"></i>
@@ -158,17 +182,17 @@ $_SESSION["userId"] = $userId;
           <!-- /Search -->
 
           <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse" style="width=100%;">
-<div class="navbar-nav align-items-center" style="width=100%;">
-  <div class="nav-item d-flex align-items-center position-relative" style="width=100%;">
-    <i class="bx bx-search fs-4 lh-0"></i>
-    <input id="searchInput" type="text" class="form-control border-0 shadow-none ps-1 ps-sm-2"
-      placeholder="Search..." aria-label="Search..." onkeyup="fetchSearchSuggestions(this.value)">
-    <div id="searchSuggestions" class="search-suggestions" style="position: absolute; top: 134%; left: 5%;background-color: #fff;
+            <div class="navbar-nav align-items-center" style="width=100%;">
+              <div class="nav-item d-flex align-items-center position-relative" style="width=100%;">
+                <i class="bx bx-search fs-4 lh-0"></i>
+                <input id="searchInput" type="text" class="form-control border-0 shadow-none ps-1 ps-sm-2"
+                  placeholder="Search..." aria-label="Search..." onkeyup="fetchSearchSuggestions(this.value)">
+                <div id="searchSuggestions" class="search-suggestions" style="position: absolute; top: 134%; left: 5%;background-color: #fff;
     width:100%; border-top: none; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     max-height: 200px; overflow-y: auto; ">
-    </div>
-  </div>
-</div>
+                </div>
+              </div>
+            </div>
             <!-- /Search -->
 
 
@@ -184,12 +208,15 @@ $_SESSION["userId"] = $userId;
 
               <!-- User -->
               <li class="nav-item navbar-dropdown dropdown-user dropdown">
-    <div class="avatar avatar-online">
-        <a class="dropdown-item" href="pages-account-settings-account.php">
-            <img src="../assets/img/avatars/1.png" alt="" class="w-px-40 h-auto rounded-circle">
-        </a>
-    </div>
-</li>
+                <a class="dropdown-item" href="pages-account-settings-account.php">
+                  <div class="avatar-wrapper">
+                    <div class="avatar avatar-md avatar-online me-2"><span
+                        class="avatar-initial rounded-circle bg-label-dark">
+                        <?php echo ucfirst($user['FirstName'][0]) . ucfirst($user['LastName'][0]);
+                        ?></span></div>
+                  </div>
+                </a>
+              </li>
               <!--/ User -->
 
 
@@ -472,7 +499,7 @@ $_SESSION["userId"] = $userId;
 
 
           <script>
-             function submitFilter() {
+            function submitFilter() {
               var universityId = document.getElementById("University").value;
               var courseId = document.getElementById("Category").value;
               var rating = document.getElementById("Rating").value;
@@ -480,69 +507,69 @@ $_SESSION["userId"] = $userId;
 
               // Redirect to the same page with filter parameters
               window.location.href = window.location.pathname + "?universityId=" + universityId + "&courseId=" + courseId + "&rating=" + rating +
-                  "&searchTerm=" + encodeURIComponent(searchTerm);
+                "&searchTerm=" + encodeURIComponent(searchTerm);
             }
             const UserId = <?php echo isset($_SESSION['userId']) ? $_SESSION['userId'] : 'null'; ?>;
             function fetchSearchSuggestions() {
-                var searchTerm = document.getElementById("searchInput").value;
-                if (searchTerm.trim() === '') {
-                  return; // No suggestions for empty search term
-                }
-
-                // AJAX call to fetch search suggestions based on the input
-                $.ajax({
-                  url: '../BE/fetchSearchSuggestionsDownloads.php',
-                  method: 'GET',
-                  data: { searchTerm: searchTerm, UserId: UserId},
-                  success: function (response) {
-                    // Update the search suggestions dropdown with retrieved suggestions
-                    var suggestionsDropdown = document.getElementById("searchSuggestions");
-                    suggestionsDropdown.innerHTML = response;
-                    suggestionsDropdown.style.display = 'block'; // Show the suggestions dropdown
-                  },
-                  error: function (xhr, status, error) {
-                    console.error(error);
-                  }
-                });
+              var searchTerm = document.getElementById("searchInput").value;
+              if (searchTerm.trim() === '') {
+                return; // No suggestions for empty search term
               }
 
-              // Add event listeners to search icon, search input field, and search suggestions
-              document.addEventListener("DOMContentLoaded", function () {
-                // Event listener for clicking the search icon
-                document.querySelector(".bx-search").addEventListener("click", function () {
-                  submitFilter(); // Trigger filter submission
-                });
-
-                // Event listener for Enter key press in the search input field
-                document.getElementById("searchInput").addEventListener("keypress", function (event) {
-                  if (event.key === "Enter") {
-                    submitFilter(); // Trigger filter submission
-                  }
-                });
-
-                // Event listener for input change in the search input field (for suggestions)
-                document.getElementById("searchInput").addEventListener("input", function () {
-                  fetchSearchSuggestions(); // Fetch search suggestions as user types
-                });
-                document.addEventListener("click", function (event) {
-                  var clickedElement = event.target;
-                  if (clickedElement.classList.contains("search-suggestion")) {
-                    // Set the search input value to the clicked suggestion
-                    document.getElementById("searchInput").value = clickedElement.textContent.trim();
-                    // Hide the suggestions container after selection
-                    document.getElementById("searchSuggestions").style.display = "none";
-                  }
-                });
-
-                var applyFilterBtn = document.getElementById('applyFilterBtn');
-
-                // Add a click event listener to the button
-                applyFilterBtn.addEventListener('click', function () {
-                  // Call the submitFilter() function when the button is clicked
-                  submitFilter();
-                });
-
+              // AJAX call to fetch search suggestions based on the input
+              $.ajax({
+                url: '../BE/fetchSearchSuggestionsDownloads.php',
+                method: 'GET',
+                data: { searchTerm: searchTerm, UserId: UserId },
+                success: function (response) {
+                  // Update the search suggestions dropdown with retrieved suggestions
+                  var suggestionsDropdown = document.getElementById("searchSuggestions");
+                  suggestionsDropdown.innerHTML = response;
+                  suggestionsDropdown.style.display = 'block'; // Show the suggestions dropdown
+                },
+                error: function (xhr, status, error) {
+                  console.error(error);
+                }
               });
+            }
+
+            // Add event listeners to search icon, search input field, and search suggestions
+            document.addEventListener("DOMContentLoaded", function () {
+              // Event listener for clicking the search icon
+              document.querySelector(".bx-search").addEventListener("click", function () {
+                submitFilter(); // Trigger filter submission
+              });
+
+              // Event listener for Enter key press in the search input field
+              document.getElementById("searchInput").addEventListener("keypress", function (event) {
+                if (event.key === "Enter") {
+                  submitFilter(); // Trigger filter submission
+                }
+              });
+
+              // Event listener for input change in the search input field (for suggestions)
+              document.getElementById("searchInput").addEventListener("input", function () {
+                fetchSearchSuggestions(); // Fetch search suggestions as user types
+              });
+              document.addEventListener("click", function (event) {
+                var clickedElement = event.target;
+                if (clickedElement.classList.contains("search-suggestion")) {
+                  // Set the search input value to the clicked suggestion
+                  document.getElementById("searchInput").value = clickedElement.textContent.trim();
+                  // Hide the suggestions container after selection
+                  document.getElementById("searchSuggestions").style.display = "none";
+                }
+              });
+
+              var applyFilterBtn = document.getElementById('applyFilterBtn');
+
+              // Add a click event listener to the button
+              applyFilterBtn.addEventListener('click', function () {
+                // Call the submitFilter() function when the button is clicked
+                submitFilter();
+              });
+
+            });
           </script>
 
           <!-- for rating lioops -->

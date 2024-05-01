@@ -167,11 +167,14 @@ $userId = $user['UserId'];
 
               <!-- User -->
               <li class="nav-item navbar-dropdown dropdown-user dropdown">
-                <div class="avatar avatar-online">
-                  <a class="dropdown-item" href="pages-account-settings-account.php">
-                    <img src="../assets/img/avatars/1.png" alt="" class="w-px-40 h-auto rounded-circle">
-                  </a>
-                </div>
+                <a class="dropdown-item" href="pages-account-settings-account.php">
+                  <div class="avatar-wrapper">
+                    <div class="avatar avatar-md avatar-online me-2"><span
+                        class="avatar-initial rounded-circle bg-label-dark">
+                        <?php echo ucfirst($user['FirstName'][0]) . ucfirst($user['LastName'][0]);
+                        ?></span></div>
+                  </div>
+                </a>
               </li>
               <!--/ User -->
 

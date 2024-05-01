@@ -177,7 +177,7 @@ $user = $userController->getUserByUsername($username);
               <i class="bx bx-menu bx-sm"></i>
             </a>
           </div>
- <!-- /Search -->
+          <!-- /Search -->
           <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse" style="width=100%;">
 
             <div class="navbar-nav align-items-center" style="width=100%;">
@@ -205,12 +205,15 @@ $user = $userController->getUserByUsername($username);
 
               <!-- User -->
               <li class="nav-item navbar-dropdown dropdown-user dropdown">
-    <div class="avatar avatar-online">
-        <a class="dropdown-item" href="pages-account-settings-account.php">
-            <img src="../assets/img/avatars/1.png" alt="" class="w-px-40 h-auto rounded-circle">
-        </a>
-    </div>
-</li>
+                <a class="dropdown-item" href="pages-account-settings-account.php">
+                  <div class="avatar-wrapper">
+                    <div class="avatar avatar-md avatar-online me-2"><span
+                        class="avatar-initial rounded-circle bg-label-dark">
+                        <?php echo ucfirst($user['FirstName'][0]) . ucfirst($user['LastName'][0]);
+                        ?></span></div>
+                  </div>
+                </a>
+              </li>
 
               <!--/ User -->
 
@@ -553,82 +556,84 @@ $user = $userController->getUserByUsername($username);
 
     <script>
 
-function submitFilter() {
+      function submitFilter() {
 
-                var searchTerm = document.getElementById("searchInput").value;
+        var searchTerm = document.getElementById("searchInput").value;
 
-                // Construct the URL with filter parameters and search term
-                var url = window.location.pathname +
-                  "?searchTerm=" + encodeURIComponent(searchTerm); // Encode search term
+        // Construct the URL with filter parameters and search term
+        var url = window.location.pathname +
+          "?searchTerm=" + encodeURIComponent(searchTerm); // Encode search term
 
-                // Redirect to the constructed URL
-                window.location.href = url;
-              }
+        // Redirect to the constructed URL
+        window.location.href = url;
+      }
 
 
-    //search suggestions
-    const UserId = <?php echo isset($_SESSION['userId']) ? $_SESSION['userId'] : 'null'; ?>;
-    function fetchSearchSuggestions() {
-                var searchTerm = document.getElementById("searchInput").value;
-                if (searchTerm.trim() === '') {
-                  return; // No suggestions for empty search term
-                }
+      //search suggestions
+      const UserId = <?php echo isset($_SESSION['userId']) ? $_SESSION['userId'] : 'null'; ?>;
+      function fetchSearchSuggestions() {
+        var searchTerm = document.getElementById("searchInput").value;
+        if (searchTerm.trim() === '') {
+          return; // No suggestions for empty search term
+        }
 
-                // AJAX call to fetch search suggestions based on the input
-                $.ajax({
-                  url: '../BE/fetchSearchSuggestionsUploads.php',
-                  method: 'GET',
-                  data: { searchTerm: searchTerm,
-                  UserId: UserId},
-                  success: function (response) {
-                    // Update the search suggestions dropdown with retrieved suggestions
-                    var suggestionsDropdown = document.getElementById("searchSuggestions");
-                    suggestionsDropdown.innerHTML = response;
-                    suggestionsDropdown.style.display = 'block'; // Show the suggestions dropdown
-                  },
-                  error: function (xhr, status, error) {
-                    console.error(error);
-                  }
-                });
-              }
+        // AJAX call to fetch search suggestions based on the input
+        $.ajax({
+          url: '../BE/fetchSearchSuggestionsUploads.php',
+          method: 'GET',
+          data: {
+            searchTerm: searchTerm,
+            UserId: UserId
+          },
+          success: function (response) {
+            // Update the search suggestions dropdown with retrieved suggestions
+            var suggestionsDropdown = document.getElementById("searchSuggestions");
+            suggestionsDropdown.innerHTML = response;
+            suggestionsDropdown.style.display = 'block'; // Show the suggestions dropdown
+          },
+          error: function (xhr, status, error) {
+            console.error(error);
+          }
+        });
+      }
 
-              // Add event listeners to search icon, search input field, and search suggestions
-              document.addEventListener("DOMContentLoaded", function () {
-                // Event listener for clicking the search icon
-                document.querySelector(".bx-search").addEventListener("click", function () {
-                  submitFilter(); // Trigger filter submission
-                });
+      // Add event listeners to search icon, search input field, and search suggestions
+      document.addEventListener("DOMContentLoaded", function () {
+        // Event listener for clicking the search icon
+        document.querySelector(".bx-search").addEventListener("click", function () {
+          submitFilter(); // Trigger filter submission
+        });
 
-                // Event listener for Enter key press in the search input field
-                document.getElementById("searchInput").addEventListener("keypress", function (event) {
-                  if (event.key === "Enter") {
-                    submitFilter(); // Trigger filter submission
-                  }
-                });
+        // Event listener for Enter key press in the search input field
+        document.getElementById("searchInput").addEventListener("keypress", function (event) {
+          if (event.key === "Enter") {
+            submitFilter(); // Trigger filter submission
+          }
+        });
 
-                // Event listener for input change in the search input field (for suggestions)
-                document.getElementById("searchInput").addEventListener("input", function () {
-                  fetchSearchSuggestions(); // Fetch search suggestions as user types
-                });
-                document.addEventListener("click", function (event) {
-                  var clickedElement = event.target;
-                  if (clickedElement.classList.contains("search-suggestion")) {
-                    // Set the search input value to the clicked suggestion
-                    document.getElementById("searchInput").value = clickedElement.textContent.trim();
-                    // Hide the suggestions container after selection
-                    document.getElementById("searchSuggestions").style.display = "none";
-                  }
-                });
+        // Event listener for input change in the search input field (for suggestions)
+        document.getElementById("searchInput").addEventListener("input", function () {
+          fetchSearchSuggestions(); // Fetch search suggestions as user types
+        });
+        document.addEventListener("click", function (event) {
+          var clickedElement = event.target;
+          if (clickedElement.classList.contains("search-suggestion")) {
+            // Set the search input value to the clicked suggestion
+            document.getElementById("searchInput").value = clickedElement.textContent.trim();
+            // Hide the suggestions container after selection
+            document.getElementById("searchSuggestions").style.display = "none";
+          }
+        });
 
-                var applyFilterBtn = document.getElementById('applyFilterBtn');
+        var applyFilterBtn = document.getElementById('applyFilterBtn');
 
-                // Add a click event listener to the button
-                applyFilterBtn.addEventListener('click', function () {
-                  // Call the submitFilter() function when the button is clicked
-                  submitFilter();
-                });
+        // Add a click event listener to the button
+        applyFilterBtn.addEventListener('click', function () {
+          // Call the submitFilter() function when the button is clicked
+          submitFilter();
+        });
 
-              });
+      });
     </script>
 </body>
 
