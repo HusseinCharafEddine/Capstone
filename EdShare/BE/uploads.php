@@ -47,18 +47,20 @@ if ($_FILES["file"]["error"] !== UPLOAD_ERR_OK) {
 $maxFileSize = 50 * 1024 * 1024; // 50MB in bytes
 
 if ($_FILES["file"]["size"] > $maxFileSize) {
-    exit('File too large (max 50MB)');
+    header("location:../html/uploads.php?success=0");
+    exit;
 }
 
 // Allowed file types
-$allowedExtensions = ["pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "py", "c", "zip", "java"];
+$allowedExtensions = ["pdf"];
 
 $pathinfo = pathinfo($_FILES["file"]["name"]);
 $fileExtension = strtolower($pathinfo["extension"]);
 
 // Check if the file extension is allowed
 if (!in_array($fileExtension, $allowedExtensions)) {
-    exit("Invalid file type");
+    header("location:../html/uploads.php?success=3");
+    exit;
 }
 
 // Sanitize file name to prevent directory traversal and ensure unique file names
@@ -93,9 +95,24 @@ $document->Type = VarExist($_POST["type"]);
 $document->FilePath = $destination;
 $document->ThumbnailPath = $thumbnailPath;
 
-$DocumentId = InsertDocumentToDBFromObject($db, $document);
+try {
+    $DocumentId = InsertDocumentToDBFromObject($db, $document);
+    // Additional code if the operation is successful
+} catch (PDOException $e) {
+    // Handle the exception here
+    header("location:../html/uploads.php?success=2");
+    exit; // Ensure no further output is sent
+}
 
-header("location:../html/uploads.php");
+if ($result > 0) {
+    // User details updated successfully
+    header("location:../html/uploads.php?success=0");
+    exit; // Ensure no further output is sent
+} else {
+    // Failed to update user details
+    header("location:../html/uploads.php?success=1");
+    exit; // Ensure no further output is sent
+}
 
 function generateThumbnail($filePath, $thumbnailDirectory)
 {

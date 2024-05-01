@@ -269,24 +269,28 @@ $user = $userController->getUserByUsername($username);
                             name="course-name" placeholder="Enter Course Name">
                           <label class="input-group-text">Course Name</label>
                         </div>
+                        <span id="inv-course-name" class="invalid-feedback">Course Name cannot be empty</span>
                         <div class="input-group">
                           <input type="text" class="form-control" aria-label="Text input with dropdown button"
                             id="course-code-input" name="course-code" placeholder="Enter Course Code">
                           <label class="input-group-text">Course Code</label>
                         </div>
+                        <span id="inv-course-code" class="invalid-feedback">Course Code cannot be empty</span>
                         <div class="input-group">
                           <input type="text" class="form-control" aria-label="Text input with dropdown button"
                             name="title" placeholder="Enter Document Title">
                           <label class="input-group-text">Document Title</label>
                         </div>
+                        <span id="inv-title" class="invalid-feedback">Document Title cannot be empty</span>
                         <div class="input-group">
                           <input type="text" class="form-control" aria-label="Text input with dropdown button"
                             id="category-input" name="category" placeholder="Enter Document Category">
                           <label class="input-group-text">Category</label>
                         </div>
+                        <span id="inv-category" class="invalid-feedback">Document Category cannot be empty</span>
                         <div class="input-group">
-                          <input type="hidden" name="type" id="type-hidden">
                           <!-- Hidden input field to store the selected value -->
+                          <input type="hidden" name="type" id="type-hidden">
                           <select id="type" class="form-select form-select-md" placeholder="type"
                             onchange="updateHiddenInput()" aria-label="Document Type">
                             <option value="" disabled selected>Select Document Type</option>
@@ -297,14 +301,17 @@ $user = $userController->getUserByUsername($username);
                           </select>
                           <label class="input-group-text">Type</label>
                         </div>
+                        <span id="inv-type" class="invalid-feedback">Document Type cannot be empty</span>
                         <div class="input-group">
                           <input type="file" class="form-control" id="inputGroupFile02" name="file">
                           <label class="input-group-text">Upload</label>
                         </div>
+                        <span id="inv-file" class="invalid-feedback">Please select a file to upload</span>
                         <div class="container d-flex justify-content-center">
-                          <input type="submit" class="btn btn-outline-primary" value="Upload" name="submit">
+                          <input type="submit" class="btn btn-outline-primary" value="Upload" name="btnSubmit">
                         </div>
                       </form>
+
                       <div id="loadingContainer">
                         <div id="loadingSpinner" class="sk-fold sk-primary">
                           <div class="sk-fold-cube"></div>
@@ -513,7 +520,7 @@ $user = $userController->getUserByUsername($username);
       });
 
     </script>
-    <script>
+    <!-- <script>
       // Function to show the loading spinner
       function showLoadingSpinner() {
         console.log("hit 1");
@@ -527,15 +534,23 @@ $user = $userController->getUserByUsername($username);
       }
 
       // Event listener for form submission
-      document.getElementById('uploadForm').addEventListener('submit', function () {
-        showLoadingSpinner(); // Show loading spinner when form is submitted
+      document.getElementById('uploadForm').addEventListener('submit', function (event) {
+        // Prevent the default form submission behavior
+        event.preventDefault();
+
+        // Show loading spinner when form is submitted
+        showLoadingSpinner();
+
+        // Submit the form after showing the loading spinner
+        this.submit();
       });
 
       // Simulate upload completion after 3 seconds (you can replace this with actual upload logic)
       setTimeout(function () {
         hideLoadingSpinner(); // Hide loading spinner after 3 seconds (simulating upload completion)
       }, 3000);
-    </script>
+    </script> -->
+
     <script>
       // JavaScript code for autocomplete
       $(document).ready(function () {
@@ -625,16 +640,31 @@ $user = $userController->getUserByUsername($username);
           }
         });
 
-        var applyFilterBtn = document.getElementById('applyFilterBtn');
+        // var applyFilterBtn = document.getElementById('applyFilterBtn');
 
-        // Add a click event listener to the button
-        applyFilterBtn.addEventListener('click', function () {
-          // Call the submitFilter() function when the button is clicked
-          submitFilter();
-        });
+        // // Add a click event listener to the button
+        // applyFilterBtn.addEventListener('click', function () {
+        //   // Call the submitFilter() function when the button is clicked
+        //   submitFilter();
+        // });
 
       });
+
     </script>
+    <?php
+    if (isset($_GET['success'])) {
+      if ($_GET['success'] == 1) {
+        echo "<script>alert('Failed to upload document! Try again later.');</script>";
+      } else if ($_GET['success'] == 2) {
+        echo "<script>alert('Failed to upload document! Document already exists.');</script>";
+      } else if ($_GET['success'] == 0) {
+        echo "<script>alert('Failed to upload document! Maximum Document size is 50MB.');</script>";
+      } else if ($_GET['success'] == 3) {
+        echo "<script>alert('Failed to upload document! PDFs are only supported');</script>";
+      }
+    } ?>
+    <script src="../assets/js/upload.js"></script>
+
 </body>
 
 </html>
