@@ -1,8 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION["username"])) {
-    header("location:../index.php");
-    exit; // Prevent further execution
+    header("location:../index.html");
 }
 require_once ("common/commonFunctions.php");
 require ("userController.php");

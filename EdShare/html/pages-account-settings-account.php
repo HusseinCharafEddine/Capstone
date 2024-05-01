@@ -2,7 +2,7 @@
 <?php
 session_start();
 if (!isset($_SESSION["username"])) {
-  header("location:../index.php");
+  header("location:../index.html");
 }
 
 
@@ -120,6 +120,12 @@ $university = $universityController->getUniversityById($user['UniversityId']);
             <a href="league-standings.php" class="menu-link">
               <i class="menu-icon tf-icons bx bx-crown"></i>
               <div data-i18n="LeagueStandings">League Standings</div>
+            </a>
+          </li>
+          <li class="menu-item ">
+            <a href="../BE/logout.php" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-power-off"></i>
+              <div data-i18n="LeagueStandings">Log Out</div>
             </a>
           </li>
         </ul>
@@ -258,7 +264,7 @@ $university = $universityController->getUniversityById($user['UniversityId']);
                   </div>
                   <!-- /Account -->
                 </div>
-                <div class="card">
+                <!-- <div class="card">
                   <h5 class="card-header">Delete Account</h5>
                   <div class="card-body">
                     <div class="mb-3 col-12 mb-0">
@@ -277,7 +283,7 @@ $university = $universityController->getUniversityById($user['UniversityId']);
                       <button type="submit" class="btn btn-danger deactivate-account">Deactivate Account</button>
                     </form>
                   </div>
-                </div>
+                </div> -->
               </div>
             </div>
           </div>

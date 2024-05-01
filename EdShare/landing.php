@@ -162,7 +162,12 @@ $user = $userController->getUserByUsername($username);
               <div data-i18n="LeagueStandings">League Standings</div>
             </a>
           </li>
-
+          <li class="menu-item ">
+            <a href="BE/logout.php" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-power-off"></i>
+              <div data-i18n="LeagueStandings">Log Out</div>
+            </a>
+          </li>
         </ul>
         </ul>
       </aside>

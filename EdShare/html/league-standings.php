@@ -2,7 +2,7 @@
 <?php
 session_start();
 if (!isset($_SESSION["username"])) {
-  header("location:../index.php");
+  header("location:../index.html");
 }
 
 require ("../BE/common/commonFunctions.php");
@@ -136,6 +136,12 @@ $userId = $user['UserId'];
             <a href="league-standings.pgp" class="menu-link">
               <i class="menu-icon tf-icons bx bx-crown"></i>
               <div data-i18n="LeagueStandings">League Standings</div>
+            </a>
+          </li>
+          <li class="menu-item ">
+            <a href="../BE/logout.php" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-power-off"></i>
+              <div data-i18n="LeagueStandings">Log Out</div>
             </a>
           </li>
 
