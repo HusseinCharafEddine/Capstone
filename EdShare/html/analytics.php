@@ -677,9 +677,9 @@ $userId = $user['UserId'];
                     show: true,
                     fontSize: '0.8125rem',
                     color: axisColor,
-                    label: 'Weekly',
+                    label: 'Summaries',
                     formatter: function (w) {
-                      return '38%';
+                      return '<?php echo $summaryPercentage; ?>%';
                     }
                   }
                 }
