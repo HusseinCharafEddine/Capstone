@@ -167,12 +167,12 @@ $userId = $user['UserId'];
 
               <!-- User -->
               <li class="nav-item navbar-dropdown dropdown-user dropdown">
-    <div class="avatar avatar-online">
-        <a class="dropdown-item" href="pages-account-settings-account.php">
-            <img src="../assets/img/avatars/1.png" alt="" class="w-px-40 h-auto rounded-circle">
-        </a>
-    </div>
-</li>
+                <div class="avatar avatar-online">
+                  <a class="dropdown-item" href="pages-account-settings-account.php">
+                    <img src="../assets/img/avatars/1.png" alt="" class="w-px-40 h-auto rounded-circle">
+                  </a>
+                </div>
+              </li>
               <!--/ User -->
 
 
@@ -183,7 +183,7 @@ $userId = $user['UserId'];
           <!-- Search Small Screens -->
           <div class="navbar-search-wrapper search-input-wrapper d-none">
             <span class="twitter-typeahead" style="position: relative; display: inline-block;"><input type="text"
-                class="form-control search-input container-xxl border-0 tt-input" placeholder="Search..."
+                class="form-control search-input container-xxl bdownload-0 tt-input" placeholder="Search..."
                 aria-label="Search..." autocomplete="off" spellcheck="false" dir="auto"
                 style="position: relative; vertical-align: top;">
               <pre aria-hidden="true"
@@ -226,7 +226,7 @@ $userId = $user['UserId'];
                       </div>
                       <span>Total Downloads</span>
                       <h3 class="card-title text-nowrap mb-1">
-                        <?php echo $totalDownloadsForUser = $downloadController->getTotalDownloadsForUser($userId);
+                        <?php echo $totalDownloadsForUser = $user['TotalDownloaded'];
                         $growthPercentage = $downloadController->computeDownloadGrowthPercentage($userId); ?>
                       </h3>
                       <small class="<?php echo getGrowthClass($growthPercentage); ?>"><i
@@ -289,8 +289,12 @@ $userId = $user['UserId'];
                                   <div class="rating-text"> 5 <i class="fa fa-star" aria-hidden="true"></i> </div>
                                   <div class="progress">
                                     <div class="progress-bar" role="progressbar" style="width: <?php $rating5 = $downloadController->getCountOfRatingsEqualTo($userId, 5);
-                                    echo $rating5 / $ratingTotalCount * 100; ?>%" aria-valuenow="100" aria-valuemin="0"
-                                      aria-valuemax="100"></div>
+                                    if ($ratingTotalCount == 0) {
+                                      echo 0;
+                                    } else {
+                                      echo $rating5 / $ratingTotalCount * 100;
+                                    }
+                                    ?>%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
                                   </div>
                                   <span class="rating-value">
                                     <?php echo $rating5; ?></span>
@@ -299,8 +303,12 @@ $userId = $user['UserId'];
                                   <div class="rating-text"> 4 <i class="fa fa-star" aria-hidden="true"></i> </div>
                                   <div class="progress">
                                     <div class="progress-bar" role="progressbar" style="width: <?php $rating4 = $downloadController->getCountOfRatingsEqualTo($userId, 4);
-                                    echo $rating4 / $ratingTotalCount * 100; ?>%" aria-valuenow="100" aria-valuemin="0"
-                                      aria-valuemax="100"></div>
+                                    if ($ratingTotalCount == 0) {
+                                      echo 0;
+                                    } else {
+                                      echo $rating4 / $ratingTotalCount * 100;
+                                    }
+                                    ?>%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
                                   </div>
                                   <span class="rating-value">
                                     <?php echo $rating4; ?></span>
@@ -310,8 +318,12 @@ $userId = $user['UserId'];
                                   <div class="rating-text"> 3 <i class="fa fa-star" aria-hidden="true"></i> </div>
                                   <div class="progress">
                                     <div class="progress-bar" role="progressbar" style="width: <?php $rating3 = $downloadController->getCountOfRatingsEqualTo($userId, 3);
-                                    echo $rating3 / $ratingTotalCount * 100; ?>%" aria-valuenow="100" aria-valuemin="0"
-                                      aria-valuemax="100"></div>
+                                    if ($ratingTotalCount == 0) {
+                                      echo 0;
+                                    } else {
+                                      echo $rating3 / $ratingTotalCount * 100;
+                                    }
+                                    ?>%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
                                   </div>
                                   <span class="rating-value">
                                     <?php echo $rating3; ?></span>
@@ -321,8 +333,12 @@ $userId = $user['UserId'];
                                   <div class="rating-text"> 2 <i class="fa fa-star" aria-hidden="true"></i> </div>
                                   <div class="progress">
                                     <div class="progress-bar" role="progressbar" style="width: <?php $rating2 = $downloadController->getCountOfRatingsEqualTo($userId, 2);
-                                    echo $rating2 / $ratingTotalCount * 100; ?>%" aria-valuenow="100" aria-valuemin="0"
-                                      aria-valuemax="100"></div>
+                                    if ($ratingTotalCount == 0) {
+                                      echo 0;
+                                    } else {
+                                      echo $rating2 / $ratingTotalCount * 100;
+                                    }
+                                    ?>%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
                                   </div>
                                   <span class="rating-value">
                                     <?php echo $rating2; ?></span>
@@ -332,8 +348,12 @@ $userId = $user['UserId'];
                                   <div class="rating-text"> 1 <i class="fa fa-star" aria-hidden="true"></i> </div>
                                   <div class="progress">
                                     <div class="progress-bar" role="progressbar" style="width: <?php $rating1 = $downloadController->getCountOfRatingsEqualTo($userId, 1);
-                                    echo $rating1 / $ratingTotalCount * 100; ?>%" aria-valuenow="100" aria-valuemin="0"
-                                      aria-valuemax="100"></div>
+                                    if ($ratingTotalCount == 0) {
+                                      echo 0;
+                                    } else {
+                                      echo $rating1 / $ratingTotalCount * 100;
+                                    }
+                                    ?>%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
                                   </div>
                                   <span class="rating-value">
                                     <?php echo $rating1; ?></span>
@@ -376,7 +396,7 @@ $userId = $user['UserId'];
                           <th>Publishing date</th>
                         </tr>
                       </thead>
-                      <tbody class="table-border-bottom-0">
+                      <tbody class="table-bdownload-bottom-0">
                         <?php foreach ($documents as $document): ?>
                           <tr>
                             <td>
@@ -427,7 +447,7 @@ $userId = $user['UserId'];
 
 
               <!-- Document Statistics -->
-              <div class="col-md-8 col-lg- col-xl-12 order-0 mb-4">
+              <div class="col-md-8 col-lg- col-xl-12 download-0 mb-4">
                 <div class="card h-100">
                   <div class="card-header d-flex align-items-center justify-content-between pb-0">
                     <div class="card-title mb-0">
@@ -451,7 +471,7 @@ $userId = $user['UserId'];
                         <h2 class="mb-2"><?php echo $totalDownloadsForUser ?></h2>
                         <span>Total Downloads</span>
                       </div>
-                      <div id="orderStatisticsChart"></div>
+                      <div id="downloadStatisticsChart"></div>
                     </div>
                     <ul class="p-0 m-0">
                       <li class="d-flex mb-4 pb-1">
@@ -500,7 +520,8 @@ $userId = $user['UserId'];
                       </li>
                       <li class="d-flex">
                         <div class="avatar flex-shrink-0 me-3">
-                          <span class="avatar-initial rounded bg-label-secondary"><i class="bx bx-spreadsheet"></i></span>
+                          <span class="avatar-initial rounded bg-label-secondary"><i
+                              class="bx bx-spreadsheet"></i></span>
                         </div>
                         <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                           <div class="me-2">
@@ -562,25 +583,40 @@ $userId = $user['UserId'];
   <script>
 
     (function () {
-      let cardColor, headingColor, axisColor, shadeColor, borderColor;
+      let cardColor, headingColor, axisColor, shadeColor, bdownloadColor;
 
       cardColor = config.colors.cardColor;
       headingColor = config.colors.headingColor;
       axisColor = config.colors.axisColor;
-      borderColor = config.colors.borderColor; const chartOrderStatistics = document.querySelector('#orderStatisticsChart'),
-        orderChartConfig = {
+      bdownloadColor = config.colors.bdownloadColor; const chartdownloadStatistics = document.querySelector('#downloadStatisticsChart'),
+        downloadChartConfig = {
           chart: {
             height: 165,
             width: 130,
             type: 'donut'
           },
           labels: ['Summaries', 'Practice Sheets', 'Exercises ', 'Notes'],
+          <?php
+          $totalPercentage = $summaryDownloadCount + $practiceSheetsDownloadCount + $exercisesDownloadCount + $notesDownloadCount;
+
+          // If all counts are zero, set them to 25%
+          if ($totalPercentage === 0) {
+            $summaryPercentage = $practiceSheetsPercentage = $exercisesPercentage = $notesPercentage = 25;
+          } else {
+            // Calculate the individual percentages
+            $summaryPercentage = ($summaryDownloadCount / $totalDownloadsForUser) * 100;
+            $practiceSheetsPercentage = ($practiceSheetsDownloadCount / $totalDownloadsForUser) * 100;
+            $exercisesPercentage = ($exercisesDownloadCount / $totalDownloadsForUser) * 100;
+            $notesPercentage = ($notesDownloadCount / $totalDownloadsForUser) * 100;
+          } ?>
           series: [
-            <?php echo $summaryDownloadCount / $totalDownloadsForUser * 100 . "," ?>
-            <?php echo $practiceSheetsDownloadCount / $totalDownloadsForUser * 100 . "," ?>
-            <?php echo $exercisesDownloadCount / $totalDownloadsForUser * 100 . "," ?>
-            <?php echo $notesDownloadCount / $totalDownloadsForUser * 100 . "," ?>
-          ], colors: [config.colors.primary, config.colors.secondary, config.colors.info, config.colors.success],
+            <?php echo $summaryPercentage . ",";
+            echo $practiceSheetsPercentage . ",";
+            echo $exercisesPercentage . ",";
+            echo $notesPercentage;
+            ?>
+          ],
+          colors: [config.colors.primary, config.colors.secondary, config.colors.info, config.colors.success],
           stroke: {
             width: 5,
             colors: [cardColor]
@@ -642,8 +678,8 @@ $userId = $user['UserId'];
             }
           }
         };
-      if (typeof chartOrderStatistics !== undefined && chartOrderStatistics !== null) {
-        const statisticsChart = new ApexCharts(chartOrderStatistics, orderChartConfig);
+      if (typeof chartdownloadStatistics !== undefined && chartdownloadStatistics !== null) {
+        const statisticsChart = new ApexCharts(chartdownloadStatistics, downloadChartConfig);
         statisticsChart.render();
       }
     })();

@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
         invalid = true;
       }
   
-      if (universityAcronym.length > 3) {
+      if (universityAcronym.length < 2 || universityAcronym.length > 4) {
         document.getElementById('inv-universityAcronym2').style.display = 'block';
         invalid = true;
       }
