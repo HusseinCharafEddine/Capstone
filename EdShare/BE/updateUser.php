@@ -11,6 +11,7 @@ $userController = new UserController();
 $db = DBConnect();
 
 $username = $_SESSION['username'];
+$userId = $_SESSION['userId'];
 $newUsername = $_POST['username'];
 
 $firstName = $_POST['firstName'];
@@ -20,7 +21,7 @@ $password = $_POST['password'];
 $universityName = $_POST['universityName'];
 $universityAcronym = $_POST['universityAcronym'];
 
-$oldUser = $userController->getUserByUsername($username);
+$oldUser = $userController->getUser($userId);
 $userId = $oldUser['UserId'];
 
 // Check if the university exists
@@ -33,18 +34,30 @@ $data = array(
     'FirstName' => $firstName,
     'LastName' => $lastName,
     'Email' => $email,
-    'Password' => $password, // Remember to hash the password before storing it
+    'Password' => $password,
     'UniversityId' => $universityId
 );
 
 // Update user details
-$result = $userController->updateUser($userId, $data);
-
-if ($result) {
-    echo "User details updated successfully!";
-} else {
-    echo "Failed to update user details!";
+try {
+    $result = $userController->updateUser($userId, $data);
+    // Additional code if the operation is successful
+} catch (PDOException $e) {
+    // Handle the exception here
+    header("Location: ../html/pages-account-settings-account.php?success=2");
+    exit; // Ensure no further output is sent
 }
+
+if ($result > 0) {
+    // User details updated successfully
+    header("Location: ../html/pages-account-settings-account.php?success=1");
+    exit; // Ensure no further output is sent
+} else {
+    // Failed to update user details
+    header("Location: ../html/pages-account-settings-account.php?success=0");
+    exit; // Ensure no further output is sent
+}
+
 
 // Function to get or create university ID
 function getOrCreateUniversityId($universityName, $universityAcronym)

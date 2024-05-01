@@ -15,7 +15,8 @@ $userController = new UserController();
 $universityController = new UniversityController();
 $db = DBConnect();
 $username = $_SESSION['username'];
-$user = $userController->getUserByUsername($username);
+$userId = $_SESSION['userId'];
+$user = $userController->getUser($userId);
 $university = $universityController->getUniversityById($user['UniversityId']);
 ?>
 <html lang="en" class="light-style layout-menu-fixed layout-compact" dir="ltr" data-theme="theme-default"
@@ -57,6 +58,8 @@ $university = $universityController->getUniversityById($user['UniversityId']);
   <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
   <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
   <script src="../assets/js/config.js"></script>
+  <script src="../assets/js/updateUser.js"></script>
+
 </head>
 
 <body>
@@ -191,41 +194,52 @@ $university = $universityController->getUniversityById($user['UniversityId']);
                   <div class="card-body">
                     <form id="formAccountSettings" method="POST" action="../BE/updateUser.php">
                       <div class="row">
-
                         <div class="mb-3 col-md-6">
-                          <label for="firstName" class="form-label">Username</label>
+                          <label for="username" class="form-label">Username</label>
                           <input class="form-control" type="text" id="username" name="username"
                             value="<?php echo $user['Username']; ?>" autofocus />
+                          <span id="inv-username" class="invalid-feedback" style="display: none;">Username must be 8
+                            characters long</span>
                         </div>
                         <div class="mb-3 col-md-6">
                           <label for="firstName" class="form-label">First Name</label>
                           <input class="form-control" type="text" id="firstName" name="firstName"
                             value="<?php echo $user['FirstName']; ?>" autofocus />
+                          <span id="inv-firstname" class="invalid-feedback" style="display: none;">First Name can not be
+                            empty</span>
                         </div>
                         <div class="mb-3 col-md-6">
                           <label for="lastName" class="form-label">Last Name</label>
                           <input class="form-control" type="text" name="lastName" id="lastName"
                             value="<?php echo ucwords($user['LastName']); ?>" />
+                          <span id="inv-lastname" class="invalid-feedback" style="display: none;">Last Name can not be
+                            empty</span>
                         </div>
                         <div class="mb-3 col-md-6">
                           <label for="email" class="form-label">E-mail</label>
                           <input class="form-control" type="text" id="email" name="email"
                             value="<?php echo $user['Email']; ?>" />
+                          <span id="inv-email" class="invalid-feedback" style="display: none;">Invalid Email</span>
                         </div>
                         <div class="mb-3 col-md-6">
-                          <label for="organization" class="form-label">University</label>
+                          <label for="universityName" class="form-label">University</label>
                           <input type="text" class="form-control" id="universityName" name="universityName"
                             value="<?php echo ucwords($university['UniversityName']); ?>" />
+                          <span id="inv-university" class="invalid-feedback" style="display: none;">University can not
+                            be empty</span>
                         </div>
                         <div class="mb-3 col-md-6">
-                          <label for="organization" class="form-label">University Acronym</label>
+                          <label for="universityAcronym" class="form-label">University Acronym</label>
                           <input type="text" class="form-control" id="universityAcronym" name="universityAcronym"
                             value="<?php echo strtoupper($university['UniversityAcronym']); ?>" />
+                          <span id="inv-universityAcronym1" class="invalid-feedback" style="display: none;">University
+                            Acronym can not be empty</span>
+                          <span id="inv-universityAcronym2" class="invalid-feedback" style="display: none;">University
+                            Acronym must be between 2 and 4 characters long</span>
                         </div>
                         <div class="mb-3 col-md-6 form-password-toggle">
                           <div class="d-flex justify-content-between">
                             <label class="form-label" for="password">Password</label>
-
                           </div>
                           <div class="input-group input-group-merge">
                             <input type="password" id="password" class="form-control" name="password"
@@ -233,13 +247,14 @@ $university = $universityController->getUniversityById($user['UniversityId']);
                               aria-describedby="password" />
                             <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
                           </div>
+                          <span id="inv-password" class="invalid-feedback" style="display: none;">Password must be at
+                            least 8 characters long</span>
                         </div>
-
-                        <div class="mt-2">
-                          <button type="submit" class="btn btn-primary me-2">Save changes</button>
-                          <button type="reset" class="btn btn-outline-secondary">Cancel</button>
-                        </div>
+                      </div>
+                      <button type="submit" class="btn btn-primary me-2">Save changes</button>
+                      <button type="reset" class="btn btn-outline-secondary">Cancel</button>
                     </form>
+
                   </div>
                   <!-- /Account -->
                 </div>
@@ -281,7 +296,17 @@ $university = $universityController->getUniversityById($user['UniversityId']);
   </div>
   <!-- / Layout wrapper -->
 
+  <?php
+  if (isset($_GET['success'])) {
+    if ($_GET['success'] == 1) {
+      echo "<script>alert('User details updated successfully!');</script>";
+    } else if ($_GET['success'] == 0) {
+      echo "<script>alert('Failed to update user details! Try again later.');</script>";
+    } else {
+      echo "<script>alert('Failed to update user details! Email or Username already exists.');</script>";
 
+    }
+  } ?>
 
   <!-- Core JS -->
   <!-- build:js assets/vendor/js/core.js -->

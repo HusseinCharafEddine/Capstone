@@ -195,7 +195,7 @@ $user = $userController->getUserByUsername($username);
             </div>
             <ul class="navbar-nav flex-row align-items-center ms-auto">
               <li class="nav-item navbar-dropdown dropdown-user dropdown">
-                <a class="dropdown-item" href="pages-account-settings-account.php">
+                <a class="dropdown-item" href="html/pages-account-settings-account.php">
                   <div class="avatar-wrapper">
                     <div class="avatar avatar-md avatar-online me-2"><span
                         class="avatar-initial rounded-circle bg-label-dark">
