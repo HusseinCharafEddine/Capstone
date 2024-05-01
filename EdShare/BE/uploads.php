@@ -20,31 +20,31 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 if ($_FILES["file"]["error"] !== UPLOAD_ERR_OK) {
     switch ($_FILES["file"]["error"]) {
         case UPLOAD_ERR_PARTIAL:
-            exit('File only partially uploaded');
+            header("location:../html/uploads.php?success=1");
             break;
         case UPLOAD_ERR_NO_FILE:
-            exit('No file was uploaded');
+            header("location:../html/uploads.php?success=1");
             break;
         case UPLOAD_ERR_EXTENSION:
-            exit('File upload stopped by a PHP extension');
+            header("location:../html/uploads.php?success=1");
             break;
         case UPLOAD_ERR_INI_SIZE:
-            exit('File exceeds upload_max_filesize in php.ini');
+            header("location:../html/uploads.php?success=0");
             break;
         case UPLOAD_ERR_NO_TMP_DIR:
-            exit('Temporary folder not found');
+            header("location:../html/uploads.php?success=1");
             break;
         case UPLOAD_ERR_CANT_WRITE:
-            exit('Failed to write file');
+            header("location:../html/uploads.php?success=1");
             break;
         default:
-            exit('Unknown upload error');
+            header("location:../html/uploads.php?success=1");
             break;
     }
 }
 
 // Setting max file size (50MB)
-$maxFileSize = 50 * 1024 * 1024; // 50MB in bytes
+$maxFileSize = 1 * 1024 * 1024; // 50MB in bytes
 
 if ($_FILES["file"]["size"] > $maxFileSize) {
     header("location:../html/uploads.php?success=0");
