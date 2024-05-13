@@ -332,19 +332,15 @@ $user = $userController->getUserByUsername($username);
               </div>
             </div>
             <?php
-            // Assuming $uploadedDocuments contains all your uploads
             $uploadsPerPage = 20;
             $user = $userController->getUserByUsername($username);
             $totalUploads = $user['UploadCount'];
             $totalPages = ceil($totalUploads / $uploadsPerPage);
 
-            // Get the current page number
             $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 
-            // Calculate the offset
             $offset = ($page - 1) * $uploadsPerPage;
             $searchTerm = isset($_GET['searchTerm']) ? $_GET['searchTerm'] : '';
-            // Fetch uploads for the current page from your data source
             $uploadsForPage = $documentController->fetchDocumentsForPage($user['UserId'], $offset, $uploadsPerPage, $searchTerm);
             ?>
 
@@ -373,7 +369,7 @@ $user = $userController->getUserByUsername($username);
                           if ($course) {
                             $university = $universityController->getUniversityById($course['UniversityId']);
                             if ($university) {
-                              echo $university['UniversityAcronym']; // Assuming 'CourseName' is a field in your courses table
+                              echo $university['UniversityAcronym'];
                             } else {
                               echo "University Not Found";
                             }
@@ -386,9 +382,9 @@ $user = $userController->getUserByUsername($username);
                         <span class="badge bg-label-primary">
                           <?php
                           if ($course) {
-                            echo $course['CourseCode']; // Assuming 'CourseName' is a field in your courses table
+                            echo $course['CourseCode'];
                           } else {
-                            echo "Course not found"; // Or handle the case where the course is not found
+                            echo "Course not found";
                           }
                           ?>
                         </span>
@@ -427,9 +423,7 @@ $user = $userController->getUserByUsername($username);
               <?php endif; ?>
 
               <?php
-              // Calculate the starting page number for display
               $startPage = max(1, $page - 2);
-              // Calculate the ending page number for display
               $endPage = min($totalPages, $startPage + 4);
 
               for ($i = $startPage; $i <= $endPage; $i++): ?>
@@ -507,7 +501,6 @@ $user = $userController->getUserByUsername($username);
     <!-- Place this tag in your head or just before your close body tag. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <script>
-      // JavaScript code for autocomplete
       $(document).ready(function () {
         $('#course-code-input').autocomplete({
           source: '../BE/autoCompleteCourseCode.php',
@@ -517,7 +510,6 @@ $user = $userController->getUserByUsername($username);
 
     </script>
     <script>
-      // JavaScript code for autocomplete
       $(document).ready(function () {
         $('#course-name-input').autocomplete({
           source: '../BE/autoCompleteCourseName.php',
@@ -526,39 +518,9 @@ $user = $userController->getUserByUsername($username);
       });
 
     </script>
-    <!-- <script>
-      // Function to show the loading spinner
-      function showLoadingSpinner() {
-        console.log("hit 1");
-        document.getElementById('loadingContainer').style.display = 'block';
-      }
 
-      // Function to hide the loading spinner
-      function hideLoadingSpinner() {
-        console.log("hit 2");
-        document.getElementById('loadingContainer').style.display = 'none';
-      }
-
-      // Event listener for form submission
-      document.getElementById('uploadForm').addEventListener('submit', function (event) {
-        // Prevent the default form submission behavior
-        event.preventDefault();
-
-        // Show loading spinner when form is submitted
-        showLoadingSpinner();
-
-        // Submit the form after showing the loading spinner
-        this.submit();
-      });
-
-      // Simulate upload completion after 3 seconds (you can replace this with actual upload logic)
-      setTimeout(function () {
-        hideLoadingSpinner(); // Hide loading spinner after 3 seconds (simulating upload completion)
-      }, 3000);
-    </script> -->
 
     <script>
-      // JavaScript code for autocomplete
       $(document).ready(function () {
         $('#category-input').autocomplete({
           source: '../BE/autoCompleteCategory.php',
@@ -581,24 +543,20 @@ $user = $userController->getUserByUsername($username);
 
         var searchTerm = document.getElementById("searchInput").value;
 
-        // Construct the URL with filter parameters and search term
         var url = window.location.pathname +
-          "?searchTerm=" + encodeURIComponent(searchTerm); // Encode search term
+          "?searchTerm=" + encodeURIComponent(searchTerm);
 
-        // Redirect to the constructed URL
         window.location.href = url;
       }
 
 
-      //search suggestions
       const UserId = <?php echo isset($_SESSION['userId']) ? $_SESSION['userId'] : 'null'; ?>;
       function fetchSearchSuggestions() {
         var searchTerm = document.getElementById("searchInput").value;
         if (searchTerm.trim() === '') {
-          return; // No suggestions for empty search term
+          return;
         }
 
-        // AJAX call to fetch search suggestions based on the input
         $.ajax({
           url: '../BE/fetchSearchSuggestionsUploads.php',
           method: 'GET',
@@ -607,10 +565,9 @@ $user = $userController->getUserByUsername($username);
             UserId: UserId
           },
           success: function (response) {
-            // Update the search suggestions dropdown with retrieved suggestions
             var suggestionsDropdown = document.getElementById("searchSuggestions");
             suggestionsDropdown.innerHTML = response;
-            suggestionsDropdown.style.display = 'block'; // Show the suggestions dropdown
+            suggestionsDropdown.style.display = 'block';
           },
           error: function (xhr, status, error) {
             console.error(error);
@@ -618,42 +575,27 @@ $user = $userController->getUserByUsername($username);
         });
       }
 
-      // Add event listeners to search icon, search input field, and search suggestions
       document.addEventListener("DOMContentLoaded", function () {
-        // Event listener for clicking the search icon
         document.querySelector(".bx-search").addEventListener("click", function () {
-          submitFilter(); // Trigger filter submission
+          submitFilter();
         });
 
-        // Event listener for Enter key press in the search input field
         document.getElementById("searchInput").addEventListener("keypress", function (event) {
           if (event.key === "Enter") {
-            submitFilter(); // Trigger filter submission
+            submitFilter();
           }
         });
 
-        // Event listener for input change in the search input field (for suggestions)
         document.getElementById("searchInput").addEventListener("input", function () {
-          fetchSearchSuggestions(); // Fetch search suggestions as user types
+          fetchSearchSuggestions();
         });
         document.addEventListener("click", function (event) {
           var clickedElement = event.target;
           if (clickedElement.classList.contains("search-suggestion")) {
-            // Set the search input value to the clicked suggestion
             document.getElementById("searchInput").value = clickedElement.textContent.trim();
-            // Hide the suggestions container after selection
             document.getElementById("searchSuggestions").style.display = "none";
           }
         });
-
-        // var applyFilterBtn = document.getElementById('applyFilterBtn');
-
-        // // Add a click event listener to the button
-        // applyFilterBtn.addEventListener('click', function () {
-        //   // Call the submitFilter() function when the button is clicked
-        //   submitFilter();
-        // });
-
       });
 
     </script>

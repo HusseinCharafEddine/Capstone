@@ -253,9 +253,8 @@ $userId = $user['UserId'];
                 </div>
               </div>
               <?php
-              // Fetch users based on selected standings and rows per page
               $selectedStandings = isset($_GET['standings']) ? $_GET['standings'] : 'worldwide';
-              $rowsPerPage = isset($_GET['rowsPerPage']) ? $_GET['rowsPerPage'] : 10; // Default rows per page
+              $rowsPerPage = isset($_GET['rowsPerPage']) ? $_GET['rowsPerPage'] : 10;
               $users = $userController->fetchUsersForStandings($selectedStandings, $userId, $rowsPerPage);
               $currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
 
@@ -267,7 +266,6 @@ $userId = $user['UserId'];
               }
               ?>
 
-              <!-- Your HTML structure with PHP integration -->
               <div class="card">
                 <div class="card-datatable table-responsive">
                   <div class="row mx-1">
@@ -283,7 +281,6 @@ $userId = $user['UserId'];
                       </div>
                       <div class="dt-action-buttons text-xl-end text-lg-start text-md-end text-start mt-md-0 mt-3">
                         <div class="dt-buttons btn-group flex-wrap"></span>
-                          <!-- Additional buttons or actions can be placed here -->
                         </div>
                       </div>
                     </div>
@@ -319,8 +316,7 @@ $userId = $user['UserId'];
                           <td><?php echo $user['Username']; ?></td>
                           <td>
                             <?php
-                            // Determine badge/title based on user's rating
-                            $badge = 'Iron'; // Default badge (lowest)
+                            $badge = 'Iron';
                             $badgeImg = 1;
                             if ($user['ContributionScore'] >= 2101) {
                               $badge = 'Immortal';
@@ -371,7 +367,6 @@ $userId = $user['UserId'];
                     <div class="col-sm-12 col-md-5">
                       <div>
                         <?php
-                        // Calculate the range of displayed entries
                         $startIndex = ($currentPage - 1) * $rowsPerPage + 1;
                         $endIndex = min($startIndex + $rowsPerPage - 1, $count);
                         $totalEntries = $count;
@@ -385,16 +380,13 @@ $userId = $user['UserId'];
                       <ul class="pagination">
                         <?php
 
-                        // Determine total number of pages based on total users and rows per page
                         $totalPages = ceil($count / $rowsPerPage);
-                        // Ensure $currentPage is defined and set to 1 if not provided in the URL
                         $currentUrl = $_SERVER['REQUEST_URI'];
 
                         for ($page = 1; $page <= $totalPages; $page++):
                           $pageUrl = buildUrlWithParams($currentUrl, ['page' => $page]);
                           $isActive = ($page == $currentPage) ? 'active' : '';
 
-                          // Output pagination link
                           echo '<li class="paginate_button page-item ' . $isActive . '">';
                           echo '<a href="' . $pageUrl . '" class="page-link">' . $page . '</a>';
                           echo '</li>'; ?>
@@ -452,7 +444,6 @@ $userId = $user['UserId'];
           const rowsPerPageSelect = document.getElementById('rowsPerPageSelect');
           const standingsOptionSelect = document.getElementById('standingsOptionSelect');
 
-          // Event listener for rows per page selection
           rowsPerPageSelect.addEventListener('change', function () {
             const rowsPerPage = rowsPerPageSelect.value;
             const currentUrl = new URL(window.location.href);
@@ -460,7 +451,6 @@ $userId = $user['UserId'];
             window.location.href = currentUrl.toString();
           });
 
-          // Event listener for standings option selection
           standingsOptionSelect.addEventListener('change', function () {
             const standings = standingsOptionSelect.value;
             const currentUrl = new URL(window.location.href);

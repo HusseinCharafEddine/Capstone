@@ -410,12 +410,10 @@ $userId = $user['UserId'];
                   <h5 class="card-header bg-success text-white">Your Top Downloaded Contributions </h5>
                   <div class="table-responsive text-nowrap">
                     <?php
-                    // Pagination parameters
                     $documentsPerPage = 10;
                     $currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
                     $offset = ($currentPage - 1) * $documentsPerPage;
 
-                    // Fetch documents for the current page
                     $documents = $documentController->fetchAllDocumentsForUser($userId, $offset, $documentsPerPage);
                     ?>
                     <table class="table table-striped">
@@ -439,7 +437,7 @@ $userId = $user['UserId'];
                               <?php
                               $documentId = $document['DocumentId'];
                               $averageRating = $documentController->getAverageRatingByDocumentId($documentId);
-                              echo number_format($averageRating, 1); // Display average rating rounded to 1 decimal point
+                              echo number_format($averageRating, 1);
                               ?>
                             </td>
                             <td>
@@ -458,7 +456,6 @@ $userId = $user['UserId'];
                     </table>
 
                     <?php
-                    // Pagination controls
                     $totalDocuments = $documentController->getDocumentCountByUserId($userId);
                     $totalPages = ceil($totalDocuments / $documentsPerPage);
 
@@ -631,11 +628,9 @@ $userId = $user['UserId'];
           <?php
           $totalPercentage = $summaryDownloadCount + $practiceSheetsDownloadCount + $exercisesDownloadCount + $notesDownloadCount;
 
-          // If all counts are zero, set them to 25%
           if ($totalPercentage === 0) {
             $summaryPercentage = $practiceSheetsPercentage = $exercisesPercentage = $notesPercentage = 25;
           } else {
-            // Calculate the individual percentages
             $summaryPercentage = ($summaryDownloadCount / $totalDownloadsForUser) * 100;
             $practiceSheetsPercentage = ($practiceSheetsDownloadCount / $totalDownloadsForUser) * 100;
             $exercisesPercentage = ($exercisesDownloadCount / $totalDownloadsForUser) * 100;
