@@ -14,9 +14,11 @@ require ("../BE/universityController.php");
 $userController = new UserController();
 $universityController = new UniversityController();
 $db = DBConnect();
-$username = $_SESSION['username'];
 $userId = $_SESSION['userId'];
+
 $user = $userController->getUser($userId);
+$_SESSION['username'] = $user['Username'];
+
 $university = $universityController->getUniversityById($user['UniversityId']);
 ?>
 <html lang="en" class="light-style layout-menu-fixed layout-compact" dir="ltr" data-theme="theme-default"

@@ -63,81 +63,81 @@ class DownloadController
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function fetchDownloadsForPage($userId, $offset, $downloadsPerPage, $filter = null, $searchTerm=null)
-{
-    // Start building the query
-    $query = "SELECT d.*, doc.*
+    public function fetchDownloadsForPage($userId, $offset, $downloadsPerPage, $filter = null, $searchTerm = null)
+    {
+        // Start building the query
+        $query = "SELECT d.*, doc.*
               FROM downloaded d
               JOIN document doc ON d.DocumentId = doc.DocumentId
               WHERE d.UserId = :userId"; // Filter by UserId
 
-    // Initialize a flag to track if any filter is applied
-    $filterApplied = false;
+        // Initialize a flag to track if any filter is applied
+        $filterApplied = false;
 
-    // Add filter conditions if provided
-    if ($filter) {
-        // Check if any filter parameters are present
-        if (!empty($filter['universityId']) || !empty($filter['courseId']) || !empty($filter['rating'])) {
-            $query .= " AND 1"; // Continue with AND clause
-            $filterApplied = true;
+        // Add filter conditions if provided
+        if ($filter) {
+            // Check if any filter parameters are present
+            if (!empty($filter['universityId']) || !empty($filter['courseId']) || !empty($filter['rating'])) {
+                $query .= " AND 1"; // Continue with AND clause
+                $filterApplied = true;
 
+                if (!empty($filter['universityId'])) {
+                    // Join with the course table to get the university
+                    $query .= " AND EXISTS (SELECT 1 FROM course c WHERE doc.CourseId = c.CourseId AND c.UniversityId = :universityId)";
+                }
+                if (!empty($filter['courseId'])) {
+                    // Apply course filter
+                    $query .= " AND doc.CourseId = :courseId";
+                }
+                if (!empty($filter['rating'])) {
+                    // Apply rating filter
+                    $query .= " AND doc.Rating = :rating";
+                }
+            }
+        }
+
+        // Add search term condition if provided
+        if ($searchTerm !== null && trim($searchTerm) !== '') {
+            $query .= " AND (doc.Title LIKE :searchTerm OR doc.Category LIKE :searchTerm)";
+        }
+
+        // Add limit and offset to the query
+        $query .= " LIMIT :offset, :downloadsPerPage";
+
+        // Prepare the query
+        $stmt = $this->db->prepare($query);
+
+        // Bind common parameters
+        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', (int) $offset, PDO::PARAM_INT);
+        $stmt->bindValue(':downloadsPerPage', (int) $downloadsPerPage, PDO::PARAM_INT);
+
+        // Bind filter parameters if any filter is applied
+        if ($filterApplied) {
             if (!empty($filter['universityId'])) {
-                // Join with the course table to get the university
-                $query .= " AND EXISTS (SELECT 1 FROM course c WHERE doc.CourseId = c.CourseId AND c.UniversityId = :universityId)";
+                $stmt->bindParam(':universityId', $filter['universityId'], PDO::PARAM_INT);
             }
             if (!empty($filter['courseId'])) {
-                // Apply course filter
-                $query .= " AND doc.CourseId = :courseId";
+                $stmt->bindParam(':courseId', $filter['courseId'], PDO::PARAM_INT);
             }
             if (!empty($filter['rating'])) {
-                // Apply rating filter
-                $query .= " AND doc.Rating = :rating";
+                $stmt->bindParam(':rating', $filter['rating'], PDO::PARAM_INT);
             }
         }
-    }
 
-    // Add search term condition if provided
-    if ($searchTerm !== null && trim($searchTerm) !== '') {
-        $query .= " AND (doc.Title LIKE :searchTerm OR doc.Category LIKE :searchTerm)";
-    }
-
-    // Add limit and offset to the query
-    $query .= " LIMIT :offset, :downloadsPerPage";
-
-    // Prepare the query
-    $stmt = $this->db->prepare($query);
-
-    // Bind common parameters
-    $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
-    $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
-    $stmt->bindValue(':downloadsPerPage', (int)$downloadsPerPage, PDO::PARAM_INT);
-
-    // Bind filter parameters if any filter is applied
-    if ($filterApplied) {
-        if (!empty($filter['universityId'])) {
-            $stmt->bindParam(':universityId', $filter['universityId'], PDO::PARAM_INT);
+        // Bind search term parameter if provided
+        if ($searchTerm !== null && trim($searchTerm) !== '') {
+            $searchParam = '%' . $searchTerm . '%'; // Wrap the search term with wildcards for partial matching
+            $stmt->bindParam(':searchTerm', $searchParam, PDO::PARAM_STR);
         }
-        if (!empty($filter['courseId'])) {
-            $stmt->bindParam(':courseId', $filter['courseId'], PDO::PARAM_INT);
-        }
-        if (!empty($filter['rating'])) {
-            $stmt->bindParam(':rating', $filter['rating'], PDO::PARAM_INT);
-        }
-    }
-    
-    // Bind search term parameter if provided
-    if ($searchTerm !== null && trim($searchTerm) !== '') {
-        $searchParam = '%' . $searchTerm . '%'; // Wrap the search term with wildcards for partial matching
-        $stmt->bindParam(':searchTerm', $searchParam, PDO::PARAM_STR);
-    }
 
-    // Execute the query
-    $stmt->execute();
+        // Execute the query
+        $stmt->execute();
 
-    // Return the result
-    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    return $result;
-}
+        // Return the result
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
 
     // Get the most downloaded document today or on the latest date
     public function getMostDownloadedToday()
@@ -302,16 +302,16 @@ class DownloadController
 
     public function getNewestDownloadedDocument($excludeDocumentId = null)
     {
-        $query = "SELECT DocumentId, MAX(Date) AS latest_download_date
-                  FROM downloaded ";
+        $query = "SELECT DocumentId, MAX(Date) AS latest_added_date
+          FROM document ";
 
         if ($excludeDocumentId !== null) {
             $query .= "WHERE DocumentId != :excludeDocumentId ";
         }
 
         $query .= "GROUP BY DocumentId
-                   ORDER BY latest_download_date DESC
-                   LIMIT 1";
+            ORDER BY latest_added_date DESC
+            LIMIT 1";
 
         $stmt = $this->db->prepare($query);
         if ($excludeDocumentId !== null) {
@@ -402,19 +402,19 @@ class DownloadController
         WHERE (d.Title LIKE :searchTerm OR d.Category LIKE :searchTerm)
           AND dl.UserId = :UserId
         ";
-    
+
         // Prepare the query
         $stmt = $this->db->prepare($query);
-    
+
         // Bind the user ID and search term parameters
         $searchParam = '%' . $searchTerm . '%'; // Wrap the search term with wildcards for partial matching
         $stmt->bindParam(':UserId', $UserId, PDO::PARAM_INT);
         $stmt->bindParam(':searchTerm', $searchParam, PDO::PARAM_STR);
 
-    
+
         // Execute the query
         $stmt->execute();
-    
+
         // Return the search results
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -487,7 +487,7 @@ class DownloadController
         return $ratingCount;
     }
 
-   
+
     // public function getDownloadByUserAndDocument($userId, $documentId)
     // {
     //     $query = "SELECT * FROM downloaded WHERE UserId = :userId AND DocumentId = :documentId";
@@ -541,19 +541,19 @@ class DownloadController
     //     WHERE (d.Title LIKE :searchTerm OR d.Category LIKE :searchTerm)
     //       AND dl.UserId = :UserId
     //     ";
-    
+
     //     // Prepare the query
     //     $stmt = $this->db->prepare($query);
-    
+
     //     // Bind the user ID and search term parameters
     //     $searchParam = '%' . $searchTerm . '%'; // Wrap the search term with wildcards for partial matching
     //     $stmt->bindParam(':UserId', $UserId, PDO::PARAM_INT);
     //     $stmt->bindParam(':searchTerm', $searchParam, PDO::PARAM_STR);
 
-    
+
     //     // Execute the query
     //     $stmt->execute();
-    
+
     //     // Return the search results
     //     return $stmt->fetchAll(PDO::FETCH_ASSOC);
     // }

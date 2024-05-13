@@ -85,7 +85,30 @@ $userId = $user['UserId'];
         <div class="menu-inner-shadow"></div>
 
         <ul class="menu-inner py-1">
-          <!-- Dashboards -->
+          <li>
+            <div id="token-container" style="display: flex; margin: 18px; margin-top:0px">
+              <div id="uploads-token" style="margin-right: auto;">
+                <span>
+                  <img src="../assets/img/icons/tokens/uploadstoken.png">
+                  <?php
+                  $contributionScore = $user['ContributionScore'];
+                  $totalDownloaded = $user['TotalDownloaded'];
+                  $tokenScore = $contributionScore - 2 * $totalDownloaded;
+                  echo $tokenScore;
+                  ?>
+                </span>
+              </div>
+              <div class="vertical-divider" style="width: 20px;"></div>
+              <div id="downloads-token" style="margin-left: auto;">
+                <span>
+                  <img src="../assets/img/icons/tokens/downloadstoken.png">
+                  <?php
+                  echo $contributionScore;
+                  ?>
+                </span>
+              </div>
+            </div>
+          </li><!-- Dashboards -->
           <li class="menu-item">
             <a href="../landing.php" class="menu-link">
               <i class="menu-icon tf-icons bx bx-home-circle"></i>
@@ -235,7 +258,7 @@ $userId = $user['UserId'];
                       </div>
                       <span>Total Downloads</span>
                       <h3 class="card-title text-nowrap mb-1">
-                        <?php echo $totalDownloadsForUser = $user['TotalDownloaded'];
+                        <?php echo $totalDownloadsForUser = $user['DownloadCount'];
                         $growthPercentage = $downloadController->computeDownloadGrowthPercentage($userId); ?>
                       </h3>
                       <small class="<?php echo getGrowthClass($growthPercentage); ?>"><i
