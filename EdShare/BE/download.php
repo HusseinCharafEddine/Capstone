@@ -6,10 +6,9 @@ if (!isset($_SESSION["userId"])) {
 
 include 'downloadController.php';
 $downloadController = new DownloadController();
-$userId = $_SESSION["userId"]; // Retrieve userId from session
+$userId = $_SESSION["userId"];
 $documentId = $_POST['documentId'];
 
-// Decrement user's token score
 $success = $downloadController->addDocumentToDownloads($userId, $documentId);
 
 if ($success) {

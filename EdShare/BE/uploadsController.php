@@ -7,7 +7,6 @@ class UploadsController
 
     private $db;
 
-    // Constructor to initialize database connection
     public function __construct()
     {
         $this->db = DBConnect();

@@ -23,10 +23,8 @@ $universityAcronym = $_POST['universityAcronym'];
 $oldUser = $userController->getUser($userId);
 $userId = $oldUser['UserId'];
 
-// Check if the university exists
 $universityId = getOrCreateUniversityId($universityName, $universityAcronym);
 
-// Construct the data array
 $data = array(
     'Username' => $newUsername,
     'UserId' => $userId,
@@ -37,28 +35,36 @@ $data = array(
     'UniversityId' => $universityId
 );
 
-// Update user details
 try {
     $result = $userController->updateUser($userId, $data);
-    // Additional code if the operation is successful
 } catch (PDOException $e) {
-    // Handle the exception here
     header("Location: ../html/pages-account-settings-account.php?success=2");
-    exit; // Ensure no further output is sent
+    exit;
 }
 
 if ($result > 0) {
-    // User details updated successfully
+    $oldUsername = $oldUser['Username'];
+    $newUsername = $data['Username'];
+
+    $oldUserUploadDirectory = __DIR__ . "/../uploads/" . $oldUsername . "/";
+    $newUserUploadDirectory = __DIR__ . "/../uploads/" . $newUsername . "/";
+    $oldUserThumbnailDirectory = __DIR__ . "/../thumbnails/" . $oldUsername . "/";
+    $newUserThumbnailDirectory = __DIR__ . "/../thumbnails/" . $newUsername . "/";
+    if (file_exists($oldUserUploadDirectory)) {
+        if ($oldUsername !== $newUsername) {
+            rename($oldUserUploadDirectory, $newUserUploadDirectory);
+            rename($oldUserThumbnailDirectory, $newUserThumbnailDirectory);
+
+        }
+    }
     header("Location: ../html/pages-account-settings-account.php?success=1");
-    exit; // Ensure no further output is sent
+    exit;
 } else {
-    // Failed to update user details
     header("Location: ../html/pages-account-settings-account.php?success=0");
-    exit; // Ensure no further output is sent
+    exit;
 }
 
 
-// Function to get or create university ID
 function getOrCreateUniversityId($universityName, $universityAcronym)
 {
     global $db;
@@ -67,7 +73,6 @@ function getOrCreateUniversityId($universityName, $universityAcronym)
     $stmt->execute([$universityName]);
     $universityId = $stmt->fetchColumn();
 
-    // If the university doesn't exist, create it and retrieve its ID
     if (!$universityId) {
         $insertUniversityQuery = "INSERT INTO University (UniversityName, UniversityAcronym) VALUES (?, ?)";
         $stmt = $db->prepare($insertUniversityQuery);

@@ -50,7 +50,6 @@ foreach ($downloadsForPage as $download):
                     <span class="text mb-3">Author: <?php echo $author; ?></span>
                 </div>
                 <div class="d-flex justify-content-center gap-3 mb-2 text-white">
-                    <!-- Download Button -->
                     <a href="uploads/<?php echo $username ?>/<?php echo $document['FilePath']; ?>" download>
                         <div class="d-flex align-items-center bg-primary rounded p-1">
                             <button class="btn btn-primary me-2">Download</button>
@@ -58,7 +57,6 @@ foreach ($downloadsForPage as $download):
                         </div>
                     </a>
                 </div>
-                <!-- Favorite Button -->
                 <div class="d-flex align-items-center bg-primary rounded p-1">
                     <button class="btn btn-primary toggle-favorite"
                         data-document-id="<?php echo $document['DocumentId']; ?>">

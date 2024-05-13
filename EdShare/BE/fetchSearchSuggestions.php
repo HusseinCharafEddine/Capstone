@@ -1,12 +1,9 @@
 <?php
-// Include necessary files and initialize DocumentController
 include 'documentController.php';
 $documentController = new DocumentController();
 
-// Retrieve search term from AJAX request
 $searchTerm = isset($_GET['searchTerm']) ? $_GET['searchTerm'] : '';
 
-// Fetch document titles based on the search term (for suggestions)
 $searchSuggestions = $documentController->searchDocuments($searchTerm);
 
 echo '<style>

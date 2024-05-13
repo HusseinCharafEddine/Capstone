@@ -6,13 +6,11 @@ class CoursesController
 
     private $db;
 
-    // Constructor to initialize database connection
     public function __construct()
     {
         $this->db = DBConnect();
     }
 
-    // Create a new course
     public function createCourse($CourseId, $CourseName, $CourseCode, $UniversityId)
     {
         $query = "INSERT INTO course (CourseId, CourseName, CourseCode, UniversityId) VALUES (:CourseId, :CourseName, :CourseCode, :UniversityId)";
@@ -25,7 +23,6 @@ class CoursesController
         return $stmt->rowCount();
     }
 
-    // Read course details
     public function getCourse($CourseId)
     {
         $query = "SELECT * FROM course WHERE CourseId = :CourseId";
@@ -41,7 +38,6 @@ class CoursesController
         $stmt = $this->db->query($query);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    // Update course details
     public function updateCourse($CourseId, $CourseName, $CourseCode, $UniversityId)
     {
         $query = "UPDATE courses SET CourseName = :CourseName, CourseCode = :CourseCode, UniversityId = :UniversityId WHERE CourseId = :CourseId";
@@ -54,7 +50,6 @@ class CoursesController
         return $stmt->rowCount();
     }
 
-    // Delete course
     public function deleteCourse($CourseId)
     {
         $query = "DELETE FROM courses WHERE CourseId = :CourseId";

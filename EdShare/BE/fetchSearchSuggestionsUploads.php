@@ -1,13 +1,10 @@
 <?php
-// Include necessary files and initialize DocumentController
 include 'documentController.php';
 $documentController = new DocumentController();
 
-// Retrieve search term from AJAX request
 $searchTerm = isset($_GET['searchTerm']) ? $_GET['searchTerm'] : '';
-$UserId = isset($_GET['UserId']) ? $_GET['UserId'] : ''; // Remove the extra space
+$UserId = isset($_GET['UserId']) ? $_GET['UserId'] : '';
 
-// Fetch document titles based on the search term (for suggestions)
 $searchSuggestions = $documentController->searchUserDocuments($UserId, $searchTerm);
 
 echo '<style>
