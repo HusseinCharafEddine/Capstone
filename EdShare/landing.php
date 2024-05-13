@@ -262,10 +262,8 @@ $user = $userController->getUserByUsername($username);
                       $documentId = $mostDownloadedToday['DocumentId'];
                       $document = $documentController->getDocumentById($documentId);
 
-                      // Display document details
                       if ($document) {
                         echo '<h5>' . $document['Title'] . '</h5>';
-                        // Add more details as needed
                       }
                     }
                     ?>
@@ -322,14 +320,12 @@ $user = $userController->getUserByUsername($username);
                                 </div>
                                 <div id="starRating_<?php echo $document['DocumentId']; ?>">
                                   <?php
-                                  // Fetch the user's rating for the document
                                   $testRating = $downloadController->getDownloadByUserAndDocument($userId, $document['DocumentId']);
                                   if ($testRating) {
                                     $userRating = $testRating['Rating'];
                                   } else {
                                     $userRating = 0;
                                   }
-                                  // Render stars based on user's rating
                                   for ($i = 0; $i < 5; $i++) {
                                     if ($userRating !== null && $i < $userRating) {
                                       echo '<i class="bx bx-star bxs-star" style="color: #ffab00;" onclick="toggleStar(' . $i . ', ' . $document['DocumentId'] . ')"></i>';
@@ -355,7 +351,6 @@ $user = $userController->getUserByUsername($username);
                                     <button class="btn btn-primary download-btn"> Insufficient Tokens! </button>
                                   <?php endif; ?>
                                 </div>
-                                <!-- Favorite Button -->
 
                               </div>
                             </div>
@@ -373,17 +368,14 @@ $user = $userController->getUserByUsername($username);
                   <div class="card-body">
                     <span>Yesterday's Pick</span>
                     <?php
-                    // Get the most downloaded document today
-                    
+
                     if ($mostDownloadedYesterday) {
                       $documentId = $mostDownloadedYesterday['DocumentId'];
                       $documentController = new DocumentController();
                       $document = $documentController->getDocumentById($documentId);
 
-                      // Display document details
                       if ($document) {
                         echo '<h5>' . $document['Title'] . '</h5>';
-                        // Add more details as needed
                       }
                     }
                     ?>
@@ -439,14 +431,12 @@ $user = $userController->getUserByUsername($username);
                                 </div>
                                 <div id="starRating_<?php echo $document['DocumentId']; ?>">
                                   <?php
-                                  // Fetch the user's rating for the document
                                   $testRating = $downloadController->getDownloadByUserAndDocument($userId, $document['DocumentId']);
                                   if ($testRating) {
                                     $userRating = $testRating['Rating'];
                                   } else {
                                     $userRating = 0;
                                   }
-                                  // Render stars based on user's rating
                                   for ($i = 0; $i < 5; $i++) {
                                     if ($userRating !== null && $i < $userRating) {
                                       echo '<i class="bx bx-star bxs-star" style="color: #ffab00;" onclick="toggleStar(' . $i . ', ' . $document['DocumentId'] . ')"></i>';
@@ -473,7 +463,6 @@ $user = $userController->getUserByUsername($username);
                                     <button class="btn btn-primary download-btn"> Insufficient Tokens! </button>
                                   <?php endif; ?>
                                 </div>
-                                <!-- Favorite Button -->
 
                               </div>
                             </div>
@@ -490,18 +479,15 @@ $user = $userController->getUserByUsername($username);
                   <div class="card-body">
                     <span>New Drops</span>
                     <?php
-                    // Get the most downloaded document today
-                    
+
 
                     if ($newestDownloadedDocument) {
                       $documentId = $newestDownloadedDocument['DocumentId'];
                       $documentController = new DocumentController();
                       $document = $documentController->getDocumentById($documentId);
 
-                      // Display document details
                       if ($document) {
                         echo '<h5>' . $document['Title'] . '</h5>';
-                        // Add more details as needed
                       }
                     }
                     ?>
@@ -558,14 +544,12 @@ $user = $userController->getUserByUsername($username);
                                 </div>
                                 <div id="starRating_<?php echo $document['DocumentId']; ?>">
                                   <?php
-                                  // Fetch the user's rating for the document
                                   $testRating = $downloadController->getDownloadByUserAndDocument($userId, $document['DocumentId']);
                                   if ($testRating) {
                                     $userRating = $testRating['Rating'];
                                   } else {
                                     $userRating = 0;
                                   }
-                                  // Render stars based on user's rating
                                   for ($i = 0; $i < 5; $i++) {
                                     if ($userRating !== null && $i < $userRating) {
                                       echo '<i class="bx bx-star bxs-star" style="color: #ffab00;" onclick="toggleStar(' . $i . ', ' . $document['DocumentId'] . ')"></i>';
@@ -593,13 +577,7 @@ $user = $userController->getUserByUsername($username);
                                   <?php endif; ?>
 
                                 </div>
-                                <!-- Favorite Button -->
-                                <!-- <div class="d-flex align-items-center bg-primary rounded p-1">
-                                  <button class="btn btn-primary toggle-favorite"
-                                    data-document-id="<?php echo $document['DocumentId']; ?>">
-                                    <?php echo $buttonText; ?> <i class="bx bx-star"></i>
-                                  </button>
-                                </div> -->
+
                               </div>
                             </div>
                           </div>
@@ -655,20 +633,15 @@ $user = $userController->getUserByUsername($username);
                   $totalUploads = $documentController->getCountOfDocuments();
                   $totalPages = ceil($totalUploads / $uploadsPerPage);
 
-                  // Get the current page number
                   $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 
-                  // Calculate the offset
                   $offset = ($page - 1) * $uploadsPerPage;
 
-                  // Fetch uploads for the current page from your data source
-                  // Get filter values from the AJAX request
                   $universityId = isset($_GET['universityId']) ? intval($_GET['universityId']) : 0;
                   $courseId = isset($_GET['courseId']) ? intval($_GET['courseId']) : 0;
                   $rating = isset($_GET['rating']) ? intval($_GET['rating']) : 0;
                   $searchTerm = isset($_GET['searchTerm']) ? $_GET['searchTerm'] : '';
 
-                  // Build the filter string based on the selected filter values
                   $filter = array();
                   if ($universityId != 0) {
                     $filter['universityId'] = $universityId;
@@ -736,7 +709,6 @@ $user = $userController->getUserByUsername($username);
                             </div>
                             <div id="starRating_<?php echo $document['DocumentId']; ?>">
                               <?php
-                              // Fetch the user's rating for the document
                               $canRate;
                               $testRating = $downloadController->getDownloadByUserAndDocument($userId, $document['DocumentId']);
                               if ($testRating) {
@@ -748,7 +720,6 @@ $user = $userController->getUserByUsername($username);
                               }
 
 
-                              // Render stars based on user's rating
                               for ($i = 0; $i < 5; $i++) {
                                 if ($canRate) {
                                   if ($userRating !== null && $i < $userRating) {
@@ -787,13 +758,7 @@ $user = $userController->getUserByUsername($username);
                             </div>
 
 
-                            <!-- Favorite Button -->
-                            <!-- <div class="d-flex align-items-center bg-primary rounded p-1">
-                              <button class="btn btn-primary toggle-favorite"
-                                data-document-id="<?php echo $document['DocumentId']; ?>">
-                                <?php echo $buttonText; ?> <i class="bx bx-star"></i>
-                              </button>
-                            </div> -->
+
                           </div>
                         </div>
                       </div>
@@ -865,45 +830,38 @@ $user = $userController->getUserByUsername($username);
             <!-- Page JS -->
             <script src="assets/js/dashboards-analytics.js"></script>
 
-            <!-- Place this tag in your head or just before your close body tag. -->
 
 
             <script>
-              // Function to handle filter submission
               function submitFilter() {
                 var universityId = document.getElementById("University").value;
                 var courseId = document.getElementById("Category").value;
                 var rating = document.getElementById("Rating").value;
                 var searchTerm = document.getElementById("searchInput").value;
 
-                // Construct the URL with filter parameters and search term
                 var url = window.location.pathname +
                   "?universityId=" + universityId +
                   "&courseId=" + courseId +
                   "&rating=" + rating +
-                  "&searchTerm=" + encodeURIComponent(searchTerm); // Encode search term
+                  "&searchTerm=" + encodeURIComponent(searchTerm);
 
-                // Redirect to the constructed URL
                 window.location.href = url;
               }
 
-              // Function to fetch search suggestions
               function fetchSearchSuggestions() {
                 var searchTerm = document.getElementById("searchInput").value;
                 if (searchTerm.trim() === '') {
-                  return; // No suggestions for empty search term
+                  return;
                 }
 
-                // AJAX call to fetch search suggestions based on the input
                 $.ajax({
                   url: 'BE/fetchSearchSuggestions.php',
                   method: 'GET',
                   data: { searchTerm: searchTerm },
                   success: function (response) {
-                    // Update the search suggestions dropdown with retrieved suggestions
                     var suggestionsDropdown = document.getElementById("searchSuggestions");
                     suggestionsDropdown.innerHTML = response;
-                    suggestionsDropdown.style.display = 'block'; // Show the suggestions dropdown
+                    suggestionsDropdown.style.display = 'block';
                   },
                   error: function (xhr, status, error) {
                     console.error(error);
@@ -911,39 +869,31 @@ $user = $userController->getUserByUsername($username);
                 });
               }
 
-              // Add event listeners to search icon, search input field, and search suggestions
               document.addEventListener("DOMContentLoaded", function () {
-                // Event listener for clicking the search icon
                 document.querySelector(".bx-search").addEventListener("click", function () {
-                  submitFilter(); // Trigger filter submission
+                  submitFilter();
                 });
 
-                // Event listener for Enter key press in the search input field
                 document.getElementById("searchInput").addEventListener("keypress", function (event) {
                   if (event.key === "Enter") {
-                    submitFilter(); // Trigger filter submission
+                    submitFilter(); n
                   }
                 });
 
-                // Event listener for input change in the search input field (for suggestions)
                 document.getElementById("searchInput").addEventListener("input", function () {
-                  fetchSearchSuggestions(); // Fetch search suggestions as user types
+                  fetchSearchSuggestions();
                 });
                 document.addEventListener("click", function (event) {
                   var clickedElement = event.target;
                   if (clickedElement.classList.contains("search-suggestion")) {
-                    // Set the search input value to the clicked suggestion
                     document.getElementById("searchInput").value = clickedElement.textContent.trim();
-                    // Hide the suggestions container after selection
                     document.getElementById("searchSuggestions").style.display = "none";
                   }
                 });
 
                 var applyFilterBtn = document.getElementById('applyFilterBtn');
 
-                // Add a click event listener to the button
                 applyFilterBtn.addEventListener('click', function () {
-                  // Call the submitFilter() function when the button is clicked
                   submitFilter();
                 });
 
@@ -957,21 +907,19 @@ $user = $userController->getUserByUsername($username);
                 console.log(stars);
                 const newRating = index + 1;
 
-                // Update star styles (visual feedback)
                 for (let i = 0; i < stars.length; i++) {
-                  const starGroupIndex = Math.floor(i / 5); // Calculate the index of the star group
-                  const starIndex = i % 5; // Calculate the index within the star group
+                  const starGroupIndex = Math.floor(i / 5);
+                  const starIndex = i % 5;
 
                   if (starIndex <= index) {
                     stars[i].classList.add('bxs-star');
                     stars[i].style.color = '#ffab00';
                   } else {
                     stars[i].classList.remove('bxs-star');
-                    stars[i].style.color = ''; // Reset color for empty stars
+                    stars[i].style.color = '';
                   }
                 }
 
-                // Send a POST request to update the rating
                 fetch('BE/updateRating.php', {
                   method: 'POST',
                   headers: {
@@ -996,71 +944,8 @@ $user = $userController->getUserByUsername($username);
               }
             </script>
 
-            <!-- <script>
-              // Add event listener to the Apply Filter button (assuming you're using jQuery for AJAX)
-              $('#applyFilterBtn').click(function () {
-                // Get selected filter values
-                var universityId = $('#University').val();
-                var courseId = $('#Category').val();
-                var rating = $('#Rating').val();
-
-                // Get search term
-                var searchTerm = $('#searchInput').val();
-
-                // AJAX call to fetch filtered documents based on filter values and search term
-                $.ajax({
-                  url: 'fetchFilteredDocuments.php',
-                  method: 'GET',
-                  data: {
-                    universityId: universityId,
-                    courseId: courseId,
-                    rating: rating,
-                    searchTerm: searchTerm
-                  },
-                  success: function (response) {
-                    // Update document listing with the filtered/searched documents
-                    $('#documentListing').html(response);
-                  },
-                  error: function (xhr, status, error) {
-                    // Handle error
-                    console.error(error);
-                  }
-                });
-              });
-
-            </script> -->
-
-            <!-- <script>
-              $(document).ready(function () {
-                $('.toggle-favorite').click(function () {
-                  var documentId = $(this).data('document-id');
-                  var button = $(this); // Reference to the clicked button
-
-                  // AJAX request to toggle favorite status
-                  $.ajax({
-                    type: 'POST',
-                    url: 'BE/toggleFavorite.php',
-                    data: {
-                      documentId: documentId
-                    },
-                    success: function (response) {
-                      if (response === 'Favorite added successfully') {
-                        button.text('Remove from Favorites');
-                      } else if (response === 'Favorite removed successfully') {
-                        button.text('Add to Favorites');
-                      }
-
-                    },
-                    error: function () {
-                    }
-                  });
-                });
-              });
-            </script> -->
-
             <script>
               function addToFavorites(documentId) {
-                // AJAX request to toggle favorite status
                 $.ajax({
                   type: 'POST',
                   url: 'BE/toggleFavorite.php',
@@ -1068,11 +953,9 @@ $user = $userController->getUserByUsername($username);
                     documentId: documentId
                   },
                   success: function (response) {
-                    // Update all heart icons with matching documentId
                     var heartIcons = document.querySelectorAll('[id^="heart-fav' + documentId + '"]');
 
                     heartIcons.forEach(function (heartIcon) {
-                      // Update src based on response
                       if (response === 'Favorite added successfully') {
                         heartIcon.src = 'assets/img/icons/unicons/heartfilled.png';
                       } else if (response === 'Favorite removed successfully') {
@@ -1089,7 +972,6 @@ $user = $userController->getUserByUsername($username);
 
             <script>
               function initiateDownload(userId, documentId, filePath, fileName) {
-                // Send AJAX request to decrement token score and initiate download
                 $.ajax({
                   url: "BE/download.php",
                   type: "POST",
